@@ -139,11 +139,79 @@ build_with_xcode() {
     copy_xcode_build_to_dist "$built_app"
 }
 
-build_manually() {
-    echo "❌ Manual swiftc fallback has been removed."
-    echo "   The macOS build now relies on the Xcode project + VoicePolishCore Swift Package."
-    echo "   Install Xcode (or run on a machine that has it) and re-run this script."
-    exit 1
+build_with_spm() {
+    echo "🔨 Building Typefree with Swift Package Manager..."
+
+    (cd "$SCRIPT_DIR" && swift build -c release)
+
+    local bin="$SCRIPT_DIR/.build/release/Typefree"
+    if [ ! -f "$bin" ]; then
+        echo "❌ SPM build completed without producing $bin"
+        return 1
+    fi
+
+    local sparkle_framework
+    sparkle_framework="$(find "$SCRIPT_DIR/.build" -name "Sparkle.framework" -type d | grep "arm64" | head -n 1)"
+    if [ -z "$sparkle_framework" ]; then
+        sparkle_framework="$(find "$SCRIPT_DIR/.build" -name "Sparkle.framework" -type d | head -n 1)"
+    fi
+    if [ -z "$sparkle_framework" ]; then
+        echo "❌ Could not locate Sparkle.framework in .build"
+        return 1
+    fi
+
+    rm -rf "$APP_DIR" "$SCRIPT_DIR/dist/Typefree.app"
+    mkdir -p "$MACOS" "$RESOURCES" "$FRAMEWORKS"
+
+    cp "$bin" "$MACOS/Typefree"
+    install_name_tool -add_rpath "@executable_path/../Frameworks" "$MACOS/Typefree" 2>/dev/null || true
+
+    # Process Info.plist
+    sed -e "s/\$(VP_TRIAL_API_BASE)/$VP_TRIAL_API_BASE/g" \
+        -e "s/\$(VP_TRIAL_CERT_SHA256)/$VP_TRIAL_CERT_SHA256/g" \
+        "$SCRIPT_DIR/Info.plist" > "$CONTENTS/Info.plist"
+
+    echo -n "APPL????" > "$CONTENTS/PkgInfo"
+
+    # Copy Resources
+    [ -f "$SCRIPT_DIR/VoicePolish.icns" ] && cp "$SCRIPT_DIR/VoicePolish.icns" "$RESOURCES/"
+    [ -f "$SCRIPT_DIR/Resources/VoicePolish.icns" ] && cp "$SCRIPT_DIR/Resources/VoicePolish.icns" "$RESOURCES/"
+    [ -f "$SCRIPT_DIR/Resources/WhatsNewGuide.html" ] && cp "$SCRIPT_DIR/Resources/WhatsNewGuide.html" "$RESOURCES/"
+    [ -f "$SCRIPT_DIR/Sources/statusbar-icon.png" ] && cp "$SCRIPT_DIR/Sources/statusbar-icon.png" "$RESOURCES/"
+    [ -f "$SCRIPT_DIR/Sources/statusbar-icon@2x.png" ] && cp "$SCRIPT_DIR/Sources/statusbar-icon@2x.png" "$RESOURCES/"
+    [ -f "$SCRIPT_DIR/Sources/record-start.wav" ] && cp "$SCRIPT_DIR/Sources/record-start.wav" "$RESOURCES/"
+    [ -f "$SCRIPT_DIR/Sources/record-stop.wav" ] && cp "$SCRIPT_DIR/Sources/record-stop.wav" "$RESOURCES/"
+
+    # Copy Frameworks
+    cp -R "$sparkle_framework" "$FRAMEWORKS/"
+
+    # Sign Sparkle framework components and app
+    local entitlements="$SCRIPT_DIR/Resources/VoicePolish.entitlements"
+    local sp_v="$FRAMEWORKS/Sparkle.framework/Versions/B"
+    if [ -d "$sp_v" ]; then
+        for xpc in "$sp_v/XPCServices/"*.xpc; do
+            [ -e "$xpc" ] && codesign --force --sign - "$xpc"
+        done
+        [ -e "$sp_v/Autoupdate" ]  && codesign --force --sign - "$sp_v/Autoupdate"
+        [ -e "$sp_v/Updater.app" ] && codesign --force --sign - "$sp_v/Updater.app"
+        codesign --force --sign - "$FRAMEWORKS/Sparkle.framework"
+    fi
+
+    if developer_id_available; then
+        echo "🔏 Signing with Developer ID..."
+        resign_with_developer_id "$APP_DIR"
+    else
+        echo "🔏 Ad-hoc signing Typefree bundle..."
+        codesign --force \
+            --entitlements "$entitlements" \
+            --sign - "$APP_DIR"
+    fi
+
+    ditto "$APP_DIR" "$SCRIPT_DIR/dist/Typefree.app"
+    xattr -cr "$APP_DIR" 2>/dev/null || true
+    xattr -cr "$SCRIPT_DIR/dist/Typefree.app" 2>/dev/null || true
+
+    codesign --verify --deep --strict "$APP_DIR" || echo "⚠️ Verification warning (ad-hoc signing)"
 }
 
 if [ "${FORCE_MANUAL_BUILD:-0}" != "1" ] && xcode_signing_ready; then
@@ -151,10 +219,11 @@ if [ "${FORCE_MANUAL_BUILD:-0}" != "1" ] && xcode_signing_ready; then
         print_summary
         exit 0
     fi
-    echo "⚠️  Xcode-managed build failed; falling back to manual build."
+    echo "⚠️  Xcode-managed build failed; falling back to SPM build."
     # 清理可能残留的旧产物，避免误安装旧版
     rm -rf "$DERIVED_DATA_PATH"
 fi
 
-build_manually
+build_with_spm
 print_summary
+
