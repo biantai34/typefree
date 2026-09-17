@@ -8,8 +8,8 @@
 
 1. **繁體中文化**：全介面（狀態列選單、設定視窗、輔助面板、新手教學、權限引導）在地化為台灣繁體中文。
 2. **擴充 BYOK（自備金鑰）生態**：
-   - 語音辨識（Cloud ASR）：支援 **Groq**（Whisper Large v3 Turbo，超低延遲）、**OpenAI**（Whisper-1）、**Google Gemini**（Gemini 2.5 Flash）、火山引擎（Volcengine BigASR）。
-   - 語音潤色與隨時問 AI（Polish & Ask）：支援 **Google Gemini**（Gemini 2.5 Flash）、**OpenAI**（GPT-4o-mini）、**Groq**（Llama 3.3 70B）、阿里雲百煉（通義千問）、智譜清言。
+   - 語音辨識（Cloud ASR）：支援 **Groq**（Whisper Large v3 Turbo，超低延遲）、**OpenAI**（Whisper-1）、**Google Gemini**（Gemini 3.8 Flash / 3.5 Flash）、火山引擎（Volcengine BigASR）。
+   - 語音潤色與隨時問 AI（Polish & Ask）：支援 **Google Gemini**（旗艦 Gemini 3.8 Flash）、**OpenAI**（GPT-4o-mini）、**Groq**（Llama 3.3 70B）、阿里雲百煉（通義千問）、智譜清言。
    - 辨識與潤色金鑰自動雙向連動，並加密安全儲存於 macOS 系統鑰匙圈（Keychain）。
 
 ## 能做什麼

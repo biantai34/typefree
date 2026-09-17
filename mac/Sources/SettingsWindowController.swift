@@ -3908,7 +3908,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             container.addArrangedSubview(keyRow)
             keyRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
 
-            let modelHint = label("使用 Google Gemini 2.5 Flash 原生音訊辨識，支援超長音訊與極速回應。和「語音最佳化」的 Gemini 共用同一個 Key。", size: 11.5, weight: .regular, color: theme.text3)
+            let modelHint = label("使用 Google Gemini 3.8 Flash / 3.5 Flash 原生音訊辨識，支援超長音訊與極速回應。和「語音最佳化」的 Gemini 共用同一個 Key。", size: 11.5, weight: .regular, color: theme.text3)
             modelHint.maximumNumberOfLines = 0
             container.addArrangedSubview(modelHint)
             modelHint.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
@@ -4564,8 +4564,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             }
             let modelRow = makePolishModelRow(
                 configKey: "gemini_polish_model",
-                presets: ["gemini-2.5-flash", "gemini-2.5-pro"],
-                caption: "Gemini 2.5 Flash 速度極快（預設推薦）；Gemini 2.5 Pro 推理能力更深。")
+                presets: ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"],
+                caption: "Gemini 3.8 Flash 智慧最強（預設推薦）；Gemini 3.5 Flash 速度極快；Gemini 3.5 Flash-Lite 超低消耗。")
             container.addArrangedSubview(modelRow)
             modelRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             polishGetKeyButton?.isHidden = false
@@ -4689,7 +4689,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// 潤色模型預設值（留空時回退）。
     private func polishModelDefault(forKey key: String) -> String {
         switch key {
-        case "gemini_polish_model": return "gemini-2.5-flash"
+        case "gemini_polish_model": return "gemini-3.8-flash"
         case "openai_polish_model": return "gpt-4o-mini"
         case "groq_polish_model": return "llama-3.3-70b-versatile"
         case "qwen_polish_model": return PolishModelRouter.autoValue
@@ -4826,7 +4826,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let presets: [String]
         switch key {
         case "gemini_polish_model":
-            presets = ["gemini-2.5-flash", "gemini-2.5-pro"]
+            presets = ["gemini-3.8-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"]
         case "openai_polish_model":
             presets = ["gpt-4o-mini", "gpt-4o"]
         case "groq_polish_model":

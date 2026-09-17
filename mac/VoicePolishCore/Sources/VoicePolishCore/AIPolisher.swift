@@ -119,7 +119,7 @@ public class AIPolisher {
         switch provider {
         case "gemini":
             let saved = config.string(forKey: "gemini_polish_model")
-            return PolishSelection(provider: "gemini", model: (saved?.isEmpty == false) ? saved! : "gemini-2.5-flash")
+            return PolishSelection(provider: "gemini", model: (saved?.isEmpty == false) ? saved! : "gemini-3.8-flash")
         case "openai":
             let saved = config.string(forKey: "openai_polish_model")
             return PolishSelection(provider: "openai", model: (saved?.isEmpty == false) ? saved! : "gpt-4o-mini")
@@ -431,7 +431,7 @@ public class AIPolisher {
         case "gemini":
             guard let key = config.string(forKey: "gemini_api_key", envKey: "GEMINI_API_KEY"),
                   !key.isEmpty else { return nil }
-            let model = config.string(forKey: "gemini_polish_model") ?? "gemini-2.5-flash"
+            let model = config.string(forKey: "gemini_polish_model") ?? "gemini-3.8-flash"
             let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions")!
             return ("gemini", url, model, key)
         case "openai":

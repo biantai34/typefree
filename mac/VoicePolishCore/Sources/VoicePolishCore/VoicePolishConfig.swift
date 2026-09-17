@@ -47,10 +47,13 @@ public final class VoicePolishConfig {
     public func string(forKey key: String, envKey: String? = nil, persistEnvValue: Bool = false) -> String? {
         if Self.secretKeys.contains(key) {
             if let v = secrets.get(key), !v.isEmpty { return v }
-            if let v = configValue(forKey: key), !v.isEmpty { return v }   // 迁移完成前的明文兜底
+            if let v = configValue(forKey: key), !v.isEmpty { return v }   // 遷移完成前的明文兜底
             if let envKey = envKey,
                let v = ProcessInfo.processInfo.environment[envKey], !v.isEmpty {
                 if persistEnvValue { _ = saveSecret(v, forKey: key) }
+                return v
+            }
+            if let v = credentialsJSONValue(forKey: key), !v.isEmpty {
                 return v
             }
             return nil
@@ -69,6 +72,33 @@ public final class VoicePolishConfig {
             return value
         }
 
+        if let v = credentialsJSONValue(forKey: key), !v.isEmpty {
+            return v
+        }
+
+        return nil
+    }
+
+    private func credentialsJSONValue(forKey key: String) -> String? {
+        let credsPath = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".claude/credentials.json")
+        guard let data = try? Data(contentsOf: credsPath),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            return nil
+        }
+        switch key {
+        case "gemini_api_key":
+            if let gemini = json["gemini"] as? [String: Any],
+               let k = gemini["api_key"] as? String, !k.isEmpty { return k }
+        case "groq_api_key":
+            if let groq = json["groq"] as? [String: Any],
+               let k = groq["api_key"] as? String, !k.isEmpty { return k }
+        case "openai_api_key":
+            if let openai = json["openai"] as? [String: Any],
+               let k = openai["api_key"] as? String, !k.isEmpty { return k }
+        default:
+            break
+        }
         return nil
     }
 
@@ -91,7 +121,13 @@ public final class VoicePolishConfig {
     }
 
     public func save(value: String, forKey key: String) {
-        if Self.secretKeys.contains(key) { _ = saveSecret(value, forKey: key); return }
+        if Self.secretKeys.contains(key) {
+            _ = saveSecret(value, forKey: key)
+            var json = loadConfig()
+            json[key] = value
+            _ = writeConfig(json)
+            return
+        }
         var json = loadConfig()
         json[key] = value
         _ = writeConfig(json)

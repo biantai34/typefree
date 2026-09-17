@@ -1707,11 +1707,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
         let hasAccessibility = textDelivery.hasAccessibilityPermission()
         debugLog("Accessibility trusted=\(hasAccessibility)")
 
+        // 確保快速鍵與滑鼠長按監聽器始終啟動（修飾鍵監聽無需輔助功能；未授權時錄音完成會複製至剪貼簿並引導授權）
+        ensureHotkeyManager()
+
         guard hasAccessibility else {
-            hotkeyManager?.stop()
-            hotkeyManager = nil
-            mouseHoldToTalkManager?.stop()
-            mouseHoldToTalkManager = nil
             startAccessibilityWatcher()
             if !isRecording && !isProcessing {
                 statusBar.setTitle("VP!")
@@ -1725,8 +1724,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
                 didPromptForAccessibility = true
             }
             if !didReportMissingAccessibility {
-                debugLog("Accessibility not granted yet; skipping global hotkey listener")
-                showError("請授予輔助功能權限以啟用快速鍵")
+                debugLog("Accessibility not granted yet; hotkey enabled with clipboard fallback")
+                showError("請授予輔助功能權限以啟用自動貼上")
                 didReportMissingAccessibility = true
             }
             return
@@ -1734,7 +1733,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
 
         didPromptForAccessibility = false
         didReportMissingAccessibility = false
-        ensureHotkeyManager()
     }
 
     /// 辅助功能未授权时每 2 秒检测一次；用户在系统设置里一打开就立刻接管快捷键，

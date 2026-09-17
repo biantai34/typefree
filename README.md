@@ -25,7 +25,7 @@
 
 - 🇹🇼 **全介面繁體中文化**：符合台灣在地語言習慣（設定、快速鍵、貼上、游標、儲存、鑰匙圈、辨識、麥克風、視窗）。
 - 🔑 **全新 BYOK（自備金鑰）支援非大陸使用者常用服務**：
-  - **Google Gemini**：語音辨識（Gemini 2.5 Flash 音訊轉寫）與語音潤色／隨時問 AI（Gemini 2.5 Flash）。
+  - **Google Gemini**：語音辨識（Gemini 3.8 Flash / 3.5 Flash 音訊轉寫）與語音潤色／隨時問 AI（旗艦 Gemini 3.8 Flash）。
   - **OpenAI**：語音辨識（Whisper-1）與語音潤色／隨時問 AI（GPT-4o-mini）。
   - **Groq**：極速語音辨識（Whisper Large v3 Turbo，低延遲首選）與語音潤色（Llama 3.3 70B）。
   - 同時保留原有的火山引擎（Volcengine）、阿里雲百煉通義千問（DashScope Qwen）、智譜清言（Zhipu GLM）。
@@ -49,7 +49,7 @@
 
 | 服務商 | 支援項目 | 特點與推薦 | 申請連結 |
 |---|---|---|---|
-| **Google Gemini** | 辨識 + 潤色 | 免費額度充裕，Gemini 2.5 Flash 速度快且理解能力強（**強烈推薦**） | [Google AI Studio](https://aistudio.google.com/app/apikey) |
+| **Google Gemini** | 辨識 + 潤色 | 免費額度充裕，全新旗艦 Gemini 3.8 Flash 思考更聰明、轉錄更精確（**強烈推薦**） | [Google AI Studio](https://aistudio.google.com/app/apikey) |
 | **OpenAI** | 辨識 + 潤色 | Whisper 辨識精準，GPT-4o-mini 潤色穩定可靠 | [OpenAI Platform](https://platform.openai.com/api-keys) |
 | **Groq** | 辨識 + 潤色 | Whisper Large v3 Turbo 極致秒開轉錄，極速輸出體驗（**強烈推薦**） | [Groq Cloud Console](https://console.groq.com/keys) |
 | **火山引擎** | 辨識 + 潤色 | 大陸地區熱門服務，支援大模型語音辨識 | [火山引擎控制台](https://console.volcengine.com/) |

@@ -15,7 +15,7 @@ public final class CloudASRTranscriber {
     public enum ASRVersion: String, CaseIterable {
         case groq       // Groq whisper-large-v3-turbo
         case openai     // OpenAI whisper-1
-        case gemini     // Google gemini-2.5-flash
+        case gemini     // Google Gemini (Gemini 3.8 Flash / 3.5 Flash)
         case turbo      // 火山極速版 1.0：同步 flash
         case standard   // 火山標準版 1.0：非同步 submit + 輪詢 query
         case v2         // 火山 2.0(seedasr)：非同步 submit + 輪詢 query
@@ -47,7 +47,7 @@ public final class CloudASRTranscriber {
             case .bailian: return "qwen3-asr-flash"
             case .groq: return "whisper-large-v3-turbo"
             case .openai: return "whisper-1"
-            case .gemini: return "gemini-2.5-flash"
+            case .gemini: return "gemini-3.8-flash"
             }
         }
 
@@ -64,7 +64,7 @@ public final class CloudASRTranscriber {
             switch self {
             case .groq: return "Groq Whisper"
             case .openai: return "OpenAI Whisper"
-            case .gemini: return "Gemini 2.5 Flash"
+            case .gemini: return "Gemini 3.8 Flash"
             case .turbo: return "極速版"
             case .standard: return "標準版"
             case .v2: return "2.0"
@@ -146,8 +146,6 @@ public final class CloudASRTranscriber {
     private static let groqURL = URL(string: "https://api.groq.com/openai/v1/audio/transcriptions")!
     // OpenAI Whisper API 端點
     private static let openAIURL = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
-    // Google Gemini API 端點
-    private static let geminiURL = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent")!
 
     private let config = VoicePolishConfig.shared
     public var debugLog: ((String) -> Void)?
@@ -358,7 +356,8 @@ public final class CloudASRTranscriber {
                 completion(.failure(TranscriptionError.missingCredentials))
                 return
             }
-            debugLog?("Cloud ASR: version=gemini provider=gemini model=gemini-2.5-flash audio=\(audioFormat)/\(audioData.count / 1024)KB budget=\(Int(budget))s")
+            let model = config.string(forKey: "gemini_asr_model") ?? "gemini-3.8-flash"
+            debugLog?("Cloud ASR: version=gemini provider=gemini model=\(model) audio=\(audioFormat)/\(audioData.count / 1024)KB budget=\(Int(budget))s")
             transcribeGemini(audioData: audioData, format: audioFormat, apiKey: apiKey, budgetSeconds: budget, completion: completion)
         case .volcano:
             guard let credentials = volcanoCredentials() else {
@@ -752,12 +751,26 @@ public final class CloudASRTranscriber {
     // MARK: - Gemini（Google 多模態音訊轉寫）
 
     private func transcribeGemini(audioData: Data, format: String, apiKey: String, budgetSeconds: TimeInterval, completion: @escaping (Result<String, Error>) -> Void) {
-        guard var components = URLComponents(url: Self.geminiURL, resolvingAgainstBaseURL: false) else {
-            completion(.failure(TranscriptionError.invalidAudio))
-            return
+        let preferredModel = config.string(forKey: "gemini_asr_model") ?? "gemini-3.8-flash"
+        callGeminiASR(model: preferredModel, audioData: audioData, format: format, apiKey: apiKey, budgetSeconds: budgetSeconds) { [weak self] result in
+            switch result {
+            case .success(let text):
+                completion(.success(text))
+            case .failure(let error):
+                // 若首選模型遭遇失敗（例如 3.8 音訊在部分地區回傳 503 暫時不可用），自動備援至 gemini-3.5-flash
+                if preferredModel != "gemini-3.5-flash" {
+                    self?.debugLog?("Gemini ASR \(preferredModel) failed, falling back to gemini-3.5-flash: \(error.localizedDescription)")
+                    self?.callGeminiASR(model: "gemini-3.5-flash", audioData: audioData, format: format, apiKey: apiKey, budgetSeconds: budgetSeconds, completion: completion)
+                } else {
+                    completion(.failure(error))
+                }
+            }
         }
-        components.queryItems = [URLQueryItem(name: "key", value: apiKey)]
-        guard let url = components.url else {
+    }
+
+    private func callGeminiASR(model: String, audioData: Data, format: String, apiKey: String, budgetSeconds: TimeInterval, completion: @escaping (Result<String, Error>) -> Void) {
+        let endpoint = "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent?key=\(apiKey)"
+        guard let url = URL(string: endpoint) else {
             completion(.failure(TranscriptionError.invalidAudio))
             return
         }
@@ -795,9 +808,16 @@ public final class CloudASRTranscriber {
             return
         }
 
-        URLSession.shared.dataTask(with: request) { data, _, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 completion(.failure(TranscriptionError.network(underlying: error)))
+                return
+            }
+            if let http = response as? HTTPURLResponse, http.statusCode >= 400 {
+                let msg = data.flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: Any] }
+                    .flatMap { AIPolisher.extractAPIErrorMessage(from: $0) }
+                    ?? "HTTP \(http.statusCode)"
+                completion(.failure(TranscriptionError.serverFailed(message: "Gemini \(model) (\(msg))")))
                 return
             }
             guard let data = data else {
@@ -819,7 +839,7 @@ public final class CloudASRTranscriber {
                 }
                 return
             }
-            let msg = AIPolisher.extractAPIErrorMessage(from: json) ?? "Gemini 語音識別失敗"
+            let msg = AIPolisher.extractAPIErrorMessage(from: json) ?? "Gemini 語音辨識失敗"
             completion(.failure(TranscriptionError.serverFailed(message: msg)))
         }.resume()
     }
