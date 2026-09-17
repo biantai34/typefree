@@ -16,7 +16,7 @@ public struct OutputLanguageCommand: Equatable {
     public let strippedText: String
 
     public static let configKey = OutputLanguage.commandEnabledConfigKey
-    static let negations: [String] = ["不要", "别", "不用", "不能", "无需", "不需要", "不必", "不会", "没有", "不是", "不", "没"]
+    static let negations: [String] = ["不要", "別", "不用", "不能", "無需", "不需要", "不必", "不會", "沒有", "不是", "不", "沒", "别", "无需", "不会", "没有", "没"]
     /// 正文至少要有这么多有意义的字符，否则整句当正文
     static let minimumContentCharacters = 3
 

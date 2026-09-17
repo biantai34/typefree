@@ -4,96 +4,93 @@
 
 <h1 align="center">Typefree</h1>
 
-<p align="center"><b>macOS 上的 AI 语音输入：按住说话，松手时文字已经整理好、进了光标处。</b></p>
+<p align="center"><b>macOS 上的 AI 語音輸入：按住說話，放開時文字已經整理好、輸入至游標處。</b></p>
 
 <p align="center">
-  <a href="https://github.com/kdsz001/typefree/releases/latest"><img src="https://img.shields.io/github/v/release/kdsz001/typefree?label=%E6%9C%80%E6%96%B0%E7%89%88&color=1d1d1f" alt="最新版"></a>
+  <a href="https://github.com/biantai34/typefree/releases/latest"><img src="https://img.shields.io/github/v/release/biantai34/typefree?label=%E6%9C%80%E6%96%B0%E7%89%88&color=1d1d1f" alt="最新版"></a>
   <a href="mac/LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-1d1d1f" alt="GPL-3.0"></a>
   <img src="https://img.shields.io/badge/macOS-14%2B-1d1d1f" alt="macOS 14+">
 </p>
 
 <p align="center">
-  <a href="https://github.com/kdsz001/typefree/releases/latest/download/Typefree.dmg"><b>下载 Mac 版</b></a> ·
-  <a href="https://typefree.app">官网</a> ·
-  <a href="https://typefree.app/setup-guide.html">API Key 配置教程</a> ·
+  <a href="https://github.com/biantai34/typefree/releases/latest"><b>下載 Mac 版</b></a> ·
   <a href="README.en.md">English</a>
 </p>
 
 <p align="center">
-  <img src="readme-assets/zh-mouse.gif" width="768" alt="在输入框里按住鼠标说话，松开后整理好的文字自动输入；向下拖锁定，拖远取消">
+  <img src="readme-assets/zh-mouse.gif" width="768" alt="在輸入框裡按住滑鼠說話，放開後整理好的文字自動輸入；向下拖曳鎖定，拖遠取消">
 </p>
 
-## 它做什么
+## 本 Fork 最佳化亮點
 
-在任何 App 的输入框里，按住快捷键或鼠标左键说话。松手后，识别出的口语会被 AI 去掉「嗯、啊、那个」，理顺句子、加上标点和分段，然后直接输入到光标处。说一句是一句，不用再改。
+- 🇹🇼 **全介面繁體中文化**：符合台灣在地語言習慣（設定、快速鍵、貼上、游標、儲存、鑰匙圈、辨識、麥克風、視窗）。
+- 🔑 **全新 BYOK（自備金鑰）支援非大陸使用者常用服務**：
+  - **Google Gemini**：語音辨識（Gemini 2.5 Flash 音訊轉寫）與語音潤色／隨時問 AI（Gemini 2.5 Flash）。
+  - **OpenAI**：語音辨識（Whisper-1）與語音潤色／隨時問 AI（GPT-4o-mini）。
+  - **Groq**：極速語音辨識（Whisper Large v3 Turbo，低延遲首選）與語音潤色（Llama 3.3 70B）。
+  - 同時保留原有的火山引擎（Volcengine）、阿里雲百煉通義千問（DashScope Qwen）、智譜清言（Zhipu GLM）。
+- 🔒 **鑰匙圈安全儲存**：API Key 儲存於 macOS Keychain，不落盤、絕不外洩。
 
-- **说话变文字**：识别 + AI 整理一步到位，微信、备忘录、浏览器、代码编辑器都能用
-- **鼠标长按说话**：不想按快捷键，就在输入框里按住鼠标；说一半想松手，向下拖一点锁定；不想要了，拖远取消
-- **随时问 AI**：在空白处按住鼠标说出问题，回答出现在屏幕右上角，可追问、可固定
-- **语音翻译**：说完正文，结尾加一句「用英文」，这句直接输入成英文；日文、韩文同理
-- **越用越准**：专有名词、人名、产品名自动学习；你改过的错字下次自动纠正
-- **历史记录**：所有输入在本机加密保存，可搜索、可导出
-- **多家模型**：识别用火山引擎，整理用通义千问，模型按质量和速度自动选
+## 它做什麼
 
-## 三种用法
+在任何 App 的輸入框裡，按住快速鍵或滑鼠左鍵說話。放開後，辨識出的口語會被 AI 去除贅字贅詞（「嗯、啊、那個」），理順句子、加上標點和分段，然後直接輸入到游標處。說一句是一句，無需手動修潤。
 
-| | 怎么开始 | 费用 |
-|---|---|---|
-| **免费试用** | [下载 DMG](https://github.com/kdsz001/typefree/releases/latest/download/Typefree.dmg)，装好就能用，不用配任何东西 | 7 天免费，由作者承担 |
-| **自带 Key** | 在「设置 → 模型」填入你自己的 API Key（[教程](https://typefree.app/setup-guide.html)，几分钟） | **永久免费，不限字数**；费用走你自己的账户 |
-| **会员** | 不想申请 Key，就开通会员，识别、整理、问 AI 全包 | ¥188 / 年 |
+- **說話變文字**：辨識 + AI 整理一步到位，LINE、備忘錄、瀏覽器、程式碼編輯器皆可使用
+- **滑鼠長按說話**：不想按快速鍵，就在輸入框裡按住滑鼠；說一半想放開，向下拖曳一點鎖定；不想要了，拖遠取消
+- **隨時問 AI**：在空白處按住滑鼠說出問題，回答出現在螢幕右上角，可追問、可固定
+- **語音翻譯**：說完正文，結尾加一句「用英文」，這句直接輸入成英文；日文、韓文同理
+- **越用越準**：專有名詞、人名、產品名自動學習；改過的錯字下次自動糾正
+- **歷史紀錄**：所有輸入在本機加密保存，可搜尋、可匯出
+- **彈性模型**：辨識支援 Groq、OpenAI、Gemini、火山引擎，潤色支援 Gemini、OpenAI、Groq、通義千問等，隨心搭配
 
-试用和会员通道只在官方签名版（官网 / Releases 的 DMG）里可用。自己从源码编译的版本没有这两条通道，装好后填入自己的 Key 即可，功能完全一样。
+## 自備 Key（BYOK）使用說明
 
-## 随时问 AI
+在「設定 → 模型」填入你自己的 API Key，**永久免費、不限字數**，費用直接走你自己的帳戶：
+
+| 服務商 | 支援項目 | 特點與推薦 | 申請連結 |
+|---|---|---|---|
+| **Google Gemini** | 辨識 + 潤色 | 免費額度充裕，Gemini 2.5 Flash 速度快且理解能力強（**強烈推薦**） | [Google AI Studio](https://aistudio.google.com/app/apikey) |
+| **OpenAI** | 辨識 + 潤色 | Whisper 辨識精準，GPT-4o-mini 潤色穩定可靠 | [OpenAI Platform](https://platform.openai.com/api-keys) |
+| **Groq** | 辨識 + 潤色 | Whisper Large v3 Turbo 極致秒開轉錄，極速輸出體驗（**強烈推薦**） | [Groq Cloud Console](https://console.groq.com/keys) |
+| **火山引擎** | 辨識 + 潤色 | 大陸地區熱門服務，支援大模型語音辨識 | [火山引擎控制台](https://console.volcengine.com/) |
+| **阿里雲百煉** | 辨識 + 潤色 | 通義千問（Qwen3 / Qwen-Plus） | [百煉平台](https://bailian.console.aliyun.com/) |
+
+> 在設定頁面中輸入任一供應商的金鑰，系統會自動在辨識與潤色欄位同步，並自動儲存至 macOS 系統鑰匙圈。
+
+## 隨時問 AI
 
 <p align="center">
-  <img src="readme-assets/zh-ask.gif" width="768" alt="在空白处按住鼠标提问，回答出现在右上角；按住面板追问；点外面收起">
+  <img src="readme-assets/zh-ask.gif" width="768" alt="在空白處按住滑鼠提問，回答出現在右上角；按住面板追問；點外面收起">
 </p>
 
-看到不懂的，不用切窗口、不用复制，在空白处按住鼠标问一句。按住回答面板可以接着问；点面板外面它会缩成一行、几秒后消失，想留住就点图钉。
+看到不懂的，不用切換視窗、不用複製，在空白處按住滑鼠問一句。按住回答面板可以接著問；點面板外面它會縮成一行、幾秒後消失，想保留就點圖釘。
 
-## 语音翻译
+## 語音翻譯
 
 <p align="center">
-  <img src="readme-assets/zh-translate.gif" width="768" alt="说完正文，结尾加一句「用英文」，这句直接输入成英文">
+  <img src="readme-assets/zh-translate.gif" width="768" alt="說完正文，結尾加一句「用英文」，這句直接輸入成英文">
 </p>
 
-口令是程序规则识别的，不靠模型猜：默认支持英文、日文、韩文、中文，法语、德语、西班牙语可以在设置里打开。也可以固定一种输出语言，不用每次说口令。
+口令由程式規則辨識，不靠模型猜測：預設支援英文、日文、韓文、中文，法語、德語、西班牙語可在設定中開啟。也可以固定一種輸出語言，無需每次說口令。
 
-## 隐私
+## 隱私承諾
 
-- API Key 只保存在本机钥匙串，不上传
-- 自带 Key 时，音频直接发给你选的模型厂商，不经过作者的服务器
-- 试用和会员通道经作者的服务器转发，只转发、不保存音频和文字
-- 历史记录在本机加密存储
+- API Key 僅儲存於本機 macOS 鑰匙圈，絕不進行任何雲端上傳
+- 音訊直接傳送至你設定的 API 服務商，絕無第三方中間伺服器
+- 歷史紀錄全數於本機端加密儲存
 
-完整说明见 [隐私政策](https://typefree.app/privacy.html)。
+## 從原始碼建置
 
-## 从源码构建
-
-要求 macOS 14+、Xcode 26.3。
+需求：macOS 14+、Xcode 15+ / 16+。
 
 ```bash
-git clone https://github.com/kdsz001/typefree.git
+git clone https://github.com/biantai34/typefree.git
 cd typefree/mac
-./build.sh                      # 产物在 dist/
-bash scripts/install_app.sh     # 安装到 /Applications
+./build.sh                      # 產物在 dist/
+bash scripts/install_app.sh     # 安裝至 /Applications
 ```
 
-细节、目录说明和测试方法见 [mac/README.md](mac/README.md)。
+## 授權條款
 
-## 仓库结构
+本專案程式碼以 [GNU GPL-3.0](mac/LICENSE) 開源。
 
-- `mac/` — macOS App 完整源码（Swift，GPL-3.0）
-- 根目录 — 官网 [typefree.app](https://typefree.app)（GitHub Pages）
-
-## 许可与商标
-
-代码以 [GNU GPL-3.0](mac/LICENSE) 开源：可以自由使用、修改、再分发，但基于它的软件也必须以 GPL 开源。**「Typefree」名称、图标与官网内容不在开源许可范围内**，请勿用于你自己发布的版本，以免用户混淆。
-
-## 反馈
-
-- App 侧栏的「反馈」页可以直接和作者对话，能附截图
-- 或者提 [Issue](https://github.com/kdsz001/typefree/issues)：bug、想法、识别不准的例子都行
-- Pull Request 目前只接受小修，见 [CONTRIBUTING](mac/CONTRIBUTING.md)

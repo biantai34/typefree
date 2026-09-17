@@ -98,7 +98,7 @@ class OverlayWindow {
         if !locked { capsuleView.isLockedDragActive = false }
         capsuleView.setCancelArmed(false)
         setRecordingControls(locked ? .cancelAndFinish : .hidden)
-        if locked { capsuleView.showTransientCaption("已锁定", seconds: 1.2) }
+        if locked { capsuleView.showTransientCaption("已鎖定", seconds: 1.2) }
     }
 
     func setRecordingControls(_ controls: RecordingControls) {
@@ -350,24 +350,24 @@ class OverlayWindow {
         showCapsuleBar(message, accent: .error, seconds: seconds)
     }
 
-    /// "已学会「xx」· 撤销"：绿点，5 秒后自动消失。
+    /// "已學會「xx」· 復原"：綠點，5 秒後自動消失。
     private func showLearnedCapsule(description: String) {
-        showCapsuleBar("已学会「\(description)」", accent: .success, seconds: 5.0,
-                       actions: [CapsuleAction(title: "撤销", primary: false, action: #selector(undoLearnedTapped))])
+        showCapsuleBar("已學會「\(description)」", accent: .success, seconds: 5.0,
+                       actions: [CapsuleAction(title: "復原", primary: false, action: #selector(undoLearnedTapped))])
     }
 
-    /// "学习「xx」？ 稍后 / 学习"：灰点，不自动消失，等用户表态。
+    /// "學習「xx」？ 稍後 / 學習"：灰點，不自動消失，等使用者表態。
     private func showLearnSuggestionCapsule(description: String) {
-        showCapsuleBar("学习「\(description)」？", accent: .neutral, seconds: nil,
-                       actions: [CapsuleAction(title: "稍后", primary: false, action: #selector(dismissLearnSuggestionTapped)),
-                                 CapsuleAction(title: "学习", primary: true, action: #selector(acceptLearnSuggestionTapped))])
+        showCapsuleBar("學習「\(description)」？", accent: .neutral, seconds: nil,
+                       actions: [CapsuleAction(title: "稍後", primary: false, action: #selector(dismissLearnSuggestionTapped)),
+                                 CapsuleAction(title: "學習", primary: true, action: #selector(acceptLearnSuggestionTapped))])
     }
 
-    /// 「已取消」+ 白色圆形撤销按钮，不显示语义圆点；9 秒后自动消失（与音频暂存时长一致）。
-    /// 点撤销箭头 → AppDelegate 用暂存的录音重新识别输出。
+    /// 「已取消」+ 白色圓形復原按鈕，不顯示語意圓點；9 秒後自動消失（與音訊暫存時長一致）。
+    /// 點復原箭頭 → AppDelegate 用暫存的錄音重新識別輸出。
     func showCancelledCapsule() {
         showCapsuleBar("已取消", accent: nil, seconds: 9.0,
-                       actions: [CapsuleAction(title: "撤销取消", primary: true,
+                       actions: [CapsuleAction(title: "復原取消", primary: true,
                                                action: #selector(undoCancelTapped), systemImage: "arrow.uturn.backward")])
     }
 
@@ -822,13 +822,13 @@ class SiriCapsuleView: NSView {
 
         // 经典样式也预备按钮，只有锁定录音时才显示。
         cancelButton = CapsuleActionButton(role: .cancel, style: style, target: self, action: #selector(cancelTapped))
-        cancelButton.toolTip = "取消本次录音"
+        cancelButton.toolTip = "取消本次錄音"
         cancelButton.frame = actionButtonFrame(side: .left, cx: cx, cy: cy)
         cancelButton.isHidden = true
         addSubview(cancelButton)
 
         finishButton = CapsuleActionButton(role: .finish, style: style, target: self, action: #selector(finishTapped))
-        finishButton.toolTip = "完成并转写"
+        finishButton.toolTip = "完成並轉寫"
         finishButton.frame = actionButtonFrame(side: .right, cx: cx, cy: cy)
         finishButton.isHidden = true
         addSubview(finishButton)

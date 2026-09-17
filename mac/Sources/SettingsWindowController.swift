@@ -180,8 +180,8 @@ final class VPSegmentedControl: NSView {
 }
 
 private final class HotkeyRecorderView: AppearanceObservingView {
-    private let displayLabel = NSTextField(labelWithString: "点击这里，然后按下新的快捷键")
-    private let hintLabel = NSTextField(labelWithString: "建议使用 Option / Command / Control / Shift 搭配一个按键")
+    private let displayLabel = NSTextField(labelWithString: "點擊這裡，然後按下新的快速鍵")
+    private let hintLabel = NSTextField(labelWithString: "建議使用 Option / Command / Control / Shift 搭配一個按鍵")
     private(set) var shortcut: RecordingHotkeyCustomShortcut?
 
     override var acceptsFirstResponder: Bool { true }
@@ -211,11 +211,11 @@ private final class HotkeyRecorderView: AppearanceObservingView {
     override func flagsChanged(with event: NSEvent) {
         let modifiers = RecordingHotkeyCustomShortcut.normalized(event.modifierFlags)
         guard !modifiers.isEmpty else {
-            hintLabel.stringValue = "先按住一个修饰键，再按一个普通键"
+            hintLabel.stringValue = "先按住一個輔助按鍵，再按一個一般按鍵"
             return
         }
         displayLabel.stringValue = "\(RecordingHotkeyCustomShortcut.symbols(for: modifiers)) ..."
-        hintLabel.stringValue = "继续按一个按键完成录入"
+        hintLabel.stringValue = "繼續按一個按鍵完成錄入"
     }
 
     override func keyDown(with event: NSEvent) {
@@ -223,8 +223,8 @@ private final class HotkeyRecorderView: AppearanceObservingView {
         let modifiers = RecordingHotkeyCustomShortcut.normalized(event.modifierFlags)
         guard !modifiers.isEmpty else {
             shortcut = nil
-            displayLabel.stringValue = "需要搭配修饰键"
-            hintLabel.stringValue = "请至少按住 Option / Command / Control / Shift 中的一个"
+            displayLabel.stringValue = "需要搭配輔助按鍵"
+            hintLabel.stringValue = "請至少按住 Option / Command / Control / Shift 中的一個"
             return
         }
         let keyDisplay = RecordingHotkeyCustomShortcut.keyDisplayName(for: event)
@@ -235,13 +235,13 @@ private final class HotkeyRecorderView: AppearanceObservingView {
         )
         shortcut = next
         displayLabel.stringValue = next.displayName
-        hintLabel.stringValue = next.conflictWarning ?? "可以保存这个快捷键"
+        hintLabel.stringValue = next.conflictWarning ?? "可以儲存這個快速鍵"
     }
 
     func setShortcut(_ shortcut: RecordingHotkeyCustomShortcut?) {
         self.shortcut = shortcut
-        displayLabel.stringValue = shortcut?.displayName ?? "点击这里，然后按下新的快捷键"
-        hintLabel.stringValue = "建议使用 Option / Command / Control / Shift 搭配一个按键"
+        displayLabel.stringValue = shortcut?.displayName ?? "點擊這裡，然後按下新的快速鍵"
+        hintLabel.stringValue = "建議使用 Option / Command / Control / Shift 搭配一個按鍵"
     }
 
     private func setup() {
@@ -290,7 +290,7 @@ final class PolishHistoryStore {
 
     var fileURL: URL { logFileURL }
 
-    // 所有读-改-写都走 HistoryFileLock：pipeline 后台追加与这里的整文件重写此前互不相知，会丢条。
+    // 所有讀-改-寫都走 HistoryFileLock：pipeline 後台追加與這裡的整文件重寫此前互不相知，會丟條。
 
     func load(limit: Int = 100) -> [AIPolisher.PolishLog] {
         HistoryFileLock.withLock {
@@ -309,10 +309,10 @@ final class PolishHistoryStore {
         }
     }
 
-    /// 导出历史为 Markdown（从新到旧，每条 `## 时间` + 整理后的文字）。
-    /// 不受界面 500 条显示上限影响，读全部后按 `retention` 过滤时间范围
-    /// （`.oneWeek` 近 7 天 / `.oneMonth` 近一个月 / `.forever` 全部，复用保留策略同一套判断）。
-    /// 该范围内无记录返回 nil。
+    /// 導出歷史為 Markdown（從新到舊，每條 `## 時間` + 整理後的文字）。
+    /// 不受界面 500 條顯示上限影響，讀全部後按 `retention` 過濾時間範圍
+    /// （`.oneWeek` 近 7 天 / `.oneMonth` 近一個月 / `.forever` 全部，復用保留策略同一套判斷）。
+    /// 該範圍內無記錄返回 nil。
     func exportAllAsMarkdown(retention: AIPolisher.HistoryRetention = .forever) -> String? {
         guard let content = try? String(contentsOf: logFileURL, encoding: .utf8) else { return nil }
         let enc = HistoryCrypto.defaultEncryptor()
@@ -322,10 +322,10 @@ final class PolishHistoryStore {
             .compactMap { HistoryCrypto.decodeLine(String($0), enc: enc) }
             .filter { AIPolisher.shouldKeepPolishLog($0, retention: retention) }
         guard !logs.isEmpty else { return nil }
-        var out = "# Typefree 转写记录\n\n"
+        var out = "# Typefree 轉寫記錄\n\n"
         for log in logs {
             if log.isAsk {
-                out += "## \(log.time) · 问 AI\n**问：** \(log.asr)\n\n\(log.output.trimmingCharacters(in: .whitespacesAndNewlines))\n\n"
+                out += "## \(log.time) · 問 AI\n**問：** \(log.asr)\n\n\(log.output.trimmingCharacters(in: .whitespacesAndNewlines))\n\n"
                 continue
             }
             let polished = log.output.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -1041,14 +1041,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         var title: String {
             switch self {
-            case .home: return "首页"
-            case .history: return "历史记录"
-            case .support: return "反馈"
-            case .vocabulary: return "个人词库"
+            case .home: return "首頁"
+            case .history: return "歷史記錄"
+            case .support: return "意見回饋"
+            case .vocabulary: return "個人詞庫"
             case .model: return "模型"
             case .explore: return "探索"
-            case .settings: return "设置"
-            case .about: return "关于"
+            case .settings: return "設定"
+            case .about: return "關於"
             }
         }
 
@@ -1070,7 +1070,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         var target: String
         var variants: [String]
         var category: String
-        var source: String   // "auto" = 自动学习学到；其余视为手动添加
+        var source: String   // "auto" = 自動學習學到；其餘視為手動新增
 
         var isAutoLearned: Bool { source == "auto" }
     }
@@ -1083,13 +1083,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private let historyStore = PolishHistoryStore()
     private let audioStore = AudioClipStore.defaultStore()
     private var historyAudioPlayer: AVAudioPlayer?
-    private var processingIndex: Int?               // 正在重新润色/转写的那条（行内转圈）
-    private var historyUpdateSheet: NSWindow?       // 「更新历史」面板
+    private var processingIndex: Int?               // 正在重新潤色/轉寫的那條（行內轉圈）
+    private var historyUpdateSheet: NSWindow?       // 「更新歷史」面板
     private weak var updateHistoryStack: NSStackView?
     private var historyProcessingLabel: String = ""
-    private var cardActionContainers: [Int: NSStackView] = [:]  // 每条卡片右侧操作区，便于就地替换
-    private var cardOutputLabels: [Int: NSTextField] = [:]      // 每条卡片正文 label，便于就地刷新
-    private var cardViews: [Int: NSView] = [:]                  // 每条卡片整体视图，便于就地换整张卡（重转后不整页重建）
+    private var cardActionContainers: [Int: NSStackView] = [:]  // 每條卡片右側操作區，便於就地替換
+    private var cardOutputLabels: [Int: NSTextField] = [:]      // 每條卡片正文 label，便於就地重新整理
+    private var cardViews: [Int: NSView] = [:]                  // 每條卡片整體視圖，便於就地換整張卡（重轉後不整頁重建）
     private var selectedPage: Page = .home
     private var sidebarRows: [Page: SidebarRow] = [:]
     private let sidebarContainer = NSView()
@@ -1100,16 +1100,22 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private var variantPopover: NSPopover?
     private weak var variantPopoverField: NSTextField?
     private var variantPopoverEntryIndex: Int = -1
-    private var vocabFilter = 0   // 0=所有 1=自动学习 2=手动添加
+    private var vocabFilter = 0   // 0=所有 1=自動學習 2=手動新增
 
     private var bigASRAPIKeyField: NSSecureTextField?
     private var bailianKeyField: NSSecureTextField?
+    private var groqKeyField: NSSecureTextField?
+    private var openaiKeyField: NSSecureTextField?
+    private var geminiKeyField: NSSecureTextField?
     private var asrVersionControl: VPSegmentedControl?
     private var asrProviderControl: VPSegmentedControl?
     private var asrKeyContainer: NSStackView?
     private var asrGetKeyButton: NSButton?
     private var dashscopeAPIKeyField: NSSecureTextField?
     private var arkAPIKeyField: NSSecureTextField?
+    private var groqPolishKeyField: NSSecureTextField?
+    private var openaiPolishKeyField: NSSecureTextField?
+    private var geminiPolishKeyField: NSSecureTextField?
     private var polishProviderControl: VPSegmentedControl?
     private var polishKeyContainer: NSStackView?
     private var polishGetKeyButton: NSButton?
@@ -1693,7 +1699,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     }
 
     private func loadUpdateHistory() {
-        setUpdateHistoryMessage("正在获取…")
+        setUpdateHistoryMessage("正在取得…")
         guard let url = URL(string: AppLinks.appcastURL) else { return }
         var req = URLRequest(url: url)
         req.cachePolicy = .reloadIgnoringLocalCacheData   // 刚发的版本要能立刻看到
@@ -1704,7 +1710,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 if entries.isEmpty {
-                    self.setUpdateHistoryMessage("暂时获取不到更新历史，请检查网络后重试。")
+                    self.setUpdateHistoryMessage("暫時無法取得更新記錄，請檢查網路連線後重試。")
                 } else {
                     self.renderUpdateHistory(entries)
                 }
@@ -1730,7 +1736,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         let df = DateFormatter()
         df.dateFormat = "yyyy年M月d日"
-        df.locale = Locale(identifier: "zh_CN")
+        df.locale = Locale(identifier: "zh_TW")
         let current = Bundle.main.appVersionString
 
         for (idx, e) in entries.enumerated() {
@@ -1762,7 +1768,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                 head.addArrangedSubview(label(df.string(from: d), size: 11.5, weight: .regular, color: theme.text3))
             }
             if e.version == current {
-                head.addArrangedSubview(makeSoftTag("当前版本"))
+                head.addArrangedSubview(makeSoftTag("目前版本"))
             }
             row.addArrangedSubview(head)
 
@@ -1774,7 +1780,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             body.setContentHuggingPriority(.defaultLow, for: .horizontal)
             body.translatesAutoresizingMaskIntoConstraints = false
             if e.notesHTML.isEmpty {
-                body.stringValue = "这一版没有留下更新说明。"
+                body.stringValue = "此版本未提供更新說明。"
                 body.font = .systemFont(ofSize: 12.5)
                 body.textColor = theme.text3
             } else if let attr = Self.attributedNotes(fromHTML: e.notesHTML,
@@ -1872,7 +1878,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         dot.layer?.cornerRadius = 3
         dot.translatesAutoresizingMaskIntoConstraints = false
 
-        let label = NSTextField(labelWithString: micOK ? "麦克风就绪" : "未授权麦克风")
+        let label = NSTextField(labelWithString: micOK ? "麥克風就緒" : "未授權麥克風")
         label.font = .systemFont(ofSize: 11)
         label.textColor = theme.text3
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -2104,8 +2110,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     // MARK: - Page: Home
 
     private func buildHome(into stack: NSStackView) {
-        stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 首页", title: "首页",
-                                             sub: "自然说话，清楚输入。这是你的语音工作台。"))
+        stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 首頁", title: "首頁",
+                                             sub: "自然說話，清楚輸入。這是你的語音工作台。"))
         stack.setCustomSpacing(20, after: stack.arrangedSubviews.last!)
 
         // Hero
@@ -2120,28 +2126,27 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let month = stats.currentMonthTotal()
         let allTime = stats.allTimeTotal()
         let statsGrid = makeStatsGrid([
-            ("今日", today.charCount, "\(today.sessionCount) 次会话"),
-            ("本周", week.chars, "\(week.sessions) 次"),
+            ("今日", today.charCount, "\(today.sessionCount) 次工作階段"),
+            ("本週", week.chars, "\(week.sessions) 次"),
             ("本月", month.chars, "\(month.sessions) 次"),
-            ("累计", allTime.chars, "\(allTime.sessions) 次"),
+            ("累計", allTime.chars, "\(allTime.sessions) 次"),
         ])
         stack.addArrangedSubview(statsGrid)
         stack.setCustomSpacing(24, after: statsGrid)
 
-        // 近 6 周一行圆点 + 连续天数（Ray 2026-09-15 选的方案三；不带标题）
+        // 近 6 週一行圓點 + 連續天數（不帶標題）
         let rhythmCard = makeRhythmCard(stats: stats)
         stack.addArrangedSubview(rhythmCard)
         stack.setCustomSpacing(24, after: rhythmCard)
 
-        let healthTitle = sectionTitle("配置健康")
+        let healthTitle = sectionTitle("設定健康度")
         stack.addArrangedSubview(healthTitle)
         stack.setCustomSpacing(8, after: healthTitle)
         let healthCard = makeHealthCard()
         stack.addArrangedSubview(healthCard)
-        // 反馈搬到侧栏「反馈」页（对话式，能附截图、能收到回复）
     }
 
-    /// 「节律」卡片：一行墨点（RhythmStripView）+ 一排小标签（连续 / 最长 / 活跃天数 / 最常周几）
+    /// 「節律」卡片：一行墨點（RhythmStripView）+ 一排小標籤（連續 / 最長 / 活躍天數 / 最常週幾）
     private func makeRhythmCard(stats: InputStats) -> NSView {
         let card = makeCard()
         let rhythm = ActivityRhythm.compute(records: stats.allDailyRecords())
@@ -2154,12 +2159,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         chips.orientation = .horizontal
         chips.alignment = .centerY
         chips.spacing = 6
-        let okTag = makeTag("已连续 \(rhythm.currentStreak) 天", bg: RhythmStripView.accent.withAlphaComponent(0.12), fg: RhythmStripView.accent)
+        let okTag = makeTag("已連續 \(rhythm.currentStreak) 天", bg: RhythmStripView.accent.withAlphaComponent(0.12), fg: RhythmStripView.accent)
         chips.addArrangedSubview(okTag)
-        chips.addArrangedSubview(makeSoftTag("最长连续 \(rhythm.bestStreak) 天"))
-        chips.addArrangedSubview(makeSoftTag("活跃 \(rhythm.activeDays) 天"))
+        chips.addArrangedSubview(makeSoftTag("最長連續 \(rhythm.bestStreak) 天"))
+        chips.addArrangedSubview(makeSoftTag("活躍 \(rhythm.activeDays) 天"))
         if let w = rhythm.busiestWeekday {
-            chips.addArrangedSubview(makeSoftTag("最常在\(ActivityRhythm.weekdayNames[w])用"))
+            chips.addArrangedSubview(makeSoftTag("最常在\(ActivityRhythm.weekdayNames[w])使用"))
         }
 
         let column = NSStackView()
@@ -2180,9 +2185,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         let tapToggleEnabled = RecordingHotkeyBehavior.isTapToggleEnabled
         let shortcut = RecordingHotkeyShortcut.current
-        let titlePrefix = label(tapToggleEnabled ? "长按或单击" : "长按",
+        let titlePrefix = label(tapToggleEnabled ? "長按或按一下" : "長按",
                                 size: 24, weight: .semibold, color: theme.text)
-        let titleSuffix = label("开始说话", size: 24, weight: .semibold, color: theme.text)
+        let titleSuffix = label("開始說話", size: 24, weight: .semibold, color: theme.text)
         let hotkeyPicker = makeHotkeyPickerButton()
 
         titlePrefix.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -2198,8 +2203,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         titleRow.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         let descText = tapToggleEnabled
-            ? "\(shortcut.displayName) 长按时松开结束；单击时再次单击结束。结束后自动转写并粘贴。"
-            : "\(shortcut.displayName) 松开后自动转写，并粘贴到当前光标位置。"
+            ? "\(shortcut.displayName) 長按時放開結束；按一下時再次按一下結束。結束後自動辨識並貼上。"
+            : "\(shortcut.displayName) 放開後自動辨識，並貼上至目前游標位置。"
         let desc = label(descText,
                           size: 13, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
@@ -2212,14 +2217,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         leftStack.addArrangedSubview(titleRow)
         leftStack.addArrangedSubview(desc)
 
-        // 三个鼠标 / 口令用法一眼看到（3.0 新功能），点哪个看哪个的演示
+        // 三個滑鼠 / 口令用法一眼看到，點哪個看哪個的展示
         let gestures = NSStackView()
         gestures.orientation = .horizontal
         gestures.alignment = .centerY
         gestures.spacing = 28
-        gestures.addArrangedSubview(makeGestureHint(key: "输入框里按住鼠标", label: "说话", feature: .mouseHold))
-        gestures.addArrangedSubview(makeGestureHint(key: "空白处按住鼠标", label: "问 AI", feature: .ask))
-        gestures.addArrangedSubview(makeGestureHint(key: "结尾说「用英文」", label: "翻译", feature: .translation))
+        gestures.addArrangedSubview(makeGestureHint(key: "輸入框按住滑鼠", label: "說話", feature: .mouseHold))
+        gestures.addArrangedSubview(makeGestureHint(key: "空白處按住滑鼠", label: "問 AI", feature: .ask))
+        gestures.addArrangedSubview(makeGestureHint(key: "結尾說「用英文」", label: "翻譯", feature: .translation))
 
         let main = NSStackView()
         main.orientation = .vertical
@@ -2236,7 +2241,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         return card
     }
 
-    /// 首页快捷用法：键帽样式的动作 + 结果；整块可点，打开该功能的演示
+    /// 首頁快速用法：鍵帽樣式的動作 + 結果；整塊可點，開啟該功能的展示
     private func makeGestureHint(key: String, label text: String, feature: WhatsNewGuide.Feature) -> NSView {
         let cap = NSView()
         cap.translatesAutoresizingMaskIntoConstraints = false
@@ -2260,7 +2265,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         row.orientation = .horizontal
         row.alignment = .centerY
         row.spacing = 8
-        row.toolTip = "看演示"
+        row.toolTip = "觀看展示"
         let click = NSClickGestureRecognizer(target: self, action: #selector(gestureHintTapped(_:)))
         row.addGestureRecognizer(click)
         row.identifier = NSUserInterfaceItemIdentifier("gesture-\(feature.rawValue)")
@@ -2289,7 +2294,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         button.layer?.setAppearanceBackground(theme.cardAlt)
         button.layer?.masksToBounds = true
         button.setButtonType(.momentaryChange)
-        button.toolTip = "设置开始说话快捷键"
+        button.toolTip = "設定開始說話快速鍵"
         button.setContentCompressionResistancePriority(.required, for: .horizontal)
         button.widthAnchor.constraint(greaterThanOrEqualToConstant: 134).isActive = true
         button.heightAnchor.constraint(equalToConstant: 38).isActive = true
@@ -2333,7 +2338,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         menu.addItem(.separator())
         addHotkeyMenuItem(to: menu,
-                          title: "自定义快捷键…",
+                          title: "自訂快速鍵…",
                           representedObject: "custom",
                           symbolName: "keyboard.badge.ellipsis",
                           isSelected: false)
@@ -2394,18 +2399,18 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         }
 
         let alert = NSAlert()
-        alert.messageText = "自定义快捷键"
-        alert.informativeText = "点击输入框，然后按下你想用于开始说话的快捷键。"
+        alert.messageText = "自訂快速鍵"
+        alert.informativeText = "點擊輸入框，然後按下你想用來開始說話的快速鍵。"
         alert.accessoryView = recorder
-        alert.addButton(withTitle: "保存")
-        alert.addButton(withTitle: "恢复默认")
+        alert.addButton(withTitle: "儲存")
+        alert.addButton(withTitle: "還原預設")
         alert.addButton(withTitle: "取消")
 
         let response = alert.runModal()
         switch response {
         case .alertFirstButtonReturn:
             guard let shortcut = recorder.shortcut else {
-                showHotkeyAlert("还没有录入快捷键", detail: "请点击输入框，然后按下一个组合键。")
+                showHotkeyAlert("尚未輸入快速鍵", detail: "請點擊輸入框，然後按下一組組合鍵。")
                 return
             }
             if let warning = shortcut.conflictWarning, !confirmRiskyHotkey(warning) {
@@ -2425,10 +2430,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func confirmRiskyHotkey(_ warning: String) -> Bool {
         let alert = NSAlert()
-        alert.messageText = "这个快捷键可能会冲突"
+        alert.messageText = "此快速鍵可能會有衝突"
         alert.informativeText = warning
-        alert.addButton(withTitle: "仍然保存")
-        alert.addButton(withTitle: "重新设置")
+        alert.addButton(withTitle: "仍然儲存")
+        alert.addButton(withTitle: "重新設定")
         return alert.runModal() == .alertFirstButtonReturn
     }
 
@@ -2514,12 +2519,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard expired || (!license.memberAutoRenew && daysLeft <= 14) else { return nil }
 
         let card = makeUpgradeCard()
-        let title = label(expired ? "会员已到期" : "会员还剩 \(daysLeft) 天", size: 13.5, weight: .semibold, color: theme.text)
-        let sub = label(expired ? "续费后继续免配置使用；也可以在「模型」填入自己的 Key，永久免费。"
-                                : "有效期至 \(license.memberExpiresDay ?? "—")。到期后可续费，或在「模型」填入自己的 Key。",
+        let title = label(expired ? "會員已到期" : "會員還剩 \(daysLeft) 天", size: 13.5, weight: .semibold, color: theme.text)
+        let sub = label(expired ? "續費後繼續免設定使用；也可以在「模型」填入自己的 Key，永久免費。"
+                                : "有效期限至 \(license.memberExpiresDay ?? "—")。到期後可續費，或在「模型」填入自己的 Key。",
                         size: 11.5, weight: .regular, color: theme.text2)
         sub.maximumNumberOfLines = 0
-        let btn = makeSolidButton(title: "续费 →")
+        let btn = makeSolidButton(title: "續費 →")
 
         let stack = makeUpgradeStack(card: card)
         stack.addArrangedSubview(title)
@@ -2553,7 +2558,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let card = makeUpgradeCard()
 
         // 标题行：「免费试用中」（左）+ 「剩 N 天」（右）
-        let titleLbl = label("免费试用中", size: 13.5, weight: .semibold, color: theme.text)
+        let titleLbl = label("免費試用中", size: 13.5, weight: .semibold, color: theme.text)
         let daysLbl = label("剩 \(TrialManager.shared.daysLeft) 天", size: 12, weight: .semibold, color: theme.text2)
         daysLbl.setContentHuggingPriority(.required, for: .horizontal)
         let titleSpacer = NSView()
@@ -2569,7 +2574,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let (numRow, track) = makeProgressNumRow(todayStr: todayStr, limitStr: nf.string(from: NSNumber(value: trialLimit)) ?? "\(trialLimit)", ratio: ratio)
 
         // 说明
-        let sub = label("7 天试用共 8000 字，每天最多 5000。到期后可开通会员，或填自己的 Key 永久免费。",
+        let sub = label("7 天試用共 8000 字，每天最多 5000 字。到期後可開通會員，或填入自己的 Key 永久免費。",
                         size: 11.5, weight: .regular, color: theme.text2)
         sub.maximumNumberOfLines = 0
 
@@ -2601,9 +2606,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeSidebarUpgradeButtonExpired() -> NSView {
         let card = makeUpgradeCard()
 
-        let title = label("免费试用已结束", size: 13.5, weight: .semibold, color: theme.text)
+        let title = label("免費試用已結束", size: 13.5, weight: .semibold, color: theme.text)
 
-        let sub = label("开通会员直接用；或在「模型」填入自己的 Key，永久免费。",
+        let sub = label("開通會員直接使用；或在「模型」填入自己的 Key，永久免費。",
                         size: 11.5, weight: .regular, color: theme.text2)
         sub.maximumNumberOfLines = 0
 
@@ -2629,13 +2634,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeSidebarUpgradeButtonBYOK() -> NSView {
         let card = makeUpgradeCard()
 
-        let title = label("自带 Key · 永久免费", size: 13.5, weight: .semibold, color: theme.text)
+        let title = label("自備 Key · 永久免費", size: 13.5, weight: .semibold, color: theme.text)
 
-        let sub = label("不限字数、不限时间。不想折腾 Key？开通会员，装好就能用。",
+        let sub = label("不限字數、不限時間。不想手動設定 Key？開通會員，安裝好就能直接使用。",
                         size: 11.5, weight: .regular, color: theme.text2)
         sub.maximumNumberOfLines = 0
 
-        let btn = makeGhostButton(title: "了解会员 →")
+        let btn = makeGhostButton(title: "瞭解會員 →")
 
         let stack = makeUpgradeStack(card: card)
         stack.addArrangedSubview(title)
@@ -2698,9 +2703,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let unit = label("字", size: 11.5, weight: .regular, color: theme.text3)
         unit.setContentHuggingPriority(.required, for: .horizontal)
         let info = NSImageView()
-        info.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: "额度说明")
+        info.image = NSImage(systemSymbolName: "info.circle", accessibilityDescription: "額度說明")
         info.contentTintColor = theme.text3
-        info.toolTip = "免费额度每周一 0 点重置"
+        info.toolTip = "免費額度每週一 0 點重設"
         info.translatesAutoresizingMaskIntoConstraints = false
         info.widthAnchor.constraint(equalToConstant: 13).isActive = true
         info.heightAnchor.constraint(equalToConstant: 13).isActive = true
@@ -2816,16 +2821,16 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         headerStack.orientation = .vertical
         headerStack.alignment = .centerX
         headerStack.spacing = 8
-        let title = label("Typefree · 自然说话，清楚输入", size: 21, weight: .bold, color: theme.text)
+        let title = label("Typefree · 自然說話，清楚輸入", size: 21, weight: .bold, color: theme.text)
         title.alignment = .center
-        // 开源（Ray 2026-09-14：付费页要凸显开源）：软件本身开源免费，会员买的是免配置的服务
+        // 开源：软件本身开源免费，会员买的是免配置的服务
         let ossRow = NSStackView()
         ossRow.orientation = .horizontal
         ossRow.alignment = .centerY
         ossRow.spacing = 8
-        ossRow.addArrangedSubview(makeDarkTag("开源"))
-        ossRow.addArrangedSubview(label("软件开源、永久免费；会员买的是免配置的识别和润色服务", size: 13, weight: .regular, color: theme.text2))
-        ossRow.addArrangedSubview(makeLinkButton(title: "查看源码 →", urlString: AppLinks.sourceCodeURL))
+        ossRow.addArrangedSubview(makeDarkTag("開源"))
+        ossRow.addArrangedSubview(label("軟體開源、永久免費；會員購買的是免設定的辨識與最佳化服務", size: 13, weight: .regular, color: theme.text2))
+        ossRow.addArrangedSubview(makeLinkButton(title: "檢視原始碼 →", urlString: AppLinks.sourceCodeURL))
         headerStack.addArrangedSubview(title)
         headerStack.addArrangedSubview(ossRow)
         stack.addArrangedSubview(headerStack)
@@ -2856,7 +2861,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         // 右上角关闭按钮（Esc 同样可关）——sheet 没有系统红绿灯，必须自己给出口
         let closeBtn = NSButton()
-        closeBtn.image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: "关闭")
+        closeBtn.image = NSImage(systemSymbolName: "xmark.circle.fill", accessibilityDescription: "關閉")
         closeBtn.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 18, weight: .regular)
         closeBtn.isBordered = false
         closeBtn.contentTintColor = theme.text3
@@ -3021,21 +3026,21 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// 卡①：免费试用（状态自适应按钮）。
     private func makeTrialPricingCard() -> NSView {
         makePricingCard(highlighted: false) { stack in
-            let nameRow = makeCardNameRow("免费试用", tags: [makeSoftTag("新用户")])
-            let price = makePriceRow(main: "免费", per: "· 7 天")
-            let desc = label("下载即用，零配置", size: 13, weight: .regular, color: theme.text2)
+            let nameRow = makeCardNameRow("免費試用", tags: [makeSoftTag("新使用者")])
+            let price = makePriceRow(main: "免費", per: "· 7 天")
+            let desc = label("下載即用，免設定", size: 13, weight: .regular, color: theme.text2)
 
             let btn: NSView
             if LicenseManager.shared.isActivated {
-                btn = makeCurrentButton(title: "已激活 · 无需试用")
+                btn = makeCurrentButton(title: "已啟用 · 無需試用")
             } else if TrialManager.shared.isInTrial {
-                btn = makeCurrentButton(title: "试用中 · 剩 \(TrialManager.shared.daysLeft) 天")
+                btn = makeCurrentButton(title: "試用中 · 剩 \(TrialManager.shared.daysLeft) 天")
             } else if TrialManager.shared.trialExpired {
-                btn = makeCurrentButton(title: "试用已结束")
+                btn = makeCurrentButton(title: "試用已結束")
             } else if !TrialManager.shared.isTrialAvailable {
-                btn = makeCurrentButton(title: "此版本不含试用")
+                btn = makeCurrentButton(title: "此版本不提供試用")
             } else {
-                btn = makeCurrentButton(title: "未开始")
+                btn = makeCurrentButton(title: "未開始")
             }
 
             stack.addArrangedSubview(nameRow)
@@ -3048,9 +3053,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             stack.setCustomSpacing(20, after: btn)
             for f in [
                 makeFeatureRow("7 天共 8000 字"),
-                makeFeatureRow("识别 + AI 润色，", muted: "费用我们承担"),
-                makeFeatureRow("不用填 Key，按一下就出字"),
-                makeFeatureRow("到期后可转下面两种"),
+                makeFeatureRow("辨識 + AI 最佳化，", muted: "費用由我們承擔"),
+                makeFeatureRow("免填 Key，按一下即可輸入文字"),
+                makeFeatureRow("到期後可轉為下方兩種方式"),
             ] {
                 stack.addArrangedSubview(f)
                 stack.setCustomSpacing(11, after: f)
@@ -3059,23 +3064,21 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     }
 
     /// 卡②：年付会员（高亮，墨黑实心按钮 → 官网付款页）。免配置：识别 / 润色 / 问 AI 走我们的托管服务。
-    /// （2026-09-14 去掉赞助版：Paddle 禁止销售捐款/赞助类商品）
     private func makeBuyPricingCard() -> NSView {
         makePricingCard(highlighted: true) { stack in
-            let nameRow = makeCardNameRow("会员", tags: [makeDarkTag("推荐"), makeSoftTag("免配置")])
+            let nameRow = makeCardNameRow("會員", tags: [makeDarkTag("推薦"), makeSoftTag("免設定")])
             let price = makePriceRow(main: "¥188", per: "· 一年")
-            let desc = label("不用申请任何 Key，装好就能用", size: 13, weight: .regular, color: theme.text2)
+            let desc = label("無需申請任何 Key，安裝好即可使用", size: 13, weight: .regular, color: theme.text2)
             desc.maximumNumberOfLines = 0
 
             let license = LicenseManager.shared
             let btn: NSView
             if !TrialManager.shared.isTrialAvailable {
-                // 自己编译的开源版没有托管服务器地址，会员通道用不了（试用同理）
-                btn = makeCurrentButton(title: "此版本不含会员服务")
+                btn = makeCurrentButton(title: "此版本不提供會員服務")
             } else if license.isMember && !license.isMemberExpired() {
-                btn = makeCurrentButton(title: "会员有效 · 至 \(license.memberExpiresDay ?? "—")")
+                btn = makeCurrentButton(title: "會員有效 · 至 \(license.memberExpiresDay ?? "—")")
             } else {
-                let solid = makeSolidButton(title: license.isMember ? "续费 →" : "开通会员 →")
+                let solid = makeSolidButton(title: license.isMember ? "續費 →" : "開通會員 →")
                 let click = NSClickGestureRecognizer(target: self, action: #selector(pricingBuyTapped))
                 solid.addGestureRecognizer(click)
                 btn = solid
@@ -3090,10 +3093,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             stack.addArrangedSubview(btn)
             stack.setCustomSpacing(20, after: btn)
             for f in [
-                makeFeatureRow("识别 + 润色 + 问 AI 全包含"),   // 文字过长会把对勾挤没；「免配置」已在卡片标签里
-                makeFeatureRow("银行卡自动续费，", muted: "或微信买一年"),
-                makeFeatureRow("随时可取消自动续费"),
-                makeFeatureRow("到期后仍可填自己的 Key 免费用"),
+                makeFeatureRow("辨識 + 最佳化 + 問 AI 全包含"),
+                makeFeatureRow("信用卡/簽帳卡自動續費，", muted: "或單次購買一年"),
+                makeFeatureRow("隨時可取消自動續費"),
+                makeFeatureRow("到期後仍可填入自己的 Key 免費使用"),
             ] {
                 stack.addArrangedSubview(f)
                 stack.setCustomSpacing(11, after: f)
@@ -3104,11 +3107,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// 卡③：自带 Key·免费（ghost 按钮 → 模型页并关闭本页）。
     private func makeBYOKPricingCard() -> NSView {
         makePricingCard(highlighted: false) { stack in
-            let nameRow = makeCardNameRow("自带 Key", tags: [makeSoftTag("永久免费")])
-            let price = makePriceRow(main: "免费", per: "· 不限时间")
+            let nameRow = makeCardNameRow("自備 Key", tags: [makeSoftTag("永久免費")])
+            let price = makePriceRow(main: "免費", per: "· 不限時間")
             let desc = label("填入你自己的 API Key", size: 13, weight: .regular, color: theme.text2)
 
-            let ghost = makeGhostButton(title: "去配置 →")
+            let ghost = makeGhostButton(title: "前往設定 →")
             ghost.addGestureRecognizer(NSClickGestureRecognizer(target: self, action: #selector(pricingConfigureTapped)))
 
             stack.addArrangedSubview(nameRow)
@@ -3120,10 +3123,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             stack.addArrangedSubview(ghost)
             stack.setCustomSpacing(20, after: ghost)
             for f in [
-                makeFeatureRow("不限字数"),
-                makeFeatureRow("永久免费，不限时间"),
-                makeFeatureRow("费用走你自己的 Key"),
-                makeFeatureRow("火山 / 千问 等主流厂商适配"),
+                makeFeatureRow("不限字數"),
+                makeFeatureRow("永久免費，不限時間"),
+                makeFeatureRow("費用走你自己的 API Key"),
+                makeFeatureRow("支援 Gemini / OpenAI / Groq / 火山 / 千問"),
             ] {
                 stack.addArrangedSubview(f)
                 stack.setCustomSpacing(11, after: f)
@@ -3165,13 +3168,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     /// 激活行：「已经购买过了？」+ 授权码输入框 + 激活按钮 + 错误提示（沿用既有激活逻辑）。
     private func makeActivateBlock() -> NSView {
-        let prompt = label("已经购买过了？粘贴授权码激活", size: 13, weight: .regular, color: theme.text2)
+        let prompt = label("已經購買過了？貼上授權碼啟用", size: 13, weight: .regular, color: theme.text2)
         prompt.alignment = .center
 
         // 授权码输入框：透明 borderless 字段 + 圆角浅灰底容器（同词库/反馈输入框做法），
         // 去掉系统蓝聚焦环；文字左右内缩 12pt，和整页灰/墨黑统一。
         let field = NSTextField()
-        field.placeholderString = "粘贴授权码（购买后邮件里的 TF-XXXX-…）"
+        field.placeholderString = "貼上授權碼（購買後信件中的 TF-XXXX-…）"
         field.font = monoFont(size: 12, weight: .regular)
         field.focusRingType = .none
         field.isBordered = false
@@ -3198,9 +3201,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             field.centerYAnchor.constraint(equalTo: fieldWrap.centerYAnchor),
         ])
 
-        // 激活按钮：墨黑自绘（onAccent 白字），仍是 NSButton 子类——
-        // activateLicenseTapped 依赖 sender(NSButton) 改 isEnabled/title，激活逻辑保持不变。
-        let activateBtn = SolidLabelButton(title: "激活", color: theme.onAccent,
+        // 激活按钮：墨黑自绘（onAccent 白字），仍是 NSButton 子类
+        let activateBtn = SolidLabelButton(title: "啟用", color: theme.onAccent,
                                            target: self, action: #selector(activateLicenseTapped(_:)))
         activateBtn.layer?.setAppearanceBackground(theme.accent)
         activateBtn.keyEquivalent = "\r"
@@ -3230,7 +3232,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         block.addArrangedSubview(inputRow)
         block.addArrangedSubview(status)
 
-        // 输入框 + 按钮一行，整行约 500 居中；输入框撑开，按钮固定宽，两者等高 40。
         NSLayoutConstraint.activate([
             inputRow.widthAnchor.constraint(equalToConstant: 500),
             fieldWrap.heightAnchor.constraint(equalToConstant: 40),
@@ -3244,17 +3245,16 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// FAQ 区块：标题 + 4 条问答，排成 2 行 × 2 列，整块用满上方三张卡的总宽。
     private func makeFAQBlock() -> NSView {
         let items: [(String, String)] = [
-            ("可以一直免费用吗？",
-             "可以。前 7 天我们请你免费体验（零配置）；到期后填入你自己的 API Key，永久免费，不限字数。"),
-            ("会员和免费有什么区别？",
-             "功能一样。免费需要你自己去厂商申请 API Key，费用走你自己的账户；会员不用配置，识别和润色走我们的服务。"),
-            ("会员会自动扣费吗？",
-             "用银行卡开通的每年自动续费，想停直接回复购买邮件即可取消；用微信买的是一次性一年，不会自动扣费。"),
-            ("我的 API Key 安全吗？",
-             "你的 Key 只保存在本机，绝不上传我们的服务器。"),
+            ("可以一直免費使用嗎？",
+             "可以。前 7 天提供免費體驗（免設定）；到期後填入你自己的 API Key，永久免費，不限字數。"),
+            ("會員和免費有什麼差別？",
+             "功能完全相同。自備 Key 需要自行申請 API Key，費用由你自己的帳號支付；會員免設定，語音辨識與最佳化直接走託管服務。"),
+            ("會員會自動扣款嗎？",
+             "以信用卡訂閱會每年自動續費，若想停止可隨時取消；單次購買一年則不會自動扣款。"),
+            ("我的 API Key 安全嗎？",
+             "你的 API Key 僅加密儲存在本機 macOS 鑰匙圈中，絕不傳送到伺服器。"),
         ]
 
-        // 单条问答：顶边分隔线 + 问题 + 自动换行的答案。
         func makeQA(_ q: String, _ a: String) -> NSView {
             let cell = NSStackView()
             cell.orientation = .vertical
@@ -3280,7 +3280,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             return cell
         }
 
-        // 两两一行；列间 36 间距，列等宽（fillEqually）。
         func makeFAQRow(_ left: NSView, _ right: NSView) -> NSStackView {
             let row = NSStackView()
             row.orientation = .horizontal
@@ -3298,7 +3297,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         stack.spacing = 0
         stack.translatesAutoresizingMaskIntoConstraints = false
 
-        let heading = label("常见问题", size: 16, weight: .semibold, color: theme.text)
+        let heading = label("常見問題", size: 16, weight: .semibold, color: theme.text)
         stack.addArrangedSubview(heading)
         stack.setCustomSpacing(10, after: heading)
 
@@ -3326,12 +3325,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     @objc private func activateLicenseTapped(_ sender: NSButton) {
         let key = licenseKeyField?.stringValue ?? ""
         guard !key.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            showLicenseStatus("请先粘贴授权码", isError: true)
+            showLicenseStatus("請先貼上授權碼", isError: true)
             return
         }
         sender.isEnabled = false
-        sender.title = "激活中…"
-        showLicenseStatus("正在激活…", isError: false)
+        sender.title = "啟用中…"
+        showLicenseStatus("正在啟用…", isError: false)
 
         let deviceName = Host.current().localizedName ?? "Mac"
         LicenseManager.shared.activate(key: key, instanceName: deviceName) { [weak self] result in
@@ -3343,7 +3342,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                 self.invalidate(self.selectedPage)   // 刷新当前页（关于页会显示「已激活」小字）
             case .failure(let err):
                 sender.isEnabled = true
-                sender.title = "激活"
+                sender.title = "啟用"
                 self.showLicenseStatus(Self.licenseErrorText(err), isError: true)
             }
         }
@@ -3358,10 +3357,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private static func licenseErrorText(_ err: LicenseManager.ActivationError) -> String {
         switch err {
-        case .emptyKey:      return "请先粘贴授权码"
-        case .invalidKey:    return "授权码无效，请检查是否复制完整"
-        case .limitReached:  return "这个授权码已在另一台 Mac 上激活。换新机请到 typefree.app/recover 重置后再试。"
-        case .network(let m): return "激活失败：\(m)"
+        case .emptyKey:      return "請先貼上授權碼"
+        case .invalidKey:    return "授權碼無效，請檢查是否複製完整"
+        case .limitReached:  return "此授權碼已在另一台 Mac 上啟用。更換電腦請至 typefree.app/recover 重設後再試。"
+        case .network(let m): return "啟用失敗：\(m)"
         }
     }
 
@@ -3374,8 +3373,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         // 按真实走的通道显示：会员优先时填了 Key 也显示「会员」；没填 Key 时会员 / 试用都算「可用」
         func hostedRow(ownKey: Bool) -> (sub: String, tail: String)? {
             switch HostedRoute.current(ownKeyConfigured: ownKey) {
-            case .member: return ("会员 · 免配置，用我们提供的", "会员")
-            case .trial: return ("试用中 · 用我们提供的", "试用中")
+            case .member: return ("會員 · 免設定，使用託管服務", "會員")
+            case .trial: return ("試用中 · 使用託管服務", "試用中")
             case .none: return nil
             }
         }
@@ -3383,26 +3382,26 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let polishHosted = hostedRow(ownKey: polishOK)
 
         let rows: [(String, String, Bool, String, Selector?)] = [
-            ("麦克风", micStatus.sub, micStatus.ok, micStatus.tail,
+            ("麥克風", micStatus.sub, micStatus.ok, micStatus.tail,
              micStatus.ok ? nil : #selector(healthMicRowTapped)),
-            ("辅助功能", accessOK ? "可自动粘贴" : "未开启只能复制到剪贴板，点击去系统设置开启",
-             accessOK, accessOK ? "已允许" : "未允许",
+            ("輔助使用", accessOK ? "可自動貼上" : "未開啟時只能複製至剪貼簿，點擊前往系統設定開啟",
+             accessOK, accessOK ? "已允許" : "未允許",
              accessOK ? nil : #selector(healthAccessibilityRowTapped)),
             asrHosted != nil
-                ? ("语音识别", asrHosted!.sub, true, asrHosted!.tail, nil)
+                ? ("語音辨識", asrHosted!.sub, true, asrHosted!.tail, nil)
                 : asrOK
-                    ? ("语音识别", "BigASR 可用", true, "已配置", nil)
-                    : ("语音识别", "请填写 ASR Key", false, "未配置", nil),
+                    ? ("語音辨識", "語音辨識可用", true, "已設定", nil)
+                    : ("語音辨識", "請填寫語音辨識 Key", false, "未設定", nil),
             polishHosted != nil
-                ? ("AI 润色", polishHosted!.sub, true, polishHosted!.tail, nil)
+                ? ("AI 最佳化", polishHosted!.sub, true, polishHosted!.tail, nil)
                 : polishOK
-                    ? ("AI 润色", "可整理文本", true, "已配置", nil)
-                    : ("AI 润色", "请填写润色 Key", false, "未配置", nil),
+                    ? ("AI 最佳化", "可整理文字", true, "已設定", nil)
+                    : ("AI 最佳化", "請填寫最佳化 Key", false, "未設定", nil),
         ]
 
         let allOK = rows.allSatisfy { $0.2 }
         let failCount = rows.filter { !$0.2 }.count
-        // 全绿默认折叠（这块没信息量），有问题默认展开；用户可手动点开/收起。
+        // 全綠預設折疊，有問題預設展開
         let expanded = healthExpandedOverride ?? !allOK
 
         let stack = NSStackView()
@@ -3431,11 +3430,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// 摘要行：全绿时绿点「配置就绪 · 一切正常」，有问题时红字「N 项需要处理」；点击切换展开。
     private func makeHealthSummaryRow(allOK: Bool, failCount: Int, expanded: Bool) -> NSView {
         let dot = circle(color: allOK ? theme.ok : theme.danger, size: 8)
-        let l = label(allOK ? "配置就绪 · 一切正常" : "\(failCount) 项需要处理",
+        let l = label(allOK ? "設定就緒 · 一切正常" : "\(failCount) 項需要處理",
                       size: 13, weight: .medium, color: allOK ? theme.text : theme.danger)
         let chevron = NSImageView()
         chevron.image = NSImage(systemSymbolName: expanded ? "chevron.up" : "chevron.down",
-                                accessibilityDescription: expanded ? "收起" : "展开")
+                                accessibilityDescription: expanded ? "收起" : "展開")
         chevron.contentTintColor = theme.text3
         chevron.translatesAutoresizingMaskIntoConstraints = false
 
@@ -3545,11 +3544,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func micStatusInfo() -> (ok: Bool, sub: String, tail: String) {
         switch AVCaptureDevice.authorizationStatus(for: .audio) {
-        case .authorized: return (true, "可录音", "已允许")
-        case .denied: return (false, "被拒绝过，点击去系统设置开启", "已拒绝")
-        case .restricted: return (false, "受系统限制", "受限")
-        case .notDetermined: return (false, "点击申请麦克风权限", "待授权")
-        @unknown default: return (false, "未知状态", "未知")
+        case .authorized: return (true, "可錄音", "已允許")
+        case .denied: return (false, "已被拒絕，點擊前往系統設定開啟", "已拒絕")
+        case .restricted: return (false, "受系統限制", "受限")
+        case .notDetermined: return (false, "點擊申請麥克風權限", "待授權")
+        @unknown default: return (false, "未知狀態", "未知")
         }
     }
 
@@ -3557,13 +3556,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func buildExplore(into stack: NSStackView) {
         stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 探索", title: "探索",
-                                             sub: "发现新的输入和表达方式，按需开启。"))
+                                             sub: "探索更多輸入與表達方式，隨需開啟。"))
         stack.setCustomSpacing(20, after: stack.arrangedSubviews.last!)
         stack.addArrangedSubview(makeExploreCard(
-            id: "translation", title: "语音翻译", summary: "把说出的话翻译成指定语言，直接输入。",
+            id: "translation", title: "語音翻譯", summary: "將說出的話翻譯成指定語言，直接輸入。",
             rows: [makeDefaultOutputLanguageRow(), makeOutputLanguageCommandRow()],
             demo: .translation,
-            detailTitle: "语言与口令设置", details: { self.makeOutputLanguageCommandOptions() }
+            detailTitle: "語言與語音指令設定", details: { self.makeOutputLanguageCommandOptions() }
         ))
         stack.addArrangedSubview(makeMouseHoldToTalkCard())
         stack.addArrangedSubview(makeMouseHoldAskCard())
@@ -3572,7 +3571,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeExploreCard(id: String, title: String, summary: String,
                                  control: NSView? = nil, rows: [NSView] = [],
                                  demo: WhatsNewGuide.Feature? = nil,
-                                 detailTitle: String = "查看使用方法", details: () -> NSView) -> NSView {
+                                 detailTitle: String = "檢視使用說明", details: () -> NSView) -> NSView {
         let card = makeCard()
         let column = NSStackView()
         column.orientation = .vertical
@@ -3609,14 +3608,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         }
 
         let expanded = expandedExploreCards.contains(id)
-        let disclosure = VPButton(title: expanded ? "收起说明" : detailTitle,
+        let disclosure = VPButton(title: expanded ? "收起說明" : detailTitle,
                                   style: .secondary, size: .small, theme: theme,
                                   target: self, action: #selector(exploreCardToggled(_:)))
         disclosure.identifier = NSUserInterfaceItemIdentifier(id)
         disclosure.setAccessibilityExpanded(expanded)
         if let demo {
-            // 「看演示」放在「查看使用方法」左边：动画比文字说明更直观，想重看随时点
-            let demoButton = VPButton(title: "看演示", style: .secondary, size: .small, theme: theme,
+            let demoButton = VPButton(title: "觀看展示", style: .secondary, size: .small, theme: theme,
                                       target: self, action: #selector(exploreDemoTapped(_:)))
             demoButton.tag = demo.rawValue
             let buttons = NSStackView(views: [demoButton, disclosure])
@@ -3659,46 +3657,46 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     // MARK: - Page: Settings
 
     private func buildSettings(into stack: NSStackView) {
-        stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 设置", title: "设置",
-                                             sub: "管理启动、音频、快捷键和权限。"))
+        stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 設定", title: "設定",
+                                             sub: "管理開機啟動、音訊、快速鍵與系統權限。"))
         stack.setCustomSpacing(20, after: stack.arrangedSubviews.last!)
 
-        let launchTitle = sectionTitle("启动")
+        let launchTitle = sectionTitle("開機啟動")
         stack.addArrangedSubview(launchTitle)
         stack.setCustomSpacing(8, after: launchTitle)
         let launchCard = makeLaunchAtLoginCard()
         stack.addArrangedSubview(launchCard)
         stack.setCustomSpacing(24, after: launchCard)
 
-        let appearanceTitle = sectionTitle("外观")
+        let appearanceTitle = sectionTitle("外觀")
         stack.addArrangedSubview(appearanceTitle)
         stack.setCustomSpacing(8, after: appearanceTitle)
         let appearanceCard = makeAppearanceCard()
         stack.addArrangedSubview(appearanceCard)
         stack.setCustomSpacing(24, after: appearanceCard)
 
-        let audioTitle = sectionTitle("音频")
+        let audioTitle = sectionTitle("音訊")
         stack.addArrangedSubview(audioTitle)
         stack.setCustomSpacing(8, after: audioTitle)
         let audioCard = makeAudioCard()
         stack.addArrangedSubview(audioCard)
         stack.setCustomSpacing(24, after: audioCard)
 
-        let hotkeyTitle = sectionTitle("快捷键")
+        let hotkeyTitle = sectionTitle("快速鍵")
         stack.addArrangedSubview(hotkeyTitle)
         stack.setCustomSpacing(8, after: hotkeyTitle)
         let hotkeyCard = makeHotkeyBehaviorCard()
         stack.addArrangedSubview(hotkeyCard)
         stack.setCustomSpacing(24, after: hotkeyCard)
 
-        let overlayTitle = sectionTitle("录音浮窗")
+        let overlayTitle = sectionTitle("錄音浮動視窗")
         stack.addArrangedSubview(overlayTitle)
         stack.setCustomSpacing(8, after: overlayTitle)
         let overlayCard = makeOverlayStyleCard()
         stack.addArrangedSubview(overlayCard)
         stack.setCustomSpacing(24, after: overlayCard)
 
-        // Permissions（个人词库自动学习开关已移至「个人词库」页）
+        // Permissions
         stack.addArrangedSubview(makePermissionsCard())
     }
 
@@ -3706,7 +3704,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeOverlayStyleCard() -> NSView {
         let card = makeCard()
 
-        let styleLabel = label("颜色样式", size: 12.5, weight: .semibold, color: theme.text2)
+        let styleLabel = label("外觀樣式", size: 12.5, weight: .semibold, color: theme.text2)
         let colorTile = OverlayStyleTile(mono: false, title: "彩色（Siri）", theme: theme)
         let monoTile = OverlayStyleTile(mono: true, title: "墨黑 · 白波", theme: theme)
         let isMono = OverlayStyle.current == .mono
@@ -3728,8 +3726,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         styleTiles.orientation = .horizontal
         styleTiles.spacing = 12
 
-        let controlsTitle = label("显示取消 / 完成按钮", size: 13, weight: .medium, color: theme.text)
-        let controlsDesc = label("开启后，录音浮窗两侧会显示可点击按钮；关闭后恢复旧版完整声波胶囊。切换后下次录音生效。",
+        let controlsTitle = label("顯示取消 / 完成按鈕", size: 13, weight: .medium, color: theme.text)
+        let controlsDesc = label("開啟後，錄音浮動視窗兩側會顯示可點擊按鈕；關閉後還原為簡約聲波膠囊。切換後於下次錄音生效。",
                                  size: 12, weight: .regular, color: theme.text3)
         controlsDesc.maximumNumberOfLines = 0
         controlsDesc.lineBreakMode = .byWordWrapping
@@ -3786,12 +3784,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let card = makeCard()
 
         let title = label("深色模式", size: 14, weight: .medium, color: theme.text)
-        let desc = label("选「跟随系统」时，Mac 切到深色（包括晚上自动切换），主窗口和问 AI 面板也跟着变深。",
+        let desc = label("選擇「跟隨系統」時，當 Mac 切換至深色模式，主視窗與問 AI 面板也會同步切換至深色模式。",
                          size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
         let seg = VPSegmentedControl(
-            labels: ["跟随系统", "浅色", "深色"],
+            labels: ["跟隨系統", "淺色", "深色"],
             trackBg: theme.cardAlt,
             trackBorder: theme.sep,
             selBg: theme.segSelBg,
@@ -3843,10 +3841,15 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     }
 
     @objc private func asrProviderChanged(_ sender: VPSegmentedControl) {
-        let provider: CloudASRTranscriber.ASRProvider = (sender.selectedSegment == 1) ? .bailian : .volcano
+        let provider = Self.asrProvider(forSegment: sender.selectedSegment)
         switch provider {
+        case .groq:
+            config.save(values: ["bigasr_version": "groq"])
+        case .openai:
+            config.save(values: ["bigasr_version": "openai"])
+        case .gemini:
+            config.save(values: ["bigasr_version": "gemini"])
         case .volcano:
-            // 回到火山：之前若就是火山某档则保留，否则用极速版
             let cur = CloudASRTranscriber().currentVersion()
             let v: CloudASRTranscriber.ASRVersion = (cur.provider == .volcano) ? cur : .turbo
             config.save(values: ["bigasr_version": v.rawValue])
@@ -3854,36 +3857,83 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             config.save(values: ["bigasr_version": "bailian"])
         }
         refreshASRFields(for: provider)
-        // 识别服务商变了，优化卡片可能要在「填框」和「已复用」之间切换，刷新一下
         if let seg = polishProviderControl {
             refreshPolishKeyField(for: Self.polishProvider(forSegment: seg.selectedSegment))
         }
     }
 
-    /// 按服务商刷新识别卡片的动态区（Key + 版本/模型），与「语音优化」同一范式。
+    /// 按服務商重新整理辨識卡片的動態區（Key + 版本/模型），與「語音最佳化」同一範式。
     private func refreshASRFields(for provider: CloudASRTranscriber.ASRProvider) {
         guard let container = asrKeyContainer else { return }
         container.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         switch provider {
+        case .groq:
+            let keyField = makeSecureField(config.string(forKey: "groq_api_key"))
+            keyField.delegate = self
+            groqKeyField = keyField
+            let keyRow = makeFieldRow(label: "Groq API Key", control: keyField, placeholder: "請輸入 Groq API Key（gsk_...）")
+            container.addArrangedSubview(keyRow)
+            keyRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            let modelHint = label("Whisper-large-v3-turbo 極速辨識且辨識率極高。可至 Groq 控制台免費申請 API Key。和「語音最佳化」的 Groq 共用同一個 Key。", size: 11.5, weight: .regular, color: theme.text3)
+            modelHint.maximumNumberOfLines = 0
+            container.addArrangedSubview(modelHint)
+            modelHint.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            asrGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://console.groq.com/keys")
+            asrGetKeyButton?.title = "↗ 取得 Groq API 密鑰"
+
+        case .openai:
+            let keyField = makeSecureField(config.string(forKey: "openai_api_key"))
+            keyField.delegate = self
+            openaiKeyField = keyField
+            let keyRow = makeFieldRow(label: "OpenAI API Key", control: keyField, placeholder: "請輸入 OpenAI API Key（sk-...）")
+            container.addArrangedSubview(keyRow)
+            keyRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            let modelHint = label("使用 OpenAI Whisper-1 語音辨識模型，穩定且準確度高。和「語音最佳化」的 OpenAI 共用同一個 Key。", size: 11.5, weight: .regular, color: theme.text3)
+            modelHint.maximumNumberOfLines = 0
+            container.addArrangedSubview(modelHint)
+            modelHint.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            asrGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://platform.openai.com/api-keys")
+            asrGetKeyButton?.title = "↗ 取得 OpenAI API 密鑰"
+
+        case .gemini:
+            let keyField = makeSecureField(config.string(forKey: "gemini_api_key"))
+            keyField.delegate = self
+            geminiKeyField = keyField
+            let keyRow = makeFieldRow(label: "Google Gemini API Key", control: keyField, placeholder: "請輸入 Google Gemini API Key（AIza...）")
+            container.addArrangedSubview(keyRow)
+            keyRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            let modelHint = label("使用 Google Gemini 2.5 Flash 原生音訊辨識，支援超長音訊與極速回應。和「語音最佳化」的 Gemini 共用同一個 Key。", size: 11.5, weight: .regular, color: theme.text3)
+            modelHint.maximumNumberOfLines = 0
+            container.addArrangedSubview(modelHint)
+            modelHint.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            asrGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://aistudio.google.com/app/apikey")
+            asrGetKeyButton?.title = "↗ 取得 Gemini API 密鑰"
+
         case .volcano:
             let keyField = makeSecureField(config.string(forKey: "bigasr_api_key"))
             keyField.delegate = self
             bigASRAPIKeyField = keyField
-            let keyRow = makeFieldRow(label: "API Key", control: keyField, placeholder: "请输入豆包 API Key")
+            let keyRow = makeFieldRow(label: "API Key", control: keyField, placeholder: "請輸入豆包 API Key")
             container.addArrangedSubview(keyRow)
             keyRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
 
-            let versionLabel = label("识别版本", size: 12.5, weight: .medium, color: theme.text2)
+            let versionLabel = label("辨識版本", size: 12.5, weight: .medium, color: theme.text2)
             let versionSeg = VPSegmentedControl(
-                labels: ["极速版", "标准版", "2.0"],
+                labels: ["極速版", "標準版", "2.0"],
                 trackBg: theme.cardAlt, trackBorder: theme.sep,
                 selBg: theme.segSelBg, selBorder: theme.sep,
                 selText: theme.text, normalText: theme.text2,
                 target: self, action: #selector(asrVersionChanged(_:)))
             versionSeg.selectedSegment = Self.asrVersionSegmentIndex(for: CloudASRTranscriber().currentVersion())
             asrVersionControl = versionSeg
-            let versionHint = label("极速版略快最稳，三种速度差不多。每个版本送 20 小时免费额度（半年有效），用完可切到下一个。", size: 11.5, weight: .regular, color: theme.text3)
+            let versionHint = label("極速版略快最穩，三種速度差不多。每個版本贈送 20 小時免費額度（半年有效），用完可切換至下一個。", size: 11.5, weight: .regular, color: theme.text3)
             versionHint.maximumNumberOfLines = 0
             let versionRow = NSStackView()
             versionRow.orientation = .vertical
@@ -3897,28 +3947,44 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             versionSeg.widthAnchor.constraint(equalTo: versionRow.widthAnchor).isActive = true
 
             asrGetKeyButton?.identifier = NSUserInterfaceItemIdentifier(AppLinks.apiKeyGuideURL)
+            asrGetKeyButton?.title = "↗ 取得火山引擎密鑰"
 
         case .bailian:
             let keyField = makeSecureField(config.string(forKey: "dashscope_api_key"))
             keyField.delegate = self
             bailianKeyField = keyField
-            let keyRow = makeFieldRow(label: "DashScope API Key", control: keyField, placeholder: "请输入 DashScope API Key")
+            let keyRow = makeFieldRow(label: "DashScope API Key", control: keyField, placeholder: "請輸入 DashScope API Key")
             container.addArrangedSubview(keyRow)
             keyRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
 
-            let modelHint = label("qwen3-asr-flash 同步快、效果好，但仅支持 5 分钟以内的短音频——录长内容请改用「火山引擎」的 2.0。送 10 小时免费额度（90 天有效，用完会自动扣费，建议去控制台开「用完即停」）。和「语音优化」的通义千问共用一个 Key。", size: 11.5, weight: .regular, color: theme.text3)
+            let modelHint = label("qwen3-asr-flash 同步快、效果好，但僅支援 5 分鐘以內的短音訊——錄長內容請改用「火山引擎」的 2.0。送 10 小時免費額度。和「語音最佳化」的通義千問共用同一個 Key。", size: 11.5, weight: .regular, color: theme.text3)
             modelHint.maximumNumberOfLines = 0
             container.addArrangedSubview(modelHint)
             modelHint.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
 
             asrGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://bailian.console.aliyun.com/")
+            asrGetKeyButton?.title = "↗ 取得百煉 API 密鑰"
         }
     }
 
     private static func asrProviderSegmentIndex(for provider: CloudASRTranscriber.ASRProvider) -> Int {
         switch provider {
-        case .volcano: return 0
-        case .bailian: return 1
+        case .groq: return 0
+        case .openai: return 1
+        case .gemini: return 2
+        case .bailian: return 3
+        case .volcano: return 4
+        }
+    }
+
+    private static func asrProvider(forSegment index: Int) -> CloudASRTranscriber.ASRProvider {
+        switch index {
+        case 0: return .groq
+        case 1: return .openai
+        case 2: return .gemini
+        case 3: return .bailian
+        case 4: return .volcano
+        default: return .groq
         }
     }
 
@@ -3927,7 +3993,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         case .turbo: return 0
         case .standard: return 1
         case .v2: return 2
-        case .bailian: return 0
+        case .bailian, .groq, .openai, .gemini: return 0
         }
     }
 
@@ -3943,27 +4009,28 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func buildModel(into stack: NSStackView) {
         stack.addArrangedSubview(pageHeader(
-            eyebrow: "TYPEFREE / 模型", title: "模型设置",
-            sub: "用你自己的 API。语音直连你选的服务商，没有中间商；历史记录只存在你本机。"))
+            eyebrow: "TYPEFREE / 模型", title: "模型設定",
+            sub: "使用你自己的 API。語音直連你選擇的服務商，沒有中間商；歷史記錄僅保存在本機。"))
         stack.setCustomSpacing(18, after: stack.arrangedSubviews.last!)
 
-        // Prepare field instances fresh from config（secret 经 string 路由钥匙串）
+        // Prepare field instances fresh from config（secret 經 string 路由鑰匙圈）
+        geminiPolishKeyField = makeSecureField(config.string(forKey: "gemini_api_key"))
+        openaiPolishKeyField = makeSecureField(config.string(forKey: "openai_api_key"))
+        groqPolishKeyField = makeSecureField(config.string(forKey: "groq_api_key"))
         dashscopeAPIKeyField = makeSecureField(config.string(forKey: "dashscope_api_key"))
         arkAPIKeyField = makeSecureField(config.string(forKey: "ark_api_key"))
-        // bigASRAPIKeyField / bailianKeyField 由识别卡片按服务商动态创建（refreshASRFields）
-        // Persist edits as soon as a field loses focus ("改动即时保存")
-        for field in [dashscopeAPIKeyField, arkAPIKeyField] {
+        for field in [geminiPolishKeyField, openaiPolishKeyField, groqPolishKeyField, dashscopeAPIKeyField, arkAPIKeyField] {
             field?.delegate = self
         }
 
-        // 首次/未配置时，顶部一句明确的「最后一步」引导（会员、试用中都不用填 Key，不催）
+        // 首次/未配置時，頂部一句明確的「最後一步」引導（會員、試用中都不用填 Key，不催）
         if !CloudASRTranscriber().isConfigured() && !LicenseManager.shared.hasActiveMembership() && !TrialManager.shared.isInTrial {
             let callout = makeFirstRunCallout()
             stack.addArrangedSubview(callout)
             stack.setCustomSpacing(14, after: callout)
         }
 
-        // 会员期间走哪条通道：选择权交给用户（有人为了隐私就是要用自己的 Key）
+        // 會員期間走哪條通道：選擇權交給使用者
         if LicenseManager.shared.isMember, !LicenseManager.shared.isMemberExpired(), TrialManager.shared.isTrialAvailable {
             let routeCard = makeMemberRouteCard()
             stack.addArrangedSubview(routeCard)
@@ -3975,13 +4042,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         stack.addArrangedSubview(tutorial)
         stack.setCustomSpacing(12, after: tutorial)
 
-        // 推荐组合横幅：新用户不知道怎么搭时照抄即可（样式与教程横幅同款，墨黑小标签突出）
+        // 推薦組合橫幅：新使用者不知道怎麼搭時照抄即可
         let combo = makeRecommendedComboBanner()
         stack.addArrangedSubview(combo)
         stack.setCustomSpacing(20, after: combo)
 
-        // ① 语音识别 + ② 语音优化：左右并列，体现"识别 → 优化"的顺序，也填满横向空间。
-        // 每张卡片外套一层"卡片 + 底部弹性占位"，矮卡被拉高时多余高度由占位吸收，内容不被撑开。
+        // ① 語音辨識 + ② 語音最佳化：左右並列
         let columns = NSStackView()
         columns.orientation = .horizontal
         columns.alignment = .top
@@ -3991,11 +4057,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let polCard = makePolishCard()
         columns.addArrangedSubview(recCard)
         columns.addArrangedSubview(polCard)
-        recCard.heightAnchor.constraint(equalTo: polCard.heightAnchor).isActive = true   // 两卡片等高、底部对齐
+        recCard.heightAnchor.constraint(equalTo: polCard.heightAnchor).isActive = true
         stack.addArrangedSubview(columns)
     }
 
-    /// 把卡片顶到列顶部：底部加弹性占位吸收多余高度，避免被另一列拉伸而撑开内容。
+    /// 把卡片頂到列頂部：底部加彈性佔位吸收多餘高度，避免被另一列拉伸而撐開內容。
     private func wrapTopColumn(_ card: NSView) -> NSView {
         let col = NSStackView()
         col.orientation = .vertical
@@ -4013,18 +4079,18 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         return col
     }
 
-    /// 会员通道开关：开 = 识别/润色/问 AI 走会员服务，已填的 Key 留着不用；关 = 自己的 Key 优先，没填的项目才走会员。
+    /// 會員通道開關：開 = 辨識/潤色/問 AI 走會員服務，已填的 Key 留著不用；關 = 自己的 Key 優先，未填的項目才走會員。
     private func makeMemberRouteCard() -> NSView {
         let card = makeCard()
         let on = HostedRoute.memberFirst
-        let title = label("优先走会员服务", size: 14, weight: .medium, color: theme.text)
-        let desc = label(on ? "识别、润色和问 AI 都用我们提供的服务，下面填的 Key 先留着不用。关掉则优先用你自己的 Key。"
-                            : "优先用你自己的 Key（内容直连服务商，不经过我们）；没填 Key 的项目才走会员服务。",
+        let title = label("優先使用會員服務", size: 14, weight: .medium, color: theme.text)
+        let desc = label(on ? "辨識、潤色和問 AI 都使用我們提供的服務，下方填寫的 Key 先保留不使用。關閉則優先使用你自己的 Key。"
+                            : "優先使用你自己的 Key（內容直連服務商，不經過我們伺服器）；未填寫 Key 的項目才使用會員服務。",
                          size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
         let toggle = VPToggle(theme: theme, target: self, action: #selector(memberRouteChanged(_:)))
         toggle.setOn(on, animated: false)
-        toggle.setAccessibilityLabel("优先走会员服务")
+        toggle.setAccessibilityLabel("優先使用會員服務")
 
         let textStack = NSStackView()
         textStack.orientation = .vertical
@@ -4063,8 +4129,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         card.layer?.setAppearanceBackground(theme.accent.withAlphaComponent(0.12))
         card.translatesAutoresizingMaskIntoConstraints = false
 
-        let title = label("⚡ 最后一步", size: 13, weight: .semibold, color: theme.accent)
-        let body = label("填入下面的 API Key，就能开始用了。", size: 12.5, weight: .regular, color: theme.text2)
+        let title = label("⚡ 最後一步", size: 13, weight: .semibold, color: theme.accent)
+        let body = label("填入下方的 API Key，就能開始體驗流暢語音輸入。", size: 12.5, weight: .regular, color: theme.text2)
         body.maximumNumberOfLines = 0
 
         let textStack = NSStackView()
@@ -4084,7 +4150,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         return card
     }
 
-    /// 「推荐搭配」横幅：墨黑实心小标签 + 加重文字，样式与教程横幅同款卡片。
+    /// 「推薦搭配」橫幅：墨黑實心小標籤 + 加重文字
     private func makeRecommendedComboBanner() -> NSView {
         let card = NSView()
         card.wantsLayer = true
@@ -4094,13 +4160,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         card.layer?.setAppearanceBackground(theme.accentSoft)
         card.translatesAutoresizingMaskIntoConstraints = false
 
-        // 墨黑实心小标签（同 primary 按钮配色）
         let chip = NSView()
         chip.wantsLayer = true
         chip.layer?.cornerRadius = 6
         chip.layer?.setAppearanceBackground(theme.accent)
         chip.translatesAutoresizingMaskIntoConstraints = false
-        let chipLabel = NSTextField(labelWithString: "推荐搭配")
+        let chipLabel = NSTextField(labelWithString: "推薦搭配")
         chipLabel.font = .systemFont(ofSize: 11.5, weight: .semibold)
         chipLabel.textColor = theme.onAccent
         chipLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -4112,7 +4177,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             chipLabel.bottomAnchor.constraint(equalTo: chip.bottomAnchor, constant: -4),
         ])
 
-        let text = label("❶ 识别用「火山引擎（豆包）」 ＋ ❷ 优化用「千问 · 自动选择」，不知道怎么选就按这个来。",
+        let text = label("❶ 辨識選「Groq」或「Gemini」 ＋ ❷ 最佳化選「Gemini」或「OpenAI」，不知道怎麼選照這樣配即可。",
                          size: 13, weight: .medium, color: theme.text)
         text.maximumNumberOfLines = 0
         text.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -4139,11 +4204,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         card.layer?.setAppearanceBackground(theme.accentSoft)
         card.translatesAutoresizingMaskIntoConstraints = false
 
-        let text = label("第一次用？跟着图文教程，几分钟拿到火山引擎的 API Key。", size: 13, weight: .regular, color: theme.text2)
+        let text = label("第一次使用？支援 Google Gemini、OpenAI、Groq 等常用 API Key。", size: 13, weight: .regular, color: theme.text2)
         text.maximumNumberOfLines = 0
         text.setContentHuggingPriority(.defaultLow, for: .horizontal)
 
-        let linkBtn = makeLinkButton(title: "看教程 →", urlString: AppLinks.apiKeyGuideURL)
+        let linkBtn = makeLinkButton(title: "看教學 →", urlString: AppLinks.apiKeyGuideURL)
 
         let spacer = NSView()
         spacer.translatesAutoresizingMaskIntoConstraints = false
@@ -4167,7 +4232,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let card = makeCard()
 
         let badge = makeSectionBadge("1")
-        let titleLbl = label("语音识别（必填）", size: 15, weight: .semibold, color: theme.text)
+        let titleLbl = label("語音辨識（必填）", size: 15, weight: .semibold, color: theme.text)
         let headRow = NSStackView()
         headRow.orientation = .horizontal
         headRow.alignment = .centerY
@@ -4175,14 +4240,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         headRow.addArrangedSubview(badge)
         headRow.addArrangedSubview(titleLbl)
 
-        let desc = label("把你说的话转成文字。识别准、支持热词；不知道选哪家就用火山引擎（豆包）。",
+        let desc = label("把你說的話轉成文字。支援 Groq、OpenAI、Gemini、百煉與火山引擎。",
                           size: 12.5, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
-        // 服务商分段：火山引擎 / 百炼(阿里)
-        let providerLabel = label("服务商", size: 12.5, weight: .medium, color: theme.text2)
+        // 服務商分段
+        let providerLabel = label("服務商", size: 12.5, weight: .medium, color: theme.text2)
         let providerSeg = VPSegmentedControl(
-            labels: ["火山引擎（豆包）", "百炼（阿里）"],
+            labels: ["Groq", "OpenAI", "Gemini", "百煉", "火山引擎"],
             trackBg: theme.cardAlt, trackBorder: theme.sep,
             selBg: theme.segSelBg, selBorder: theme.sep,
             selText: theme.text, normalText: theme.text2,
@@ -4190,18 +4255,18 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         providerSeg.selectedSegment = Self.asrProviderSegmentIndex(for: CloudASRTranscriber().currentVersion().provider)
         asrProviderControl = providerSeg
 
-        // 动态区：随服务商切换（火山→Key+版本三选；百炼→DashScope Key+模型说明）
+        // 動態區：隨服務商切換
         let keyContainer = NSStackView()
         keyContainer.orientation = .vertical
         keyContainer.alignment = .leading
         keyContainer.spacing = 10
         asrKeyContainer = keyContainer
 
-        let getKey = makeLinkButton(title: "↗ 点此获取密钥", urlString: AppLinks.apiKeyGuideURL)
+        let getKey = makeLinkButton(title: "↗ 點此取得密鑰", urlString: AppLinks.apiKeyGuideURL)
         asrGetKeyButton = getKey
 
         // Test row
-        let testBtn = VPButton(title: "▷ 测试连接", style: .secondary, size: .regular,
+        let testBtn = VPButton(title: "▷ 測試連線", style: .secondary, size: .regular,
                                theme: theme, target: self, action: #selector(testRecognitionConnection))
         asrTestButton = testBtn
 
@@ -4255,7 +4320,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let card = makeCard()
 
         let badge = makeSectionBadge("2")
-        let titleLbl = label("语音优化（可选）", size: 15, weight: .semibold, color: theme.text)
+        let titleLbl = label("語音最佳化（可選）", size: 15, weight: .semibold, color: theme.text)
         let headRow = NSStackView()
         headRow.orientation = .horizontal
         headRow.alignment = .centerY
@@ -4263,14 +4328,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         headRow.addArrangedSubview(badge)
         headRow.addArrangedSubview(titleLbl)
 
-        let desc = label("把识别出的文字整理成通顺、好读的句子（去口水、改口误、自动分段），保留你的口语风格。",
+        let desc = label("把辨識出的文字整理成通順、好讀的句子（去口贅字、修口誤、自動分段），保留你的口語風格。",
                           size: 12.5, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
-        // Provider selector: 通义千问 / 豆包 / 不优化（阿里润色更强，作为推荐放最前）
-        // 自绘分段控件，软填充观感（详见 VPSegmentedControl）
+        // Provider selector
         let seg = VPSegmentedControl(
-            labels: ["百炼（阿里）", "火山引擎（豆包）", "不优化"],
+            labels: ["Gemini", "OpenAI", "Groq", "百煉", "火山引擎", "不最佳化"],
             trackBg: theme.cardAlt,
             trackBorder: theme.sep,
             selBg: theme.segSelBg,
@@ -4279,22 +4343,20 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             normalText: theme.text2,
             target: self,
             action: #selector(polishProviderChanged(_:)))
-        let current = config.string(forKey: "polish_provider") ?? "qwen"
+        let current = config.string(forKey: "polish_provider") ?? "gemini"
         seg.selectedSegment = Self.polishSegmentIndex(for: current)
         polishProviderControl = seg
 
-        // Key field container (swapped by selection)
         let keyContainer = NSStackView()
         keyContainer.orientation = .vertical
         keyContainer.alignment = .leading
         keyContainer.spacing = 10
         polishKeyContainer = keyContainer
 
-        let getKey = makeLinkButton(title: "↗ 点此获取密钥", urlString: "https://console.volcengine.com/ark")
+        let getKey = makeLinkButton(title: "↗ 點此取得密鑰", urlString: "https://aistudio.google.com/app/apikey")
         polishGetKeyButton = getKey
 
-        // Test row
-        let testBtn = VPButton(title: "▷ 测试连接", style: .secondary, size: .regular,
+        let testBtn = VPButton(title: "▷ 測試連線", style: .secondary, size: .regular,
                                theme: theme, target: self, action: #selector(testPolishConnection))
         polishTestButton = testBtn
 
@@ -4339,15 +4401,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         mount(inner, in: card)
 
-        // Populate the key field / hint for the current selection
         refreshPolishKeyField(for: current)
         return card
     }
 
-    /// 声波品牌标：圆角盒子 + 钟形声波（与 App 图标同款）。小盒(<40)用 3 根、大盒用 5 根；
-    /// 深色盒子上波形用浅色(onAccent)。用 CALayer 画实心柱，原生清晰。
+    /// 聲波品牌標：圓角盒子 + 鐘形聲波（與 App 圖示同款）。
     private func makeWaveformMark(box: CGFloat, corner: CGFloat, boxColor: NSColor, waveColor: NSColor) -> NSView {
-        // viewBox 0..100 柱子：(x, 宽, y, 高, 圆角)
         let bars5: [(CGFloat, CGFloat, CGFloat, CGFloat, CGFloat)] = [
             (11, 10, 37.2, 25.6, 5), (28, 10, 26, 48, 5), (45, 10, 18, 64, 5),
             (62, 10, 29.2, 41.6, 5), (79, 10, 38.8, 22.4, 5)
@@ -4356,7 +4415,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             (10, 18, 30.2, 39.7, 9), (41, 18, 18, 64, 9), (72, 18, 33.4, 33.3, 9)
         ]
         let bars = box < 40 ? bars3 : bars5
-        let mark = box * 0.68            // 波形占盒子 68%
+        let mark = box * 0.68
         let off = (box - mark) / 2
         let k = mark / 100.0
 
@@ -4372,7 +4431,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         for (x, w, y, h, r) in bars {
             let bar = CALayer()
             bar.setAppearanceBackground(waveColor)
-            // CALayer 默认 y 向上、viewBox y 向下 → 翻转：柱底 = box - off - (y+h)*k
             bar.frame = CGRect(x: off + x*k, y: box - off - (y+h)*k, width: w*k, height: h*k)
             bar.cornerRadius = r*k
             v.layer?.addSublayer(bar)
@@ -4440,17 +4498,25 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private static func polishSegmentIndex(for provider: String) -> Int {
         switch provider {
-        case "doubao": return 1
-        case "none": return 2
-        default: return 0 // qwen（推荐，放最前）
+        case "gemini": return 0
+        case "openai": return 1
+        case "groq": return 2
+        case "qwen": return 3
+        case "doubao": return 4
+        case "none": return 5
+        default: return 0 // gemini 預設
         }
     }
 
     private static func polishProvider(forSegment index: Int) -> String {
         switch index {
-        case 1: return "doubao"
-        case 2: return "none"
-        default: return "qwen"
+        case 0: return "gemini"
+        case 1: return "openai"
+        case 2: return "groq"
+        case 3: return "qwen"
+        case 4: return "doubao"
+        case 5: return "none"
+        default: return "gemini"
         }
     }
 
@@ -4462,36 +4528,129 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         invalidate(.home)
     }
 
-    /// Rebuild the polish key field (or hint) to match the selected provider.
+    /// 依選取的服務商重新整理最佳化 Key 欄位（或提示）
     private func refreshPolishKeyField(for provider: String) {
         guard let container = polishKeyContainer else { return }
         container.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         switch provider {
         case "none":
-            let hint = label("直接输出识别原文，不做整理。", size: 12.5, weight: .regular, color: theme.text3)
+            let hint = label("直接輸出辨識原文，不做整理修飾。", size: 12.5, weight: .regular, color: theme.text3)
             hint.maximumNumberOfLines = 0
             container.addArrangedSubview(hint)
             hint.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             polishGetKeyButton?.isHidden = true
             polishTestButton?.isEnabled = false
-            polishTestButton?.title = "无需测试"
-        case "qwen":
-            let rec = label("✓ 推荐。语义润色效果好，识别配火山或阿里都行。", size: 11.5, weight: .medium, color: theme.accent)
+            polishTestButton?.title = "無需測試"
+
+        case "gemini":
+            let rec = label("✓ 推薦。Google Gemini 2.5 Flash 速度極快且語意理解極佳，極速修飾與問答。", size: 11.5, weight: .medium, color: theme.accent)
             rec.maximumNumberOfLines = 0
             container.addArrangedSubview(rec)
             rec.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
-            // 识别已用阿里(百炼) key 时，优化复用同一个 DashScope Key，不再出重复输入框
-            let asrUsesBailian = CloudASRTranscriber().currentVersion().provider == .bailian
-            let dashKey = config.string(forKey: "dashscope_api_key") ?? ""
-            if asrUsesBailian && !dashKey.isEmpty {
-                let reused = label("✓ 已复用识别填的 DashScope Key，无需重填（同一个阿里 key 通用）。", size: 12, weight: .medium, color: theme.accent)
+
+            let asrUsesGemini = CloudASRTranscriber().currentVersion().provider == .gemini
+            let gemKey = config.string(forKey: "gemini_api_key") ?? ""
+            if asrUsesGemini && !gemKey.isEmpty {
+                let reused = label("✓ 已複用辨識所填的 Google Gemini Key，無需重填。", size: 12, weight: .medium, color: theme.accent)
                 reused.maximumNumberOfLines = 0
                 container.addArrangedSubview(reused)
                 reused.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             } else {
-                let row = makeFieldRow(label: "通义千问 API Key", control: dashscopeAPIKeyField!,
-                                       placeholder: "请输入 DashScope API Key")
+                let row = makeFieldRow(label: "Google Gemini API Key", control: geminiPolishKeyField!,
+                                       placeholder: "請輸入 Google Gemini API Key（AIza...）")
+                container.addArrangedSubview(row)
+                row.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            }
+            let modelRow = makePolishModelRow(
+                configKey: "gemini_polish_model",
+                presets: ["gemini-2.5-flash", "gemini-2.5-pro"],
+                caption: "Gemini 2.5 Flash 速度極快（預設推薦）；Gemini 2.5 Pro 推理能力更深。")
+            container.addArrangedSubview(modelRow)
+            modelRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            polishGetKeyButton?.isHidden = false
+            polishGetKeyButton?.title = "↗ 取得 Gemini API 密鑰"
+            polishGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://aistudio.google.com/app/apikey")
+            polishTestButton?.isEnabled = true
+            polishTestButton?.title = "▷ 測試連線"
+
+        case "openai":
+            let rec = label("✓ OpenAI 模型，品質穩定，支援 GPT-4o mini 及 GPT-4o。", size: 11.5, weight: .medium, color: theme.accent)
+            rec.maximumNumberOfLines = 0
+            container.addArrangedSubview(rec)
+            rec.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            let asrUsesOpenAI = CloudASRTranscriber().currentVersion().provider == .openai
+            let oaiKey = config.string(forKey: "openai_api_key") ?? ""
+            if asrUsesOpenAI && !oaiKey.isEmpty {
+                let reused = label("✓ 已複用辨識所填的 OpenAI Key，無需重填。", size: 12, weight: .medium, color: theme.accent)
+                reused.maximumNumberOfLines = 0
+                container.addArrangedSubview(reused)
+                reused.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            } else {
+                let row = makeFieldRow(label: "OpenAI API Key", control: openaiPolishKeyField!,
+                                       placeholder: "請輸入 OpenAI API Key（sk-...）")
+                container.addArrangedSubview(row)
+                row.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            }
+            let modelRow = makePolishModelRow(
+                configKey: "openai_polish_model",
+                presets: ["gpt-4o-mini", "gpt-4o"],
+                caption: "GPT-4o mini 兼顧速度與品質（預設推薦）；GPT-4o 適合超長文本或更細緻修辭。")
+            container.addArrangedSubview(modelRow)
+            modelRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            polishGetKeyButton?.isHidden = false
+            polishGetKeyButton?.title = "↗ 取得 OpenAI API 密鑰"
+            polishGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://platform.openai.com/api-keys")
+            polishTestButton?.isEnabled = true
+            polishTestButton?.title = "▷ 測試連線"
+
+        case "groq":
+            let rec = label("✓ Groq 極速推理，採用 Llama 3.3 70B 模型，幾毫秒瞬間出字。", size: 11.5, weight: .medium, color: theme.accent)
+            rec.maximumNumberOfLines = 0
+            container.addArrangedSubview(rec)
+            rec.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+
+            let asrUsesGroq = CloudASRTranscriber().currentVersion().provider == .groq
+            let groqKey = config.string(forKey: "groq_api_key") ?? ""
+            if asrUsesGroq && !groqKey.isEmpty {
+                let reused = label("✓ 已複用辨識所填的 Groq Key，無需重填。", size: 12, weight: .medium, color: theme.accent)
+                reused.maximumNumberOfLines = 0
+                container.addArrangedSubview(reused)
+                reused.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            } else {
+                let row = makeFieldRow(label: "Groq API Key", control: groqPolishKeyField!,
+                                       placeholder: "請輸入 Groq API Key（gsk_...）")
+                container.addArrangedSubview(row)
+                row.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            }
+            let modelRow = makePolishModelRow(
+                configKey: "groq_polish_model",
+                presets: ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
+                caption: "Llama 3.3 70B 極速輸出且最佳化品質優異（預設推薦）。")
+            container.addArrangedSubview(modelRow)
+            modelRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            polishGetKeyButton?.isHidden = false
+            polishGetKeyButton?.title = "↗ 取得 Groq API 密鑰"
+            polishGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://console.groq.com/keys")
+            polishTestButton?.isEnabled = true
+            polishTestButton?.title = "▷ 測試連線"
+
+        case "qwen":
+            let rec = label("✓ 語意潤色效果好，辨識配火山或阿里皆可。", size: 11.5, weight: .medium, color: theme.accent)
+            rec.maximumNumberOfLines = 0
+            container.addArrangedSubview(rec)
+            rec.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            let asrUsesBailian = CloudASRTranscriber().currentVersion().provider == .bailian
+            let dashKey = config.string(forKey: "dashscope_api_key") ?? ""
+            if asrUsesBailian && !dashKey.isEmpty {
+                let reused = label("✓ 已複用辨識所填的 DashScope Key，無需重填（同一個阿里 key 通用）。", size: 12, weight: .medium, color: theme.accent)
+                reused.maximumNumberOfLines = 0
+                container.addArrangedSubview(reused)
+                reused.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
+            } else {
+                let row = makeFieldRow(label: "通義千問 API Key", control: dashscopeAPIKeyField!,
+                                       placeholder: "請輸入 DashScope API Key")
                 container.addArrangedSubview(row)
                 row.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             }
@@ -4499,53 +4658,58 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             container.addArrangedSubview(modelRow)
             modelRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             polishGetKeyButton?.isHidden = false
+            polishGetKeyButton?.title = "↗ 取得百煉 API 密鑰"
             polishGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://bailian.console.aliyun.com/")
             polishTestButton?.isEnabled = true
-            polishTestButton?.title = "▷ 测试连接"
+            polishTestButton?.title = "▷ 測試連線"
+
         default: // doubao
-            let warn = label("⚠️ 火山引擎（豆包）润色效果一般，建议换「百炼（阿里）」。", size: 11.5, weight: .medium, color: theme.text2)
+            let warn = label("⚠️ 火山引擎（豆包）潤色效果一般，建議選用「Google Gemini」或「百煉（阿里）」。", size: 11.5, weight: .medium, color: theme.text2)
             warn.maximumNumberOfLines = 0
             container.addArrangedSubview(warn)
             warn.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             let row = makeFieldRow(label: "豆包大模型 API Key", control: arkAPIKeyField!,
-                                   placeholder: "请输入豆包大模型 API Key")
+                                   placeholder: "請輸入豆包大模型 API Key")
             container.addArrangedSubview(row)
             row.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             let modelRow = makePolishModelRow(
                 configKey: "doubao_polish_model",
                 presets: ["doubao-seed-2-0-pro-260215", "doubao-seed-1-6-flash-250828"],
-                caption: "两个模型按需选：doubao-seed-2-0-pro-260215 质量更好（默认）；doubao-seed-1-6-flash-250828 更快，但质量一般。")
+                caption: "兩個模型依需求選擇：doubao-seed-2-0-pro-260215 品質更好（預設）；doubao-seed-1-6-flash-250828 更快。")
             container.addArrangedSubview(modelRow)
             modelRow.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
             polishGetKeyButton?.isHidden = false
+            polishGetKeyButton?.title = "↗ 取得火山引擎密鑰"
             polishGetKeyButton?.identifier = NSUserInterfaceItemIdentifier("https://console.volcengine.com/ark")
             polishTestButton?.isEnabled = true
-            polishTestButton?.title = "▷ 测试连接"
+            polishTestButton?.title = "▷ 測試連線"
         }
     }
 
-    /// 润色模型默认值（留空时回落）。
+    /// 潤色模型預設值（留空時回退）。
     private func polishModelDefault(forKey key: String) -> String {
         switch key {
+        case "gemini_polish_model": return "gemini-2.5-flash"
+        case "openai_polish_model": return "gpt-4o-mini"
+        case "groq_polish_model": return "llama-3.3-70b-versatile"
         case "qwen_polish_model": return PolishModelRouter.autoValue
         case "doubao_polish_model": return "doubao-seed-2-0-pro-260215"
         default: return ""
         }
     }
 
-    /// 千问润色模型下拉选项：value → 展示名。顺序即下拉框顺序。
+    /// 千問潤色模型下拉選項：value → 展示名。順序即下拉框順序。
     private var qwenPolishModelOptions: [(value: String, title: String)] {
-        [(PolishModelRouter.autoValue, "自动 · 质量优先（推荐）"),
-         (PolishModelRouter.autoSpeedValue, "自动 · 速度优先"),
-         ("qwen3.8-max", "qwen3.8-max · 质量最好"),
-         ("qwen3.7-max", "qwen3.7-max · 质量好"),
-         ("qwen3.7-flash", "qwen3.7-flash · 快，付费最便宜"),
+        [(PolishModelRouter.autoValue, "自動 · 品質優先（推薦）"),
+         (PolishModelRouter.autoSpeedValue, "自動 · 速度優先"),
+         ("qwen3.8-max", "qwen3.8-max · 品質最好"),
+         ("qwen3.7-max", "qwen3.7-max · 品質好"),
+         ("qwen3.7-flash", "qwen3.7-flash · 快，付費最便宜"),
          ("qwen3.7-plus", "qwen3.7-plus · 均衡"),
          ("qwen3.6-flash", "qwen3.6-flash · 最快")]
     }
 
-    /// 「模型」行（千问专用）：下拉框，首项「自动选择」。
-    /// 额度冷却中的模型加「额度可能已用完」标记（标记来自请求层捕捉到的 403）。
+    /// 「模型」行（千問專用）：下拉框，首項「自動選擇」。
     private func makeQwenPolishModelDropdownRow() -> NSView {
         let def = polishModelDefault(forKey: "qwen_polish_model")
         let saved = config.string(forKey: "qwen_polish_model") ?? ""
@@ -4553,17 +4717,15 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         var options = qwenPolishModelOptions
         if !current.isEmpty, !options.contains(where: { $0.value == current }) {
-            options.append((current, "自定义：\(current)"))
+            options.append((current, "自訂：\(current)"))
         }
 
         let items = options.map { opt -> VPDropdown.Item in
             let exhausted = !PolishModelRouter.isAuto(opt.value) && PolishModelRouter.isExhausted(opt.value)
             return VPDropdown.Item(value: opt.value,
-                                   title: exhausted ? opt.title + "（当前不可用）" : opt.title,
+                                   title: exhausted ? opt.title + "（目前不可用）" : opt.title,
                                    warn: exhausted)
         }
-        // 白底 + 细边框：与上方 API Key 输入框同款观感（同处「标签下的单值控件」位置）
-        // 收起时选中项若已用完 → 红字（此时用户需要动手换）；菜单里其余已用完项只用弱化色，避免满屏红。
         let popup = VPDropdown(items: items, selectedValue: current,
                                trackBg: theme.card,
                                trackBorder: Self.dropdownBorder,
@@ -4573,8 +4735,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             guard let self else { return }
             self.config.save(value: value, forKey: "qwen_polish_model")
             self.polishTestResultLabel?.stringValue = ""
-            // 重建本页让状态行跟随新选择。必须延到下一轮 runloop：invalidate 会拆掉
-            // 正在执行回调的那个下拉控件所在的视图树，同步拆会在它自己的方法栈上释放它。
             DispatchQueue.main.async { [weak self] in self?.invalidate(.model) }
         }
 
@@ -4587,13 +4747,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         stack.addArrangedSubview(lbl)
         stack.addArrangedSubview(popup)
 
-        // 状态行：自动模式告诉用户「现在在用哪个」；手动选中的模型额度用完则红字给出路。
         if let status = qwenPolishStatusLine(for: current) {
             stack.addArrangedSubview(status)
             status.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
         }
 
-        let cap = label("两种自动模式都会在某个模型免费额度用完时自动换下一个，无需手动切换：质量优先从 3.7-plus 往下用；速度优先从 3.7-flash 开始，说长段话时出字明显更快。每个模型各送 100 万 Token 免费额度；建议在百炼控制台开启「免费额度用完即停」，额度用完 App 才能感知并自动切换。",
+        let cap = label("兩種自動模式都會在某個模型免費額度用完時自動換下一個，無需手動切換：品質優先從 3.7-plus 往下用；速度優先從 3.7-flash 開始。每個模型贈送 100 萬 Token 免費額度；建議在百煉控制台開啟「免費額度用完即停」。",
                         size: 11.5, weight: .regular, color: theme.text3)
         cap.maximumNumberOfLines = 0
         stack.addArrangedSubview(cap)
@@ -4601,34 +4760,30 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         return stack
     }
 
-    /// 模型下拉框下方的状态行；没什么可说时返回 nil。
-    /// - 自动模式：显示当前实际会用的模型（用自动的人最关心这个）。
-    /// - 手动模式且该模型额度已用完：红字 + 指出路（换「自动选择」）。
+    /// 模型下拉框下方的狀態行
     private func qwenPolishStatusLine(for current: String) -> NSTextField? {
         if PolishModelRouter.isAuto(current) {
             guard let inUse = PolishModelRouter.candidates(for: current).first else { return nil }
             let skipped = PolishModelRouter.qualityChain.filter { PolishModelRouter.isExhausted($0) }.count
-            let suffix = skipped > 0 ? "（已自动跳过 \(skipped) 个当前不可用的模型）" : ""
-            let l = label("当前在用：\(inUse)\(suffix)", size: 11.5, weight: .medium, color: theme.text2)
+            let suffix = skipped > 0 ? "（已自動跳過 \(skipped) 個目前不可用的模型）" : ""
+            let l = label("目前使用：\(inUse)\(suffix)", size: 11.5, weight: .medium, color: theme.text2)
             l.maximumNumberOfLines = 0
             return l
         }
         guard PolishModelRouter.isExhausted(current) else { return nil }
-        // 403 既可能是免费额度用完，也可能是这把 Key 没开通该模型——两种都得换模型，文案一并覆盖。
-        let l = label("这个模型当前不可用（免费额度已用完，或这个 Key 未开通它），润色会失败。建议改用「自动 · 质量优先」，会自动换到可用的模型。",
+        let l = label("這個模型目前不可用（免費額度已用完，或此 Key 未開通），建議改用「自動 · 品質優先」，會自動切換至可用模型。",
                       size: 11.5, weight: .medium, color: theme.danger)
         l.maximumNumberOfLines = 0
         return l
     }
 
-
-    /// 「模型」行：复用识别版本的横向分段样式，从预设模型里切换。
+    /// 「模型」行：複用辨識版本的橫向分段樣式，從預設模型中切換。
     private func makePolishModelRow(configKey: String, presets: [String], caption: String) -> NSView {
         let def = polishModelDefault(forKey: configKey)
         let saved = config.string(forKey: configKey) ?? ""
         let current = saved.isEmpty ? def : saved
         let selected = presets.firstIndex(of: current) ?? (saved.isEmpty ? (presets.firstIndex(of: def) ?? 0) : -1)
-        let customModelNotice = (!saved.isEmpty && selected == -1) ? "当前使用：\(current)。它不在上方预设里；点上方任一项才会切换。" : nil
+        let customModelNotice = (!saved.isEmpty && selected == -1) ? "目前使用：\(current)。它不在上方預設中；點選上方任一項才會切換。" : nil
         let modelSeg = VPSegmentedControl(
             labels: presets,
             trackBg: theme.cardAlt,
@@ -4670,6 +4825,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard let key = sender.identifier?.rawValue else { return }
         let presets: [String]
         switch key {
+        case "gemini_polish_model":
+            presets = ["gemini-2.5-flash", "gemini-2.5-pro"]
+        case "openai_polish_model":
+            presets = ["gpt-4o-mini", "gpt-4o"]
+        case "groq_polish_model":
+            presets = ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"]
         case "doubao_polish_model":
             presets = ["doubao-seed-2-0-pro-260215", "doubao-seed-1-6-flash-250828"]
         default:
@@ -4678,7 +4839,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let index = max(0, min(sender.selectedSegment, presets.count - 1))
         let value = presets[index]
         config.save(value: value, forKey: key)
-        polishTestResultLabel?.stringValue = ""
     }
 
     private func makeAutoLearnCard() -> NSView {
@@ -4720,8 +4880,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeLaunchAtLoginCard() -> NSView {
         let card = makeCard()
 
-        let title = label("开机时自动启动", size: 14, weight: .medium, color: theme.text)
-        let desc = label("登录后自动在后台打开 Typefree，不用每次手动启动。", size: 12, weight: .regular, color: theme.text3)
+        let title = label("開機時自動啟動", size: 14, weight: .medium, color: theme.text)
+        let desc = label("登入後自動於背景開啟 Typefree，無需每次手動啟動。", size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
         let toggle = VPToggle(theme: theme, target: self, action: #selector(launchAtLoginChanged(_:)))
@@ -4758,10 +4918,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeMouseHoldToTalkCard() -> NSView {
         let toggle = VPToggle(theme: theme, target: self, action: #selector(mouseHoldToTalkChanged(_:)))
         toggle.setOn(MouseHoldToTalkSettings.isEnabled, animated: false)
-        toggle.setAccessibilityLabel("鼠标长按说话")
-        return makeExploreCard(id: "mouse", title: "鼠标长按说话",
-                               summary: "在输入框里按住鼠标说话，松开后自动输入。", control: toggle, demo: .mouseHold) {
-            self.makeExploreHelp("开始说话：在输入框上按住鼠标左键约半秒，松开即结束。\n\n锁定录音：向下拖动，或移到胶囊内及边缘附近。绿光亮起后松手继续说，点 ✓ 完成、× 取消。\n\n拖开取消：按住鼠标拖远，红光亮起后松手取消；移回胶囊可恢复锁定。锁定后，也可重新按住胶囊向外拖动取消。普通移动鼠标不会取消录音。\n\n微信：仅在聊天主窗口底部输入区域的左半部分生效，会接管微信自带的按住语音输入。触控板不建议开启。")
+        toggle.setAccessibilityLabel("滑鼠長按說話")
+        return makeExploreCard(id: "mouse", title: "滑鼠長按說話",
+                               summary: "在輸入框按住滑鼠說話，放開後自動輸入。", control: toggle, demo: .mouseHold) {
+            self.makeExploreHelp("開始說話：在輸入框按住滑鼠左鍵約半秒，放開即結束。\n\n鎖定錄音：向下拖曳，或移至膠囊內及邊緣附近。綠光亮起後放手繼續說，點擊 ✓ 完成、× 取消。\n\n拖開取消：按住滑鼠拖遠，紅光亮起後放手取消；移回膠囊可恢復鎖定。鎖定後，亦可重新按住膠囊向外拖曳取消。一般移動滑鼠不會取消錄音。\n\n微信：僅在聊天主視窗底部輸入區域的左半部生效，會接管微信內建的按住語音輸入。觸控式軌跡板不建議開啟。")
         }
     }
 
@@ -4769,11 +4929,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     /// 默认输出语言：不管说什么语言都翻成它。开着时录音胶囊常驻语言标签，说口令可临时切换。
     private func makeDefaultOutputLanguageRow() -> NSView {
-        let title = label("默认输出语言", size: 13, weight: .medium, color: theme.text)
-        let desc = label("固定翻译成一种语言，或选择跟随说话语言。", size: 12, weight: .regular, color: theme.text3)
+        let title = label("預設輸出語言", size: 13, weight: .medium, color: theme.text)
+        let desc = label("固定翻譯為特定語言，或選擇跟隨說話語言。", size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
-        var items: [VPDropdown.Item] = [VPDropdown.Item(value: "", title: "跟随说话语言")]
+        var items: [VPDropdown.Item] = [VPDropdown.Item(value: "", title: "跟隨說話語言")]
         for language in OutputLanguage.configured() where language.enabled {
             items.append(VPDropdown.Item(value: language.id, title: language.name))
         }
@@ -4808,12 +4968,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     }
 
     private func makeOutputLanguageCommandRow() -> NSView {
-        let title = label("语音口令", size: 13, weight: .medium, color: theme.text)
-        let desc = label("说「用英文」或「翻译成日文」，临时切换本次输出。", size: 12, weight: .regular, color: theme.text3)
+        let title = label("語音指令", size: 13, weight: .medium, color: theme.text)
+        let desc = label("說「用英文」或「翻譯成日文」，臨時切換本次輸出。", size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
         let master = VPToggle(theme: theme, target: self, action: #selector(outputLanguageCommandEnabledChanged(_:)))
         master.setOn(config.bool(forKey: OutputLanguage.commandEnabledConfigKey, defaultValue: true), animated: false)
-        master.setAccessibilityLabel("语音口令")
+        master.setAccessibilityLabel("語音指令")
         let textStack = NSStackView()
         textStack.orientation = .vertical
         textStack.alignment = .leading
@@ -4840,7 +5000,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         column.orientation = .vertical
         column.alignment = .leading
         column.spacing = 12
-        let help = makeExploreHelp("在句首或句尾加上口令，这一次就用指定语言输出。句首说完口令后稍停一下。开启固定语言时，胶囊会显示对应语言标签。翻译需要开启 AI 润色。")
+        let help = makeExploreHelp("在句首或句尾加上指令，本次就會以指定語言輸出。句首說完指令後請稍作停頓。開啟固定語言時，膠囊會顯示對應語言標籤。翻譯功能需要開啟 AI 最佳化。")
         column.addArrangedSubview(help)
         help.widthAnchor.constraint(equalTo: column.widthAnchor).isActive = true
 
@@ -4849,7 +5009,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         chips.orientation = .horizontal
         chips.alignment = .centerY
         chips.spacing = 8
-        let chipLabel = label("语言", size: 12.5, weight: .medium, color: theme.text3)
+        let chipLabel = label("語言", size: 12.5, weight: .medium, color: theme.text3)
         chipLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
         chips.addArrangedSubview(chipLabel)
         let languages = OutputLanguage.configured()
@@ -4857,13 +5017,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             let chip = VPButton(title: language.name, style: language.enabled ? .primary : .secondary, size: .small, theme: theme,
                                 target: self, action: #selector(outputLanguageChipTapped(_:)))
             chip.identifier = NSUserInterfaceItemIdentifier(language.id)
-            chip.toolTip = "说「\(language.phrases.first ?? "用" + language.name)」这一句就用\(language.name)输出"
+            chip.toolTip = "說「\(language.phrases.first ?? "用" + language.name)」這句就以\(language.name)輸出"
             chips.addArrangedSubview(chip)
         }
         column.addArrangedSubview(chips)
 
         // 高级：自定义触发词 / 添加语言，默认收起
-        let disclosure = VPButton(title: outputLanguageAdvancedExpanded ? "收起自定义触发词" : "自定义触发词…", style: .secondary, size: .small, theme: theme,
+        let disclosure = VPButton(title: outputLanguageAdvancedExpanded ? "收起自訂觸發詞" : "自訂觸發詞…", style: .secondary, size: .small, theme: theme,
                                   target: self, action: #selector(outputLanguageAdvancedToggled))
         column.addArrangedSubview(disclosure)
 
@@ -4877,7 +5037,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                 name.widthAnchor.constraint(equalToConstant: 64).isActive = true
                 let field = makeTextField(language.phrases.joined(separator: "，"))
                 field.font = .systemFont(ofSize: 12)
-                field.placeholderString = "触发词，用逗号分隔"
+                field.placeholderString = "觸發詞，以逗號分隔"
                 field.identifier = NSUserInterfaceItemIdentifier("olang:" + language.id)
                 field.delegate = self
                 field.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -4898,17 +5058,17 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             addRow.orientation = .horizontal
             addRow.alignment = .centerY
             addRow.spacing = 10
-            let addLabel = label("添加语言", size: 12.5, weight: .medium, color: theme.text3)
+            let addLabel = label("新增語言", size: 12.5, weight: .medium, color: theme.text3)
             addLabel.widthAnchor.constraint(equalToConstant: 64).isActive = true
             let nameField = makeTextField("")
             nameField.font = .systemFont(ofSize: 12)
-            nameField.placeholderString = "语言名，如 泰语"
+            nameField.placeholderString = "語言名稱，如 泰語"
             nameField.widthAnchor.constraint(equalToConstant: 110).isActive = true
             let phrasesField = makeTextField("")
             phrasesField.font = .systemFont(ofSize: 12)
-            phrasesField.placeholderString = "触发词，不填则用「用泰语、翻译成泰语」"
+            phrasesField.placeholderString = "觸發詞，未填則預設為「用泰語、翻譯成泰語」"
             phrasesField.setContentHuggingPriority(.defaultLow, for: .horizontal)
-            let addButton = VPButton(title: "添加", style: .secondary, size: .small, theme: theme,
+            let addButton = VPButton(title: "新增", style: .secondary, size: .small, theme: theme,
                                      target: self, action: #selector(outputLanguageAddTapped))
             outputLanguageAddNameField = nameField
             outputLanguageAddPhrasesField = phrasesField
@@ -4969,7 +5129,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let name = (outputLanguageAddNameField?.stringValue ?? "").trimmingCharacters(in: .whitespaces)
         guard !name.isEmpty else { return }
         var phrases = OutputLanguage.parsePhrases(outputLanguageAddPhrasesField?.stringValue ?? "")
-        if phrases.isEmpty { phrases = ["用\(name)", "翻译成\(name)", "翻成\(name)", "\(name)输出"] }
+        if phrases.isEmpty { phrases = ["用\(name)", "翻譯成\(name)", "翻成\(name)", "\(name)輸出"] }
         var list = OutputLanguage.configured()
         list.append(OutputLanguage.makeCustom(name: name, phrases: phrases))
         OutputLanguage.save(list)
@@ -4979,8 +5139,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeHotkeyBehaviorCard() -> NSView {
         let card = makeCard()
 
-        let title = label("单击快捷键开始/停止录音", size: 14, weight: .medium, color: theme.text)
-        let desc = label("开启后，仍可长按录音；短按一次会保持录音，再短按一次结束。", size: 12, weight: .regular, color: theme.text3)
+        let title = label("按一下快速鍵開始/停止錄音", size: 14, weight: .medium, color: theme.text)
+        let desc = label("開啟後，仍可長按錄音；短按一次會持續錄音，再次短按即可結束。", size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
         let toggle = VPToggle(theme: theme, target: self, action: #selector(tapToggleChanged(_:)))
@@ -5017,8 +5177,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let card = makeCard()
         let mgr = MicrophoneManager.shared
 
-        let l = label("麦克风", size: 14, weight: .medium, color: theme.text)
-        let s = label("选择录音用的麦克风。如果没有声音输入，可以试试切换。", size: 12, weight: .regular, color: theme.text3)
+        let l = label("麥克風", size: 14, weight: .medium, color: theme.text)
+        let s = label("選擇錄音使用的麥克風。若無聲音輸入，可嘗試切換。", size: 12, weight: .regular, color: theme.text3)
         s.maximumNumberOfLines = 0
         s.preferredMaxLayoutWidth = 320
 
@@ -5077,8 +5237,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let micInfo = micStatusInfo()
         let accessOK = AXIsProcessTrusted()
         let rows: [(String, String, Selector)] = [
-            ("麦克风", micInfo.ok ? "已允许，可录音" : "未允许，请到系统设置开启", #selector(openMicrophoneSettings)),
-            ("辅助功能", accessOK ? "已允许，可自动粘贴" : "未允许，只能复制到剪贴板", #selector(openAccessibilitySettings)),
+            ("麥克風", micInfo.ok ? "已允許，可錄音" : "未允許，請前往系統設定開啟", #selector(openMicrophoneSettings)),
+            ("輔助使用", accessOK ? "已允許，可自動貼上" : "未允許，僅能複製至剪貼簿", #selector(openAccessibilitySettings)),
         ]
         let stack = NSStackView()
         stack.orientation = .vertical
@@ -5102,7 +5262,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let s = label(sub, size: 12, weight: .regular, color: theme.text3)
         s.maximumNumberOfLines = 0
         s.lineBreakMode = .byWordWrapping
-        let btn = VPButton(title: "系统设置 →", style: .secondary, size: .small,
+        let btn = VPButton(title: "系統設定 →", style: .secondary, size: .small,
                            theme: theme, target: self, action: action)
         btn.setContentHuggingPriority(.required, for: .horizontal)
         btn.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -5137,8 +5297,6 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// Persist the model-tab field values to the local config file.
     /// Drops zhipu_api_key entirely; leaves any existing stored value for that key untouched.
     private func persistModelFields() {
-        // 各家 API Key 直接走 saveSecret（写钥匙串 + 校验）；field 为 nil 时不动，避免清空已存的 key。
-        // 空字符串 = 删除该 key；saveSecret 失败（钥匙串写不进）则提示重试，不静默成功。
         var secretOK = true
         if let f = bigASRAPIKeyField {
             secretOK = config.saveSecret(f.stringValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: "bigasr_api_key") && secretOK
@@ -5146,17 +5304,30 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         if let f = arkAPIKeyField {
             secretOK = config.saveSecret(f.stringValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: "ark_api_key") && secretOK
         }
-        // DashScope Key 在识别(百炼)和优化(通义千问)共用同一 config key，取两处非空的
         let dsBailian = bailianKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let dsPolish = dashscopeAPIKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         if bailianKeyField != nil || dashscopeAPIKeyField != nil {
             secretOK = config.saveSecret(!dsBailian.isEmpty ? dsBailian : dsPolish, forKey: "dashscope_api_key") && secretOK
         }
-        config.save(values: ["polish_provider": polishProviderControl.map { Self.polishProvider(forSegment: $0.selectedSegment) } ?? "qwen"])
-        if !secretOK {
-            presentHistoryActionResult(success: false, message: "API Key 保存到钥匙串失败，请重试")
+        let groqASR = groqKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let groqPol = groqPolishKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if groqKeyField != nil || groqPolishKeyField != nil {
+            secretOK = config.saveSecret(!groqASR.isEmpty ? groqASR : groqPol, forKey: "groq_api_key") && secretOK
         }
-        // 首页"语音识别 / AI 润色"健康卡依赖这些配置
+        let oaiASR = openaiKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let oaiPol = openaiPolishKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if openaiKeyField != nil || openaiPolishKeyField != nil {
+            secretOK = config.saveSecret(!oaiASR.isEmpty ? oaiASR : oaiPol, forKey: "openai_api_key") && secretOK
+        }
+        let gemASR = geminiKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        let gemPol = geminiPolishKeyField?.stringValue.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if geminiKeyField != nil || geminiPolishKeyField != nil {
+            secretOK = config.saveSecret(!gemASR.isEmpty ? gemASR : gemPol, forKey: "gemini_api_key") && secretOK
+        }
+        config.save(values: ["polish_provider": polishProviderControl.map { Self.polishProvider(forSegment: $0.selectedSegment) } ?? "gemini"])
+        if !secretOK {
+            presentHistoryActionResult(success: false, message: "API Key 儲存至鑰匙圈失敗，請重試")
+        }
         invalidate(.home)
     }
 
@@ -5164,7 +5335,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         persistModelFields()
         asrTestButton?.isEnabled = false
         asrTestResultLabel?.textColor = theme.text3
-        asrTestResultLabel?.stringValue = "测试中…"
+        asrTestResultLabel?.stringValue = "測試中…"
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             let silence = [Float](repeating: 0, count: 4800) // ~0.3s @16k
@@ -5174,14 +5345,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                     self.asrTestButton?.isEnabled = true
                     switch result {
                     case .success:
-                        self.setTestResult(self.asrTestResultLabel, ok: true, text: "✓ 连接成功")
+                        self.setTestResult(self.asrTestResultLabel, ok: true, text: "✓ 連線成功")
                     case .failure(let error):
-                        // 只有服务端明确判"静音/无语音"（火山 20000003 / 百炼空结果）才算通过——
-                        // 说明鉴权、服务开通、网络全链路都通了，只是我们发的确实是静音。
-                        // 其它一律如实报错。以前把"非鉴权错误"都当"凭证有效"，
-                        // 结果账号没开通极速版（45000030 resource not granted）也显示 ✓，用户真录音才红框。
                         if case CloudASRTranscriber.TranscriptionError.noSpeech? = error as? CloudASRTranscriber.TranscriptionError {
-                            self.setTestResult(self.asrTestResultLabel, ok: true, text: "✓ 连接成功")
+                            self.setTestResult(self.asrTestResultLabel, ok: true, text: "✓ 連線成功")
                         } else {
                             self.setTestResult(self.asrTestResultLabel, ok: false,
                                                text: "✗ " + Self.shortError(error))
@@ -5193,21 +5360,21 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     }
 
     @objc private func testPolishConnection() {
-        let provider = polishProviderControl.map { Self.polishProvider(forSegment: $0.selectedSegment) } ?? "qwen"
+        let provider = polishProviderControl.map { Self.polishProvider(forSegment: $0.selectedSegment) } ?? "gemini"
         guard provider != "none" else { return }
         persistModelFields()
         polishTestButton?.isEnabled = false
         polishTestResultLabel?.textColor = theme.text3
-        polishTestResultLabel?.stringValue = "测试中…"
+        polishTestResultLabel?.stringValue = "測試中…"
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            AIPolisher().polishCloudASROutput(text: "测试") { result in
+            AIPolisher().polishCloudASROutput(text: "測試") { result in
                 DispatchQueue.main.async {
                     guard let self else { return }
                     self.polishTestButton?.isEnabled = true
                     switch result {
                     case .success:
-                        self.setTestResult(self.polishTestResultLabel, ok: true, text: "✓ 连接成功")
+                        self.setTestResult(self.polishTestResultLabel, ok: true, text: "✓ 連線成功")
                     case .failure(let error):
                         self.setTestResult(self.polishTestResultLabel, ok: false,
                                            text: "✗ " + Self.shortError(error))
@@ -5223,10 +5390,33 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             saveOutputLanguagePhrases(id: String(id.dropFirst(6)), text: field.stringValue)
             return
         }
-        // 识别(百炼)与优化(通义千问)的 DashScope Key 框联动，保持一致
-        if field === bailianKeyField {
+        // 辨識與最佳化的 Key 框連動，保持一致
+        if field === geminiKeyField {
+            geminiPolishKeyField?.stringValue = field.stringValue
+            DispatchQueue.main.async { [weak self] in
+                guard let self, let seg = self.polishProviderControl else { return }
+                self.refreshPolishKeyField(for: Self.polishProvider(forSegment: seg.selectedSegment))
+            }
+        } else if field === geminiPolishKeyField {
+            geminiKeyField?.stringValue = field.stringValue
+        } else if field === openaiKeyField {
+            openaiPolishKeyField?.stringValue = field.stringValue
+            DispatchQueue.main.async { [weak self] in
+                guard let self, let seg = self.polishProviderControl else { return }
+                self.refreshPolishKeyField(for: Self.polishProvider(forSegment: seg.selectedSegment))
+            }
+        } else if field === openaiPolishKeyField {
+            openaiKeyField?.stringValue = field.stringValue
+        } else if field === groqKeyField {
+            groqPolishKeyField?.stringValue = field.stringValue
+            DispatchQueue.main.async { [weak self] in
+                guard let self, let seg = self.polishProviderControl else { return }
+                self.refreshPolishKeyField(for: Self.polishProvider(forSegment: seg.selectedSegment))
+            }
+        } else if field === groqPolishKeyField {
+            groqKeyField?.stringValue = field.stringValue
+        } else if field === bailianKeyField {
             dashscopeAPIKeyField?.stringValue = field.stringValue
-            // 识别百炼填了 key → 优化通义千问那边切到「已复用」
             DispatchQueue.main.async { [weak self] in
                 guard let self, let seg = self.polishProviderControl else { return }
                 self.refreshPolishKeyField(for: Self.polishProvider(forSegment: seg.selectedSegment))
@@ -5234,8 +5424,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         } else if field === dashscopeAPIKeyField {
             bailianKeyField?.stringValue = field.stringValue
         }
-        let modelFields: [NSTextField?] = [bigASRAPIKeyField, bailianKeyField,
-                                           dashscopeAPIKeyField, arkAPIKeyField]
+        let modelFields: [NSTextField?] = [bigASRAPIKeyField, bailianKeyField, groqKeyField, openaiKeyField, geminiKeyField,
+                                           dashscopeAPIKeyField, arkAPIKeyField, groqPolishKeyField, openaiPolishKeyField, geminiPolishKeyField]
         guard modelFields.contains(where: { $0 === field }) else { return }
         persistModelFields()
     }
@@ -5270,14 +5460,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         config.save(bool: sender.isOn, forKey: MouseHoldToTalkSettings.askEnabledKey)
     }
 
-    /// 长按问 AI：在正文、空白处长按 → 问题交给 AI，答案弹在旁边
+    /// 長按問 AI：在正文、空白處長按 → 問題交給 AI，答案彈在旁邊
     private func makeMouseHoldAskCard() -> NSView {
         let toggle = VPToggle(theme: theme, target: self, action: #selector(mouseHoldAskChanged(_:)))
         toggle.setOn(MouseHoldToTalkSettings.isAskEnabled, animated: false)
-        toggle.setAccessibilityLabel("随时问 AI")
-        return makeExploreCard(id: "ask", title: "随时问 AI",
-                               summary: "在空白处按住说话，让 AI 帮你解答。", control: toggle, demo: .ask) {
-            self.makeExploreHelp("开始提问：在页面空白处按住鼠标左键说出问题，松开后显示回答。输入框、按钮和链接不触发提问。\n\n继续追问：按住回答面板继续说话，AI 会结合当前话题回答。\n\n管理浮窗：点图钉可固定回答；未固定时，点外面会收起，鼠标移回可展开。回答支持复制。\n\n查看记录：对话保存在「历史记录」中，同一话题的多轮问答合并展示。\n\n所用模型：使用「模型」中配置的润色模型；千问支持联网搜索。")
+        toggle.setAccessibilityLabel("隨時問 AI")
+        return makeExploreCard(id: "ask", title: "隨時問 AI",
+                              summary: "在空白處按住說話，讓 AI 幫你解答。", control: toggle, demo: .ask) {
+            self.makeExploreHelp("開始提問：在頁面空白處按住滑鼠左鍵說出問題，放開後顯示回答。輸入框、按鈕和連結不觸發提問。\n\n繼續追問：按住回答面板繼續說話，AI 會結合目前話題回答。\n\n管理浮動視窗：點圖釘可固定回答；未固定時，點外面會收起，滑鼠移回可展開。回答支援複製。\n\n查看紀錄：對話保存在「歷史紀錄」中，同一話題的多輪問答合併展示。\n\n所用模型：使用「模型」中設定的潤色模型；支援自訂模型或聯網搜尋。")
         }
     }
 
@@ -5316,13 +5506,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         processingIndex = nil
 
         let header = makePageHeaderRow(
-            eyebrow: "TYPEFREE / 历史记录",
-            title: "历史记录",
-            sub: "文字与音频都只存在本机，没有中间商。重新转写会把音频发送到你配置的识别服务商并产生费用。",
-            buttonTitle: "清空历史",
+            eyebrow: "TYPEFREE / 歷史紀錄",
+            title: "歷史紀錄",
+            sub: "文字與音訊都只存在本機，沒有中間商。重新轉寫會把音訊發送到你設定的辨識服務商並產生費用。",
+            buttonTitle: "清空歷史",
             buttonStyle: .danger,
             buttonAction: #selector(clearHistory),
-            secondaryTitle: "导出…",
+            secondaryTitle: "匯出…",
             secondaryAction: #selector(exportHistory)
         )
         stack.addArrangedSubview(header)
@@ -5333,7 +5523,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         stack.setCustomSpacing(20, after: retentionCard)
 
         if allHistoryEntries.isEmpty {
-            stack.addArrangedSubview(makeEmptyState("还没有历史记录。完成一次语音输入后，这里会显示最近的转写结果。"))
+            stack.addArrangedSubview(makeEmptyState("還沒有歷史紀錄。完成一次語音輸入後，這裡會顯示最近的轉寫結果。"))
             return
         }
 
@@ -5388,7 +5578,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func makeHistoryFooter() -> NSView {
         let v = NSView()
-        let l = label("已显示 \(historyVisibleCount) / \(allHistoryEntries.count) · 继续向下滚动加载更多",
+        let l = label("已顯示 \(historyVisibleCount) / \(allHistoryEntries.count) · 繼續向下滾動載入更多",
                        size: 11, weight: .regular, color: theme.text3)
         l.alignment = .center
         l.translatesAutoresizingMaskIntoConstraints = false
@@ -5441,7 +5631,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         // 处理中时正文暗显，提示"正在基于这条重做"。空记录（没录到音频 / 识别为空）显示灰色占位。
         let isEmptyEntry = entry.output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         let output = makeWrappingLabel(
-            isEmptyEntry ? "无内容" : entry.output,
+            isEmptyEntry ? "無內容" : entry.output,
             size: 14, weight: .regular,
             color: (isProcessing || isEmptyEntry) ? theme.text3 : theme.text)
         cardOutputLabels[index] = output
@@ -5491,7 +5681,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let turns = indices.reversed().map { allHistoryEntries[$0] }
 
         let time = label(formatHistoryTime(newest.time), size: 12, weight: .regular, color: theme.text3)
-        let askPill = makePill(text: turns.count > 1 ? "问 AI · \(turns.count) 轮" : "问 AI")
+        let askPill = makePill(text: turns.count > 1 ? "問 AI · \(turns.count) 輪" : "問 AI")
         let appPill = makePill(text: newest.app)
         let spacer = NSView()
         spacer.translatesAutoresizingMaskIntoConstraints = false
@@ -5501,7 +5691,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             v.setContentHuggingPriority(.required, for: .horizontal)
             v.setContentCompressionResistancePriority(.required, for: .horizontal)
         }
-        let copy = VPButton(title: "复制回答", style: .secondary, size: .small,
+        let copy = VPButton(title: "複製回答", style: .secondary, size: .small,
                             theme: theme, target: self, action: #selector(copyAskAnswer(_:)))
         copy.tag = indices[0]
         let more = VPButton(title: "···", style: .icon, size: .small,
@@ -5546,7 +5736,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             q.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -40 - 13).isActive = true
 
             let plain = AnswerPanel.plainText(fromMarkdown: turn.output)
-            let a = makeWrappingLabel(plain.isEmpty ? "（没有回答）" : plain, size: 13.5, weight: .regular,
+            let a = makeWrappingLabel(plain.isEmpty ? "（沒有回答）" : plain, size: 13.5, weight: .regular,
                                       color: plain.isEmpty ? theme.text3 : theme.text2)
             stack.addArrangedSubview(a)
             widthConstrained.append(a)
@@ -5584,10 +5774,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             it.tag = i
             menu.addItem(it)
         }
-        add("复制问题", #selector(copyAskQuestion(_:)))
-        add("复制整段对话", #selector(copyAskThread(_:)))
+        add("複製問題", #selector(copyAskQuestion(_:)))
+        add("複製整段對話", #selector(copyAskThread(_:)))
         menu.addItem(.separator())
-        add("删除这段对话", #selector(deleteAskThread(_:)))
+        add("刪除這段對話", #selector(deleteAskThread(_:)))
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
     }
 
@@ -5600,7 +5790,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     @objc private func copyAskThread(_ sender: NSMenuItem) {
         let turns = askThreadIndices(containing: sender.tag).reversed().map { allHistoryEntries[$0] }
         guard !turns.isEmpty else { return }
-        let text = turns.map { "问：\($0.asr)\n\n\(AnswerPanel.plainText(fromMarkdown: $0.output))" }.joined(separator: "\n\n")
+        let text = turns.map { "問：\($0.asr)\n\n\(AnswerPanel.plainText(fromMarkdown: $0.output))" }.joined(separator: "\n\n")
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
     }
@@ -5609,10 +5799,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let indices = askThreadIndices(containing: sender.tag)
         guard !indices.isEmpty else { return }
         let alert = NSAlert()
-        alert.messageText = indices.count > 1 ? "删除这段对话？" : "删除这条问答？"
-        alert.informativeText = indices.count > 1 ? "这段对话共 \(indices.count) 轮，会一起删除，无法恢复。" : "无法恢复。"
+        alert.messageText = indices.count > 1 ? "刪除這段對話？" : "刪除這條問答？"
+        alert.informativeText = indices.count > 1 ? "這段對話共 \(indices.count) 輪，會一起刪除，無法復原。" : "無法復原。"
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "删除")
+        alert.addButton(withTitle: "刪除")
         alert.addButton(withTitle: "取消")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         for i in indices { _ = historyStore.deleteEntry(matching: allHistoryEntries[i]) }
@@ -5636,7 +5826,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             actions.addArrangedSubview(spinner)
             actions.addArrangedSubview(working)
         } else {
-            let copy = VPButton(title: "复制输出", style: .secondary, size: .small,
+            let copy = VPButton(title: "複製輸出", style: .secondary, size: .small,
                                 theme: theme, target: self, action: #selector(copyHistoryOutput(_:)))
             copy.tag = index
 
@@ -5704,13 +5894,13 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         // 润色用的是已识别的文字、不需要音频，所以"无音频有文字"也能重试；两者都没有（空/静音记录）则无从下手，禁用。
         // 合并 重新润色/重新转写 两个入口，符合"一个重试按钮"的直觉，用户不必理解两者区别。
         let retrySel: Selector = hasAudio ? #selector(retranscribeHistoryEntry(_:)) : #selector(repolishHistoryEntry(_:))
-        add("重试", retrySel, enabled: hasAudio || hasText)
+        add("重試", retrySel, enabled: hasAudio || hasText)
         let hasOutput = !allHistoryEntries[i].output.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        add("编辑文字…", #selector(editHistoryEntry(_:)), enabled: hasOutput || hasText)
+        add("編輯文字…", #selector(editHistoryEntry(_:)), enabled: hasOutput || hasText)
         menu.addItem(.separator())
-        add("导出音频…", #selector(exportHistoryAudio(_:)), enabled: hasAudio)
+        add("匯出音訊…", #selector(exportHistoryAudio(_:)), enabled: hasAudio)
         menu.addItem(.separator())
-        add("删除这条", #selector(deleteHistoryEntry(_:)), enabled: true)
+        add("刪除這條", #selector(deleteHistoryEntry(_:)), enabled: true)
 
         menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.height + 4), in: sender)
     }
@@ -5720,18 +5910,18 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
               let audioFile = allHistoryEntries[sender.tag].audioFile else { return }
         let url = audioStore.url(forFileName: audioFile)
         guard FileManager.default.fileExists(atPath: url.path) else {
-            presentHistoryActionResult(success: false, message: "音频已不存在。"); return
+            presentHistoryActionResult(success: false, message: "音訊已不存在。"); return
         }
         do {
             guard let data = audioStore.loadData(fileName: audioFile) else {
-                presentHistoryActionResult(success: false, message: "无法读取音频。")
+                presentHistoryActionResult(success: false, message: "無法讀取音訊。")
                 return
             }
             let player = try AVAudioPlayer(data: data)
             historyAudioPlayer = player
             player.play()
         } catch {
-            presentHistoryActionResult(success: false, message: "无法播放音频。")
+            presentHistoryActionResult(success: false, message: "無法播放音訊。")
         }
     }
 
@@ -5740,10 +5930,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
               let audioFile = allHistoryEntries[sender.tag].audioFile else { return }
         let src = audioStore.url(forFileName: audioFile)
         guard FileManager.default.fileExists(atPath: src.path) else {
-            presentHistoryActionResult(success: false, message: "音频已不存在。"); return
+            presentHistoryActionResult(success: false, message: "音訊已不存在。"); return
         }
         guard let data = audioStore.loadData(fileName: audioFile) else {
-            presentHistoryActionResult(success: false, message: "无法读取音频。")
+            presentHistoryActionResult(success: false, message: "無法讀取音訊。")
             return
         }
         let panel = NSSavePanel()
@@ -5767,9 +5957,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard !original.isEmpty else { return }
 
         let alert = NSAlert()
-        alert.messageText = "编辑这条记录"
-        alert.informativeText = "改动会保存进历史；改过的词会被自动学习，下次识别更准。"
-        alert.addButton(withTitle: "保存")
+        alert.messageText = "編輯這條紀錄"
+        alert.informativeText = "改動會儲存進歷史；改過的詞會被自動學習，下次辨識更準確。"
+        alert.addButton(withTitle: "儲存")
         alert.addButton(withTitle: "取消")
 
         let scrollView = NSScrollView(frame: NSRect(x: 0, y: 0, width: 420, height: 180))
@@ -5797,7 +5987,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard !edited.isEmpty, edited != original else { return }
 
         guard historyStore.updateEntry(matching: entry, newASR: nil, newOutput: edited) else {
-            presentHistoryActionResult(success: false, message: "保存失败，这条记录可能已被删除。")
+            presentHistoryActionResult(success: false, message: "儲存失敗，這條紀錄可能已被刪除。")
             return
         }
         allHistoryEntries[index] = AIPolisher.PolishLog(
@@ -5821,10 +6011,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let polisher = AIPolisher()
         polisher.polishLogAppNameProvider = { entry.app }
         guard polisher.isPolishEnabled() else {
-            presentHistoryActionResult(success: false, message: "「语音优化」当前为「不优化」，无法重新润色。先去「模型」里选一个润色模型。")
+            presentHistoryActionResult(success: false, message: "「語音最佳化」目前為「不最佳化」，無法重新潤色。請先至「模型」選取潤色模型。")
             return
         }
-        beginInlineProcessing(index: index, label: "正在重新润色…")
+        beginInlineProcessing(index: index, label: "正在重新潤色…")
         polisher.polishCloudASROutput(text: entry.asr) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
@@ -5835,7 +6025,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                     self.endInlineProcessingRepolish(index: index)
                 case .failure(let err):
                     self.endInlineProcessingRepolish(index: index)  // 恢复按钮（文本不变）
-                    self.presentHistoryActionResult(success: false, message: "重新润色失败：\(err.localizedDescription)")
+                    self.presentHistoryActionResult(success: false, message: "重新潤色失敗：\(err.localizedDescription)")
                 }
             }
         }
@@ -5866,12 +6056,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard allHistoryEntries.indices.contains(index) else { return }
         let entry = allHistoryEntries[index]
         guard let audioFile = entry.audioFile else {
-            presentHistoryActionResult(success: false, message: "音频已不存在，无法重新转写。")
+            presentHistoryActionResult(success: false, message: "音訊已不存在，無法重新轉寫。")
             return
         }
         // 先让转圈出现、再干重活：解密 + 解码 M4A 有明显耗时，放在主线程会把界面卡住，
         // 连转圈都出不来，用户以为"点了没反应"。
-        beginInlineProcessing(index: index, label: "正在重新转写…")
+        beginInlineProcessing(index: index, label: "正在重新轉寫…")
         let log: (String) -> Void = { [weak self] m in
             self?.settingsDelegate?.debugLog(m)
         }
@@ -5882,7 +6072,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             guard let samples = self.audioStore.loadSamples(fileName: audioFile), !samples.isEmpty else {
                 DispatchQueue.main.async {
                     self.endInlineProcessingRepolish(index: index)
-                    self.presentHistoryActionResult(success: false, message: "音频已不存在，无法重新转写。")
+                    self.presentHistoryActionResult(success: false, message: "音訊已不存在，無法重新轉寫。")
                 }
                 return
             }
@@ -5911,7 +6101,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                 log("History retry: 识别失败 \(err.localizedDescription)")
                 DispatchQueue.main.async {
                     self.endInlineProcessingRepolish(index: index)
-                    self.presentHistoryActionResult(success: false, message: "重新转写失败：\(err.localizedDescription)")
+                    self.presentHistoryActionResult(success: false, message: "重新轉寫失敗：\(err.localizedDescription)")
                 }
             case .success(let rawText):
                 let polisher = AIPolisher()
@@ -5954,10 +6144,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard allHistoryEntries.indices.contains(sender.tag) else { return }
         let entry = allHistoryEntries[sender.tag]
         let alert = NSAlert()
-        alert.messageText = "删除这条历史记录？"
-        alert.informativeText = "会同时删除它的文字和音频，无法恢复。"
+        alert.messageText = "刪除這條歷史紀錄？"
+        alert.informativeText = "會同時刪除文字與音訊，無法復原。"
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "删除")
+        alert.addButton(withTitle: "刪除")
         alert.addButton(withTitle: "取消")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         _ = historyStore.deleteEntry(matching: entry)
@@ -5981,7 +6171,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     /// 点「导出…」：在按钮下方弹出时间范围菜单（tag 即天数，0=全部）。
     @objc private func exportHistory(_ sender: NSButton) {
         let menu = NSMenu()
-        for (title, tag) in [("最近 7 天", 7), ("最近一个月", 30), ("全部", 0)] {
+        for (title, tag) in [("最近 7 天", 7), ("最近 1 個月", 30), ("全部", 0)] {
             let item = NSMenuItem(title: title, action: #selector(exportHistoryRange(_:)), keyEquivalent: "")
             item.target = self
             item.tag = tag
@@ -5995,32 +6185,32 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let rangeTag: String
         switch sender.tag {
         case 7: retention = .oneWeek; rangeTag = "最近7天"
-        case 30: retention = .oneMonth; rangeTag = "最近一个月"
+        case 30: retention = .oneMonth; rangeTag = "最近1個月"
         default: retention = .forever; rangeTag = "全部"
         }
         guard let markdown = historyStore.exportAllAsMarkdown(retention: retention) else {
-            presentHistoryActionResult(success: false, message: "所选时间范围内没有记录可导出。")
+            presentHistoryActionResult(success: false, message: "所選時間範圍內沒有紀錄可匯出。")
             return
         }
         let df = DateFormatter()
         df.dateFormat = "yyyy-MM-dd"
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "Typefree 转写记录 \(rangeTag) \(df.string(from: Date())).md"
-        panel.message = "导出的文件是明文（未加密），请妥善保管。"
+        panel.nameFieldStringValue = "Typefree 轉寫紀錄 \(rangeTag) \(df.string(from: Date())).md"
+        panel.message = "匯出的檔案為明文（未加密），請妥善保管。"
         panel.begin { [weak self] resp in
             guard resp == .OK, let dst = panel.url else { return }
             do {
                 try markdown.write(to: dst, atomically: true, encoding: .utf8)
             } catch {
-                self?.presentHistoryActionResult(success: false, message: "写入文件失败：\(error.localizedDescription)")
+                self?.presentHistoryActionResult(success: false, message: "寫入檔案失敗：\(error.localizedDescription)")
             }
         }
     }
 
     @objc private func clearHistory() {
         let alert = NSAlert()
-        alert.messageText = "清空本地历史记录？"
-        alert.informativeText = "这只会清空本机的历史文件，不会影响个人词库和 API 配置。"
+        alert.messageText = "清空本機歷史紀錄？"
+        alert.informativeText = "這只會清空本機的歷史檔案，不會影響個人詞庫與 API 設定。"
         alert.alertStyle = .warning
         alert.addButton(withTitle: "清空")
         alert.addButton(withTitle: "取消")
@@ -6034,8 +6224,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeHistoryRetentionCard() -> NSView {
         let card = makeCard()
 
-        let title = label("语音输入内容保存时长", size: 14, weight: .medium, color: theme.text)
-        let sub = label("文字和音频一起保存。默认保存全部数据；改成较短时长后，过期的本地历史会自动删除。",
+        let title = label("語音輸入內容保存時長", size: 14, weight: .medium, color: theme.text)
+        let sub = label("文字與音訊一起保存。預設保存全部資料；改為較短時長後，過期的本機歷史紀錄會自動刪除。",
                         size: 12, weight: .regular, color: theme.text3)
         sub.maximumNumberOfLines = 0
 
@@ -6094,9 +6284,9 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         loadVocabularyEntries()
 
         let header = pageHeader(
-            eyebrow: "TYPEFREE / 个人词库",
-            title: "个人词库",
-            sub: "添加你常说的人名、产品名、专有名词，语音识别会优先认出它们。你改过的错词也会自动学进来。"
+            eyebrow: "TYPEFREE / 個人詞庫",
+            title: "個人詞庫",
+            sub: "新增你常說的人名、產品名、專有名詞，語音辨識會優先認出它們。你改過的錯詞也會自動學習進來。"
         )
         stack.addArrangedSubview(header)
         stack.setCustomSpacing(20, after: header)
@@ -6108,12 +6298,12 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         // 词条网格（含筛选）
         if vocabularyEntries.isEmpty {
-            let empty = makeEmptyState("还没有词。在上面输入一个常说的人名、产品名试试。")
+            let empty = makeEmptyState("還沒有詞。請在上方輸入常說的人名、產品名試試看。")
             stack.addArrangedSubview(empty)
             stack.setCustomSpacing(20, after: empty)
         } else {
             let seg = VPSegmentedControl(
-                labels: ["所有", "自动学习", "手动添加"],
+                labels: ["全部", "自動學習", "手動新增"],
                 trackBg: theme.cardAlt,
                 trackBorder: theme.sep,
                 selBg: theme.segSelBg,
@@ -6138,7 +6328,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
                 .map { (index: $0.offset, entry: $0.element) }
 
             if visible.isEmpty {
-                let empty = label(vocabFilter == 1 ? "还没有自动学到的词。" : "还没有手动添加的词。",
+                let empty = label(vocabFilter == 1 ? "還沒有自動學到的詞。" : "還沒有手動新增的詞。",
                                   size: 13, weight: .regular, color: theme.text3)
                 stack.addArrangedSubview(empty)
                 stack.setCustomSpacing(20, after: empty)
@@ -6165,7 +6355,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
     private func makeVocabQuickAddRow() -> NSView {
         let field = NSTextField()
-        field.placeholderString = "输入常说的词，回车添加"
+        field.placeholderString = "輸入常說的詞，按 Enter 新增"
         field.font = .systemFont(ofSize: 14)
         field.isBordered = false
         field.drawsBackground = false
@@ -6194,7 +6384,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
             fieldWrap.heightAnchor.constraint(equalToConstant: 32),
         ])
 
-        let addBtn = VPButton(title: "添加词汇", style: .primary, size: .regular,
+        let addBtn = VPButton(title: "新增詞彙", style: .primary, size: .regular,
                               theme: theme, target: self, action: #selector(vocabQuickAddSubmitted))
         addBtn.heightAnchor.constraint(equalToConstant: 32).isActive = true
 
@@ -6293,7 +6483,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         let icon = NSImageView()
         icon.image = NSImage(systemSymbolName: entry.isAutoLearned ? "sparkles" : "pencil",
-                             accessibilityDescription: entry.isAutoLearned ? "自动学习" : "手动添加")
+                             accessibilityDescription: entry.isAutoLearned ? "自動學習" : "手動新增")
         icon.symbolConfiguration = NSImage.SymbolConfiguration(pointSize: 11, weight: .medium)
         icon.contentTintColor = theme.text3
         icon.setContentHuggingPriority(.required, for: .horizontal)
@@ -6306,14 +6496,14 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         // 已记录错法数的弱提示（悬停时让位给操作按钮）
         let hint: NSTextField? = entry.variants.isEmpty
             ? nil
-            : label("\(entry.variants.count) 个错法", size: 10.5, weight: .regular, color: theme.text3)
+            : label("\(entry.variants.count) 個常錯寫法", size: 10.5, weight: .regular, color: theme.text3)
 
         let variantsBtn = makeChipIconButton(symbol: "character.cursor.ibeam",
-                                             tooltip: "管理常见错法",
+                                             tooltip: "管理常見常錯寫法",
                                              action: #selector(manageVariantsTapped(_:)),
                                              tag: originalIndex)
         let deleteBtn = makeChipIconButton(symbol: "trash",
-                                           tooltip: "删除",
+                                           tooltip: "刪除",
                                            action: #selector(deleteVocabularyEntry(_:)),
                                            tag: originalIndex)
         let actions = NSStackView()
@@ -6378,10 +6568,10 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         guard vocabularyEntries.indices.contains(sender.tag) else { return }
         let entry = vocabularyEntries[sender.tag]
         let alert = NSAlert()
-        alert.messageText = "删除个人词语"
-        alert.informativeText = "确定删除「\(entry.target)」吗？"
+        alert.messageText = "刪除個人詞語"
+        alert.informativeText = "確定刪除「\(entry.target)」嗎？"
         alert.alertStyle = .warning
-        alert.addButton(withTitle: "删除")
+        alert.addButton(withTitle: "刪除")
         alert.addButton(withTitle: "取消")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         vocabularyEntries.remove(at: sender.tag)
@@ -6406,7 +6596,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         content.edgeInsets = NSEdgeInsets(top: 12, left: 14, bottom: 12, right: 14)
         content.translatesAutoresizingMaskIntoConstraints = false
 
-        let title = label("「\(entry.target)」常被错识别成", size: 12, weight: .medium, color: theme.text2)
+        let title = label("「\(entry.target)」常被誤辨識為", size: 12, weight: .medium, color: theme.text2)
         content.addArrangedSubview(title)
 
         if !entry.variants.isEmpty {
@@ -6421,7 +6611,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         }
 
         let field = NSTextField()
-        field.placeholderString = "输入新错法，回车保存"
+        field.placeholderString = "輸入新常錯寫法，按 Enter 儲存"
         field.font = .systemFont(ofSize: 12)
         field.target = self
         field.action = #selector(variantPopoverSubmitted)
@@ -6517,8 +6707,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     private func makeBuiltinHotWordsCard() -> NSView {
         let card = makeCard()
 
-        let title = label("内置科技词热词", size: 14, weight: .medium, color: theme.text)
-        let desc = label("Claude、Xcode、GitHub 等常用科技词。不常聊技术可以关掉。", size: 12, weight: .regular, color: theme.text3)
+        let title = label("內建科技熱門詞彙", size: 14, weight: .medium, color: theme.text)
+        let desc = label("Claude、Xcode、GitHub 等常用科技詞彙。不常聊科技話題可關閉。", size: 12, weight: .regular, color: theme.text3)
         desc.maximumNumberOfLines = 0
 
         let toggle = VPToggle(theme: theme, target: self, action: #selector(builtinHotWordsChanged(_:)))
@@ -6586,8 +6776,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     // MARK: - Page: About
 
     private func buildAbout(into stack: NSStackView) {
-        stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 关于", title: "关于",
-                                             sub: "语音转文字，并用 AI 帮你整理成可直接使用的文本。"))
+        stack.addArrangedSubview(pageHeader(eyebrow: "TYPEFREE / 關於", title: "關於",
+                                             sub: "語音轉文字，並透過 AI 幫你整理成可直接使用的文字。"))
         stack.setCustomSpacing(20, after: stack.arrangedSubviews.last!)
 
         // Logo card
@@ -6598,8 +6788,8 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         let name = label("Typefree", size: 22, weight: .semibold, color: theme.text)
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
             ?? Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-            ?? "本地开发版"
-        let sub = label("\(version) · macOS 状态栏应用", size: 13, weight: .regular, color: theme.text3)
+            ?? "本機開發版"
+        let sub = label("\(version) · macOS 選單列應用程式", size: 13, weight: .regular, color: theme.text3)
 
         let logoStack = NSStackView()
         logoStack.orientation = .vertical
@@ -6613,11 +6803,11 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
 
         if LicenseManager.shared.isActivated {
             let license = LicenseManager.shared
-            var status = "✓ 已激活"
+            var status = "✓ 已啟用"
             if license.isMember {
-                status = license.isMemberExpired() ? "会员已到期" : "✓ 会员 · 有效期至 \(license.memberExpiresDay ?? "—")"
+                status = license.isMemberExpired() ? "會員已到期" : "✓ 會員 · 有效期至 \(license.memberExpiresDay ?? "—")"
             }
-            let actLbl = label(license.isGenesis ? "\(status) · 创世用户" : status, size: 12, weight: .regular, color: theme.text3)
+            let actLbl = label(license.isGenesis ? "\(status) · 創世使用者" : status, size: 12, weight: .regular, color: theme.text3)
             logoStack.addArrangedSubview(actLbl)
             logoStack.setCustomSpacing(12, after: sub)
         }
@@ -6628,7 +6818,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         } else {
             hasPendingUpdate = false
         }
-        let updateButton = VPButton(title: hasPendingUpdate ? "查看新版本" : "检查更新…", style: .secondary, size: .regular,
+        let updateButton = VPButton(title: hasPendingUpdate ? "查看新版本" : "檢查更新…", style: .secondary, size: .regular,
                                     theme: theme, target: self, action: #selector(checkForUpdatesTapped(_:)))
         updateButton.translatesAutoresizingMaskIntoConstraints = false
         updateButton.widthAnchor.constraint(greaterThanOrEqualToConstant: 112).isActive = true
@@ -6834,12 +7024,20 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
     }
 
     private func isPolishConfigured() -> Bool {
-        let provider = config.string(forKey: "polish_provider") ?? "qwen"
+        let provider = config.string(forKey: "polish_provider") ?? "gemini"
         switch provider {
+        case "gemini":
+            return !(config.string(forKey: "gemini_api_key", envKey: "GEMINI_API_KEY") ?? "").isEmpty
+        case "openai":
+            return !(config.string(forKey: "openai_api_key", envKey: "OPENAI_API_KEY") ?? "").isEmpty
+        case "groq":
+            return !(config.string(forKey: "groq_api_key", envKey: "GROQ_API_KEY") ?? "").isEmpty
         case "qwen":
             return !(config.string(forKey: "dashscope_api_key", envKey: "DASHSCOPE_API_KEY") ?? "").isEmpty
         case "zhipu":
             return !(config.string(forKey: "zhipu_api_key", envKey: "ZHIPU_API_KEY") ?? "").isEmpty
+        case "none":
+            return true
         default:
             return !(config.string(forKey: "ark_api_key", envKey: "ARK_API_KEY") ?? "").isEmpty
         }
@@ -6869,7 +7067,7 @@ final class SettingsWindowController: NSWindowController, NSWindowDelegate, NSTe
         if cal.isDateInYesterday(date) { return "昨天 \(hm)" }
 
         let dayFormat = DateFormatter()
-        dayFormat.locale = Locale(identifier: "zh_CN")
+        dayFormat.locale = Locale(identifier: "zh_TW")
         if cal.isDate(date, equalTo: Date(), toGranularity: .year) {
             dayFormat.dateFormat = "M月d日 HH:mm"
         } else {
@@ -6938,7 +7136,7 @@ private final class MicrophonePickerSheet: NSObject, NSWindowDelegate {
             backing: .buffered,
             defer: false
         )
-        sheet.title = "麦克风"
+        sheet.title = "麥克風"
         sheet.titlebarAppearsTransparent = true
         sheet.isReleasedWhenClosed = false
         sheet.delegate = self
@@ -6950,10 +7148,10 @@ private final class MicrophonePickerSheet: NSObject, NSWindowDelegate {
         cv.layer?.setAppearanceBackground(theme.bg)
         sheet.contentView = cv
 
-        let title = NSTextField(labelWithString: "麦克风")
+        let title = NSTextField(labelWithString: "麥克風")
         title.font = .systemFont(ofSize: 18, weight: .semibold)
         title.textColor = theme.text
-        let sub = NSTextField(wrappingLabelWithString: "选择能捕捉到你声音的麦克风。如果指示条没有跳动，请试试别的。")
+        let sub = NSTextField(wrappingLabelWithString: "選取能收錄你聲音的麥克風。如果音量指示條沒有跳動，請試試其他裝置。")
         sub.font = .systemFont(ofSize: 12)
         sub.textColor = theme.text2
         sub.maximumNumberOfLines = 0
@@ -7062,8 +7260,8 @@ private final class MicrophonePickerSheet: NSObject, NSWindowDelegate {
         let followingName = mgr.systemDefaultDeviceName ?? "未知"
         listStack.addArrangedSubview(makeRow(
             uid: MicrophoneManager.systemDefaultUID,
-            primary: "跟随系统默认（\(followingName)）",
-            secondary: "随系统输入设置切换",
+            primary: "跟隨系統預設（\(followingName)）",
+            secondary: "隨系統輸入設定切換",
             isSelected: mgr.selectedUID == MicrophoneManager.systemDefaultUID,
             isRecommended: false
         ))
@@ -7072,7 +7270,7 @@ private final class MicrophonePickerSheet: NSObject, NSWindowDelegate {
             listStack.addArrangedSubview(makeRow(
                 uid: device.uid,
                 primary: device.name,
-                secondary: device.isBuiltIn ? "Mac 内置麦克风" : "外部麦克风",
+                secondary: device.isBuiltIn ? "Mac 內建麥克風" : "外接麥克風",
                 isSelected: mgr.selectedUID == device.uid,
                 isRecommended: device.isBuiltIn
             ))
@@ -7113,7 +7311,7 @@ private final class MicrophonePickerSheet: NSObject, NSWindowDelegate {
 
         let recommended: NSView
         if isRecommended {
-            let pill = NSTextField(labelWithString: "推荐")
+            let pill = NSTextField(labelWithString: "推薦")
             pill.font = .systemFont(ofSize: 10, weight: .semibold)
             pill.textColor = theme.accent
             pill.backgroundColor = theme.accentSoft

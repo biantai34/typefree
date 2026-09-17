@@ -13,21 +13,21 @@ public class AIPolisher {
 
         public var title: String {
             switch self {
-            case .forever: return "保存全部数据"
-            case .oneMonth: return "保存一个月"
-            case .oneWeek: return "保存一周"
-            case .oneDay: return "保存 24 小时"
-            case .off: return "不保存数据"
+            case .forever: return "保存全部資料"
+            case .oneMonth: return "保存一個月"
+            case .oneWeek: return "保存一週"
+            case .oneDay: return "保存 24 小時"
+            case .off: return "不保存資料"
             }
         }
 
         public var detail: String {
             switch self {
-            case .forever: return "不自动删除历史记录"
-            case .oneMonth: return "自动删除 30 天前的记录"
-            case .oneWeek: return "自动删除 7 天前的记录"
-            case .oneDay: return "自动删除 24 小时前的记录"
-            case .off: return "录音结束后不保留任何本地历史"
+            case .forever: return "不自動刪除歷史記錄"
+            case .oneMonth: return "自動刪除 30 天前的記錄"
+            case .oneWeek: return "自動刪除 7 天前的記錄"
+            case .oneDay: return "自動刪除 24 小時前的記錄"
+            case .off: return "錄音結束後不保留任何本機歷史"
             }
         }
 
@@ -112,11 +112,20 @@ public class AIPolisher {
 
     public static func currentPolishSelection() -> PolishSelection {
         let config = VoicePolishConfig.shared
-        let provider = config.string(forKey: "polish_provider") ?? "qwen"
+        let provider = config.string(forKey: "polish_provider") ?? "gemini"
         if isPolishDisabled(provider: provider) {
             return PolishSelection(provider: "none", model: nil)
         }
         switch provider {
+        case "gemini":
+            let saved = config.string(forKey: "gemini_polish_model")
+            return PolishSelection(provider: "gemini", model: (saved?.isEmpty == false) ? saved! : "gemini-2.5-flash")
+        case "openai":
+            let saved = config.string(forKey: "openai_polish_model")
+            return PolishSelection(provider: "openai", model: (saved?.isEmpty == false) ? saved! : "gpt-4o-mini")
+        case "groq":
+            let saved = config.string(forKey: "groq_polish_model")
+            return PolishSelection(provider: "groq", model: (saved?.isEmpty == false) ? saved! : "llama-3.3-70b-versatile")
         case "qwen":
             let saved = config.string(forKey: "qwen_polish_model")
             return PolishSelection(provider: "qwen", model: (saved?.isEmpty == false) ? saved! : "qwen3.6-flash")
@@ -279,24 +288,15 @@ public class AIPolisher {
         let limitedWords = words.prefix(80).joined(separator: "、")
         return """
 
-        ## 用户个人词库
-        以下是用户常说的人名、产品名、项目名或专有表达。整理文本时要优先保留这些准确写法；当语音转写里出现读音相近、大小写不同或空格不同的表达时，可以修正为词库中的写法，但不要凭空加入用户没有表达过的词：\(limitedWords)
+        ## 使用者個人詞庫
+        以下是使用者常說的人名、產品名、專案名或專有表達。整理文字時要優先保留這些準確寫法；當語音轉寫裡出現讀音相近、大小寫不同或空格不同的表達時，可以修正為詞庫中的寫法，但不要憑空加入使用者沒有表達過的詞：\(limitedWords)
         """
     }
 
-    /// 完整润色 system prompt：基础规则 + 个人词库 + 风格画像（都是有内容才附加）。
-    /// 词库让模型别"纠正"用户的专有写法；画像让整理结果贴合用户的说话习惯（越用越懂你）——
-    /// 画像分两层：人身特征全局注入，场合特征按当前前台 App 的场景注入（聊天≠文档≠代码）。
-    ///
-    /// 画像观察期（owner 2026-07-03 定）：画像照常统计、照常写 style_profile.json，
-    /// 但注入默认关闭——先观察它总结得准不准，确认后把下面的开关置 true 再生效，
-    /// 避免总结错了反而把润色带偏。
+    /// 完整潤色 system prompt：基礎規則 + 個人詞庫 + 風格畫像（都是有內容才附加）。
     private func composedPolishSystemPrompt(outputLanguage: OutputLanguage? = nil) -> String {
         var prompt = cloudASRPolishPrompt
         if let outputLanguage { prompt += Self.outputLanguageSystemSection(for: outputLanguage) }
-        // 基线对齐（owner 2026-07-03 实测定）：润色提示词严格回到线上 2.5.1 的组成。
-        // 实测发现叠加"保留/不要改"类条款会让模型整体变怂（废话不删、语序不理、口误不修），
-        // 所以词库段和画像段都默认不注入，之后一次只开一个、用真实用例验证再放行。
         if VoicePolishConfig.shared.bool(forKey: "polish_vocab_injection_enabled", defaultValue: false) {
             prompt += personalVocabularyPrompt()
         }
@@ -307,39 +307,41 @@ public class AIPolisher {
         return prompt
     }
 
-    // MARK: - 云端 ASR 后润色
+    // MARK: - 雲端 ASR 後潤色
 
     private let cloudASRPolishPrompt = """
-    你是一个语音转文字的整理助手。用户通过语音输入了一段话，你要把它整理成好读的文本。
+    你是一個語音轉文字的整理助手。使用者透過語音輸入了一段話，你要把它整理成好讀、通順的文字。
 
     ## 你的角色
-    想象你是用户的表达优化师，用户口述了一段想法，你帮他整理成用户看到结果时应该觉得"这就是我想说的，只是整理得更清楚、便于阅读和理解"。
+    想像你是使用者的表達優化師，使用者口述了一段想法，你幫他整理成使用者看到結果時覺得「這就是我想說的，只是整理得更清楚、便於閱讀和理解」。
+
+    ## 核心語言規則（極其重要）
+    - 一律使用繁體中文（台灣習慣用詞與正體中文）整理輸出，除非使用者明確要求其他語言。
+    - 絕不要添加使用者沒說過的內容，包括問候語、總結句、過渡句或小標題。
 
     ## 可以做的事
-    - 分段：根据语义、语境分段，避免大段文字堆积，让阅读体验更好。
-    - 标点：修正标点符号，让断句更自然。适当使用冒号、分号来连接关联内容
-    - 列表：当你觉得用户表达的语义里包含或者就是并列内容时，或用户说“第一、第二、第三”“一个是、另一个是、最后”，或者明显是在口述步骤/清单/多个独立条目时，你要把其中适合并列的列编号显示。
-    - 去除口语冗余：删掉重复的词、无意义的语气词（"就是"、"然后"、"嗯"等）
-    - 理顺断句：口语中断裂或不通顺的句子，可以根据语义、语境适当的轻微调整语序使其通顺
-    - 数字：口语中的汉字数字转为阿拉伯数字（"两到三次"→"2 到 3 次"，"大概五百块"→"大概 500 块"），但成语、固定搭配除外（"一模一样"、"三心二意"不转）
-    - 明显重复的短语、绕口表达要合并整理，但不要改变用户原意。
-    - “保留用户用词”不等于原样保留口语里的重复结构。对于明显重复、断裂、不顺的表达，要做轻微合并和理顺。
-    - 如果一句话本身已经通顺，可以少改；但如果存在明显重复、语序绕、主语不清，要主动整理到自然可读。
+    - 分段：根據語意、語境分段，避免大段文字堆積，讓閱讀體驗更好。
+    - 標點：修正標點符號，讓斷句更自然。適當使用冒號、分號來連接關聯內容。
+    - 列表：當使用者表達的語意包含並列內容，或使用者說「第一、第二、第三」「一個是、另一個是、最後」，或明顯是在口述步驟/清單/多個獨立條目時，將其中適合並列的項目以編號列表顯示。
+    - 去除口語贅詞：刪掉重複的詞、無意義的語氣詞（「就是」、「然後」、「嗯」、「那個」等）。
+    - 理順斷句：口語中斷裂或不通順的句子，可以根據語意適當輕微調整語序使其通順。
+    - 數字：口語中的中文數字轉為阿拉伯數字（「兩到三次」→「2 到 3 次」，「大概五百塊」→「大概 500 塊」），但成語、固定搭配除外（「一模一樣」、「三心二意」不轉）。
+    - 明顯重複的詞組、繞口表達要合併整理，但絕不改變使用者原意。
+    - 如果一句話本身已經通順，可以少改；但如果存在明顯重複、語序繞、主語不清，要主動整理到自然可讀。
 
     ## 不能做的事
-    - 不要回答或回应用户说的内容——你不是对话助手，你是用户的表达转写整理工具。即使用户说的是一个问题，也不要给出答案或建议
-    - 同义词不替换："不如"不要改成"不妨"，"想要的效果不一样"不要改成"需求各异"
-    - 不要把口语改成书面语：保留用户自己的说话风格
-    - 不要添加用户没说过的内容，包括总结句、过渡句、小标题
-    - 不要使用加粗、标题等富文本格式
-    - 不要随意更换用户的用词，除非用户用词逻辑不恰当
-    - 不要翻译用户输入的语言种类
+    - 不要回答或回應使用者說的內容——你不是對話助手，你是使用者的表達轉寫整理工具。即使使用者說的是一個問題，也不要給出答案或建議。
+    - 同義詞不隨意替換：保留使用者原本的說話風格。
+    - 不要把口語改成生硬的公文語。
+    - 不要使用粗體、標題等富文本格式。
+    - 不要隨意更換使用者的用詞，除非邏輯明顯不通。
+    - 不要翻譯使用者輸入的語言種類（除非有指定目標語言）。
 
-    ## 输出格式
-    纯文本，适当分段。并列内容用编号列表。不要加粗、不要加标题。
+    ## 輸出格式
+    純文字，適當分段。並列內容用編號列表。不要粗體、不要加標題。
     """
 
-    /// 用户是否选择了"不优化"（polish_provider == "none"）。
+    /// 使用者是否選擇了「不優化」（polish_provider == "none"）。
     public static func isPolishDisabled(provider: String?) -> Bool {
         provider?.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == "none"
     }
@@ -348,15 +350,15 @@ public class AIPolisher {
         !Self.isPolishDisabled(provider: VoicePolishConfig.shared.string(forKey: "polish_provider"))
     }
 
-    /// 用户要求本次用某种语言输出时附在待整理文本后面的标记；system prompt 里的「目标语言」一节解释它。
-    static func outputRequestMarker(for language: OutputLanguage) -> String { "【本次要求：用\(language.name)输出】" }
+    /// 使用者要求本次用某種語言輸出時附在待整理文字後面的標記；system prompt 裡的「目標語言」一節解釋它。
+    static func outputRequestMarker(for language: OutputLanguage) -> String { "【本次要求：用\(language.name)輸出】" }
 
     static func outputLanguageSystemSection(for language: OutputLanguage) -> String {
         """
 
 
-        ## 目标语言
-        如果待整理文本后面带有\(outputRequestMarker(for: language))，说明用户要求这段话用\(language.name)输出：先按上面的规则整理，再把整理结果翻译成自然、地道的\(language.name)，只输出\(language.name)译文；人名、产品名、专有名词保留原样；不要输出其他语言，不要加任何说明或翻译标注。如果整理后的文本本来就是\(language.name)，直接输出整理结果。此时「不要翻译用户输入的语言种类」这条不适用。
+        ## 目標語言
+        如果待整理文本後面帶有\(outputRequestMarker(for: language))，說明使用者要求這段話用\(language.name)輸出：先按上面的規則整理，再把整理結果翻譯成自然、道地的\(language.name)，只輸出\(language.name)譯文；人名、產品名、專有名詞保留原樣；不要輸出其他語言，不要加任何說明或翻譯標記。如果整理後的文字本來就是\(language.name)，直接輸出整理結果。此時「不要翻譯使用者輸入的語言種類」這條不適用。
         """
     }
 
@@ -423,14 +425,31 @@ public class AIPolisher {
 
     private func polishProvider() -> (name: String, url: URL, model: String, apiKey: String)? {
         let config = VoicePolishConfig.shared
-        let provider = config.string(forKey: "polish_provider") ?? "qwen"
+        let provider = config.string(forKey: "polish_provider") ?? "gemini"
 
         switch provider {
+        case "gemini":
+            guard let key = config.string(forKey: "gemini_api_key", envKey: "GEMINI_API_KEY"),
+                  !key.isEmpty else { return nil }
+            let model = config.string(forKey: "gemini_polish_model") ?? "gemini-2.5-flash"
+            let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions")!
+            return ("gemini", url, model, key)
+        case "openai":
+            guard let key = config.string(forKey: "openai_api_key", envKey: "OPENAI_API_KEY"),
+                  !key.isEmpty else { return nil }
+            let model = config.string(forKey: "openai_polish_model") ?? "gpt-4o-mini"
+            let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+            return ("openai", url, model, key)
+        case "groq":
+            guard let key = config.string(forKey: "groq_api_key", envKey: "GROQ_API_KEY"),
+                  !key.isEmpty else { return nil }
+            let model = config.string(forKey: "groq_polish_model") ?? "llama-3.3-70b-versatile"
+            let url = URL(string: "https://api.groq.com/openai/v1/chat/completions")!
+            return ("groq", url, model, key)
         case "qwen":
             guard let key = config.string(forKey: "dashscope_api_key", envKey: "DASHSCOPE_API_KEY"),
                   !key.isEmpty else { return nil }
             let saved = config.string(forKey: "qwen_polish_model")
-            // 未选过 → 自动选择（质量优先 + 额度用完自动降级）；老用户手动选过的值原样保留。
             let model = (saved?.isEmpty == false) ? saved! : PolishModelRouter.autoValue
             let url = URL(string: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")!
             return ("qwen", url, model, key)
@@ -448,17 +467,15 @@ public class AIPolisher {
         }
     }
 
-    /// outputLanguage：用户用语音口令要求的目标语言（nil = 照常保留原语言）
+    /// outputLanguage：使用者用語音口令要求的目標語言（nil = 照常保留原語言）
     public func polishCloudASROutput(text: String, outputLanguage: OutputLanguage? = nil, completion: @escaping (Result<String, Error>) -> Void) {
-        // 会员选了「优先走会员服务」：填了自己的 Key 也走会员通道（用户没选「不优化」时）
+        // 會員選了「優先走會員服務」：填了自己的 Key 也走會員通道（使用者沒選「不優化」時）
         if HostedRoute.current(ownKeyConfigured: polishProvider() != nil) == .member,
            !Self.isPolishDisabled(provider: VoicePolishConfig.shared.string(forKey: "polish_provider")) {
             polishHosted(route: .member, text: text, outputLanguage: outputLanguage, completion: completion)
             return
         }
         guard let provider = polishProvider() else {
-            // 没配自己的 key：试用用户走服务器代理润色（千问，owner 出 API 费）。
-            // 用户主动选了"不优化"(none) 则尊重；已激活(买断)用户绝不走试用。
             let providerSetting = VoicePolishConfig.shared.string(forKey: "polish_provider")
             let hostedRoute = HostedRoute.current(ownKeyConfigured: false)
             if !Self.isPolishDisabled(provider: providerSetting) && hostedRoute != .none {
@@ -487,6 +504,9 @@ public class AIPolisher {
                 body["temperature"] = 0.7
                 body["result_format"] = "message"
                 body["enable_thinking"] = false
+            } else if provider.name == "gemini" || provider.name == "openai" || provider.name == "groq" {
+                body["temperature"] = 0.3
+                body["max_tokens"] = 2500
             } else if provider.name == "zhipu" {
                 body["temperature"] = 0.1
                 body["max_tokens"] = 2000
@@ -494,7 +514,7 @@ public class AIPolisher {
             } else {  // doubao
                 body["temperature"] = 0.1
                 body["max_tokens"] = 2000
-                body["thinking"] = ["type": "disabled"]  // 关闭深度思考：润色不需要，且更快
+                body["thinking"] = ["type": "disabled"]
             }
             return body
         }
@@ -654,12 +674,12 @@ public class AIPolisher {
     // MARK: - 语音问答（长按问 AI）
 
     static let askSystemPrompt = """
-    你是用户身边的语音问答助手。用户用语音提问，问题可能带口语、可能不完整。直接回答：先给结论，再展开要点；用用户提问的语言回答；不要客套，不要复述问题，结尾不要追问「要不要……」；不确定就说不确定。篇幅随问题而定：简单问题两三句说完，复杂问题可以分组展开，但不要注水。
-    排版用轻量 Markdown（面板会渲染）：段落之间空一行，每段只说一件事；列举多项时逐条分行，用「1. 」或「- 」开头；内容分几组时用「### 组名」做小标题；每条里的关键词用 **加粗** 标出（一条最多一处）；不用表格、引用、代码块。
+    你是使用者身邊的語音問答助手。使用者用口述語音提問，問題可能帶口語、可能不完整。請直接回答：先給結論，再展開要點；一律使用繁體中文（台灣習慣用詞與正體中文）回答（若使用者明確要求特定語言則遵照其要求）；不要客套，不要複述問題，結尾不要追問「要不要……」；不確定就說不確定。篇幅隨問題而定：簡單問題兩三句說完，複雜問題可以分組展開，但不要灌水。
+    排版用輕量 Markdown（面板會渲染）：段落之間空一行，每段只說一件事；列舉多項時逐條分行，用「1. 」或「- 」開頭；內容分幾組時用「### 組名」做小標題；每條裡的關鍵詞用 **粗體** 標出（一條最多一處）；不用表格、引用、程式碼區塊。
     """
 
-    /// 模型没有时钟：每次提问都把「现在」写进提示词。不写的话它只能从搜到的网页里猜今天几号
-    /// （网页常是前一两天发的，2026-09-11 实测 4 次全答成前一天），问「现在几点」也答不出。
+    /// 模型沒有時鐘：每次提問都把「現在」寫進提示詞。不寫的話它只能從搜到的網頁裡猜今天幾號
+    /// （網頁常是前一兩天發的，2026-09-11 實測 4 次全答成前一天），問「現在幾點」也答不出。
     static func askTimeLine(now: Date = Date(), timeZone: TimeZone = .current) -> String {
         var cal = Calendar(identifier: .gregorian)
         cal.timeZone = timeZone
@@ -668,25 +688,25 @@ public class AIPolisher {
         let offset = timeZone.secondsFromGMT(for: now)
         let zone: String
         if offset == 8 * 3600 {
-            zone = "北京时间"
+            zone = "台灣/台北時間"
         } else {
             let h = offset / 3600, m = abs(offset % 3600) / 60
             zone = m == 0 ? String(format: "UTC%+d", h) : String(format: "UTC%+d:%02d", h, m)
         }
-        return "当前时间：\(c.year ?? 0)年\(c.month ?? 0)月\(c.day ?? 0)日 星期\(week) "
+        return "當前時間：\(c.year ?? 0)年\(c.month ?? 0)月\(c.day ?? 0)日 星期\(week) "
             + String(format: "%02d:%02d", c.hour ?? 0, c.minute ?? 0) + "（\(zone)）。"
     }
 
-    /// 问题里带时效词（今天/最新/价格…）→ 联网时强制搜索。
+    /// 問題裡帶時效詞（今天/最新/價格…）→ 連網時強制搜尋。
     static func isTimeSensitive(_ question: String) -> Bool {
-        let cues = ["今天", "现在", "目前", "最近", "最新", "新闻", "价格", "股价", "汇率", "天气", "几号", "星期",
-                                 "多少钱", "发布", "更新", "今年", "本周", "这周", "昨天", "明天", "上市", "2025", "2026", "2027"]
+        let cues = ["今天", "現在", "目前", "最近", "最新", "新聞", "價格", "股價", "匯率", "天氣", "幾號", "星期",
+                                 "多少錢", "發布", "更新", "今年", "本週", "這週", "昨天", "明天", "上市", "2025", "2026", "2027"]
         return cues.contains { question.contains($0) }
     }
 
-    /// 用当前配置的润色模型回答一个问题（千问附带联网搜索；问题带时效词时强制搜）。
-    /// history：本话题之前的问答对（多轮续聊时带上，最多 6 轮）。
-    /// onPartial：流式输出，每收到一段就回调累计文本；没配 key 的试用用户走代理（不流式，只回调一次）。
+    /// 用當前設定的潤色模型回答一個問題（千問附帶連網搜尋；問題帶時效詞時強制搜）。
+    /// history：本話題之前的問答對（多輪續聊時帶上，最多 6 輪）。
+    /// onPartial：流式輸出，每收到一段就回調累計文字；沒配 key 的試用使用者走代理（不流式，只回調一次）。
     public func answer(question: String,
                        history: [(question: String, answer: String)] = [],
                        onPartial: ((String) -> Void)? = nil,
@@ -698,14 +718,14 @@ public class AIPolisher {
         }
         messages.append(["role": "user", "content": question])
 
-        // 会员优先走会员：有自己的 Key 也走托管问答（与润色同一条规则）
+        // 會員優先走會員：有自己的 Key 也走託管問答（與潤色同一條規則）
         let ownProvider = polishProvider()
         let preferHosted = ownProvider != nil && HostedRoute.current(ownKeyConfigured: true) == .member
         guard let provider = ownProvider, !preferHosted else {
             let providerSetting = VoicePolishConfig.shared.string(forKey: "polish_provider")
             let hostedRoute = HostedRoute.current(ownKeyConfigured: ownProvider != nil)
             if !Self.isPolishDisabled(provider: providerSetting) && hostedRoute != .none {
-                // 托管问答（试用/会员）一律 qwen3.7-plus，与 owner 自用一致（Ray 2026-09-12）；联网与强制搜索由服务器放行
+                // 託管問答（試用/會員）一律 qwen3.7-plus，與 owner 自用一致（Ray 2026-09-12）；連網與強制搜尋由伺服器放行
                 var body: [String: Any] = ["model": "qwen3.7-plus", "messages": messages, "top_p": 0.8, "temperature": 0.5,
                                            "result_format": "message", "enable_thinking": false, "enable_search": true]
                 if Self.isTimeSensitive(question) { body["search_options"] = ["forced_search": true] }
@@ -719,7 +739,7 @@ public class AIPolisher {
                         completion(.success(text))
                     } else {
                         let errJson = (try? JSONSerialization.jsonObject(with: data ?? Data())) as? [String: Any]
-                        completion(.failure(PolishError.apiError(Self.extractAPIErrorMessage(from: errJson) ?? "问答请求失败（\(response?.statusCode ?? 0)）")))
+                        completion(.failure(PolishError.apiError(Self.extractAPIErrorMessage(from: errJson) ?? "問答請求失敗（\(response?.statusCode ?? 0)）")))
                     }
                 }
                 return
@@ -727,10 +747,8 @@ public class AIPolisher {
             completion(.failure(PolishError.noAPIKey))
             return
         }
-        // 千问联网默认由模型自己判断要不要搜，它觉得会答的就不搜、答案可能过期；
-        // 问题里带时效词时强制搜，其他问题维持智能判断。
-        // 搜索档位一律用默认，别指定 search_strategy="standard"：它只拿回默认档约一半的资料、结果偏旧
-        // （2026-09-11 实测「美联储主席是谁」standard 档 3 次都答成已卸任的前任，默认档每次都对）。
+        // 千問連網預設由模型自己判斷要不要搜，它覺得會答的就不搜、答案可能過期；
+        // 問題裡帶時效詞時強制搜，其他問題維持智慧判斷。
         let forceSearch = Self.isTimeSensitive(question)
         debugLog?("Ask provider=\(provider.name) model=\(provider.model) forceSearch=\(forceSearch) history=\(history.count)")
         func makeBody(_ model: String, search: Bool) -> [String: Any] {
@@ -741,6 +759,9 @@ public class AIPolisher {
                     body["enable_search"] = true
                     if forceSearch { body["search_options"] = ["forced_search": true] }
                 }
+            } else if provider.name == "gemini" || provider.name == "openai" || provider.name == "groq" {
+                body["temperature"] = 0.5
+                body["max_tokens"] = 2000
             } else {
                 body["temperature"] = 0.5; body["max_tokens"] = 1200; body["thinking"] = ["type": "disabled"]
             }
@@ -751,7 +772,7 @@ public class AIPolisher {
             : [provider.model]
         func attempt(_ index: Int, search: Bool) {
             guard index < candidates.count else {
-                completion(.failure(PolishError.apiError("问答模型均不可用（额度用完）")))
+                completion(.failure(PolishError.apiError("問答模型均不可用（額度用完）")))
                 return
             }
             let model = candidates[index]
@@ -763,7 +784,7 @@ public class AIPolisher {
                 case .failure(let err):
                     if case PolishError.quotaExhausted = err {
                         PolishModelRouter.markExhausted(model)
-                        self?.debugLog?("Ask: \(model) 额度类失败，降级到下一个")
+                        self?.debugLog?("Ask: \(model) 額度類失敗，降級到下一個")
                         attempt(index + 1, search: search)
                     } else if search, case PolishError.apiError = err {
                         self?.debugLog?("Ask with enable_search failed, retrying without: \(err)")
@@ -882,7 +903,7 @@ public class AIPolisher {
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return PolishLog(
             time: formatter.string(from: Date()),
-            app: polishLogAppNameProvider?() ?? "键盘",
+            app: polishLogAppNameProvider?() ?? "鍵盤",
             asr: asr,
             output: output,
             duration_ms: durationMs,
@@ -911,7 +932,7 @@ public class AIPolisher {
     }
 
     private func appendToPendingLog(_ entry: PolishLog) {
-        // 「不保存数据」：文字不落盘，连刚生成的音频也一并删掉，避免留下孤儿文件
+        // 「不保存資料」：文字不落盤，連剛生成的音訊也一併刪除，避免留下孤兒檔案
         if Self.currentHistoryRetention() == .off {
             AudioClipStore.defaultStore().delete(fileName: entry.audioFile)
             return
@@ -929,7 +950,7 @@ public class AIPolisher {
         let audioStore = AudioClipStore.defaultStore()
         let retention = Self.currentHistoryRetention()
 
-        // 追加 + 裁剪在同一把锁里：设置窗那边的整文件重写若插在中间，这条就丢了。
+        // 追加 + 裁剪在同一把鎖裡：設定視窗那邊的整檔案重寫若插在中間，這條就丟了。
         HistoryFileLock.withLock {
             try? FileManager.default.createDirectory(at: logFile.deletingLastPathComponent(), withIntermediateDirectories: true)
 
@@ -944,7 +965,7 @@ public class AIPolisher {
             }
 
             Self.pruneLogFile(at: logFile, retention: retention, encryptor: enc) { removed in
-                audioStore.delete(fileName: removed.audioFile)  // 裁剪过期记录时一并删音频
+                audioStore.delete(fileName: removed.audioFile)  // 裁剪過期記錄時一併刪除音訊
             }
         }
     }
@@ -987,7 +1008,7 @@ public class AIPolisher {
                     keptLines.append(rawLine)
                 } else {
                     removedCount += 1
-                    onRemove?(log)  // 让调用方删掉该条对应的音频文件
+                    onRemove?(log)  // 讓呼叫方刪掉該條對應的音訊檔案
                 }
             }
 
@@ -1011,22 +1032,22 @@ public class AIPolisher {
         case noAPIKey
         case noData
         case parseError
-        case apiError(String)   // 服务端返回的业务错误（鉴权/限流等），带真实原因
-        case quotaExhausted(String)   // 403 额度类失败（免费额度用完即停/欠费），自动路由靠它降级
+        case apiError(String)   // 伺服端回傳的業務錯誤（鑑權/限流等），帶真實原因
+        case quotaExhausted(String)   // 403 額度類失敗（免費額度用完即停/欠費），自動路由靠它降級
 
         public var errorDescription: String? {
             switch self {
-            case .noAPIKey: return "未配置润色模型的 API key"
-            case .noData: return "润色服务未返回数据"
-            case .parseError: return "润色返回无法解析"
+            case .noAPIKey: return "未設定潤色模型的 API 金鑰"
+            case .noData: return "潤色服務未回傳資料"
+            case .parseError: return "潤色回傳內容無法解析"
             case .apiError(let msg): return msg
             case .quotaExhausted(let msg): return msg
             }
         }
     }
 
-    /// 从 OpenAI 兼容 / DashScope 的错误响应里取人话原因：
-    /// 兼容 {"error":{"message":...}}、{"message":...,"code":...}、{"error":"..."}。
+    /// 從 OpenAI 相容 / DashScope 的錯誤回應裡取清楚原因：
+    /// 相容 {"error":{"message":...}}、{"message":...,"code":...}、{"error":"..."}。
     static func extractAPIErrorMessage(from json: [String: Any]?) -> String? {
         guard let json = json else { return nil }
         if let err = json["error"] as? [String: Any] {
@@ -1049,10 +1070,7 @@ public class AIPolisher {
         return nil
     }
 
-    /// 把服务商（百炼 DashScope / 火山 Ark）最常见的两类错误翻成能照着办的中文；认不出的返回 nil、保留原话。
-    /// 依据实测原文：百炼 Key 错 → code=invalid_api_key "Incorrect API key provided…"；
-    /// 火山 Ark Key 错 → code=AuthenticationError "The API key format is incorrect…"；
-    /// 百炼欠费 → code=Arrearage "…account is in good standing"；火山 Ark 欠费 → AccountOverdueError。
+    /// 把服務商最常見的兩類錯誤翻成能照著處理的繁體中文；認不出的回傳 nil、保留原話。
     static func friendlyProviderError(code: String?, type: String?, message: String?) -> String? {
         let c = (code ?? "").lowercased()
         let t = (type ?? "").lowercased()
@@ -1062,16 +1080,16 @@ public class AIPolisher {
         if c == "invalid_api_key" || c == "invalidapikey" || c == "authenticationerror" || t == "unauthorized"
             || m.contains("incorrect api key") || m.contains("api key format is incorrect")
             || m.contains("didn't provide an api key") || m.contains("invalid api key") {
-            return "API Key 无效，请检查是否复制完整\(tag)"
+            return "API Key 無效，請檢查是否複製完整\(tag)"
         }
         if c == "arrearage" || c == "accountoverdueerror" || c == "insufficient_quota"
             || m.contains("in good standing") || m.contains("arrearage") || m.contains("overdue")
             || m.contains("quota exceeded") || m.contains("enough balance") {
-            return "账号欠费或免费额度已用完，请到服务商控制台检查\(tag)"
+            return "帳號欠費或免費額度已用完，請至服務商控制台檢查\(tag)"
         }
         if c == "quotaexceeded" || c == "ratelimitexceeded" || c == "throttling" || c.hasPrefix("throttling.")
             || c == "limit_requests" || m.contains("rate limit") || m.contains("too many requests") {
-            return "请求太频繁或额度超限，稍后再试\(tag)"
+            return "請求太頻繁或額度超限，請稍後再試\(tag)"
         }
         return nil
     }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN"><head><meta charset="utf-8"><title>Typefree 新功能</title>
+<html lang="zh-TW"><head><meta charset="utf-8"><title>Typefree 新功能</title>
 <style>
   :root{
     --desk:#E6E6E9;
@@ -240,14 +240,14 @@
     <div class="top"><span class="eyebrow" id="pg"></span></div>
     <div class="body">
       <div class="left">
-      <div class="stage-host" id="stageHost" role="img" aria-label="手势动画演示">
+      <div class="stage-host" id="stageHost" role="img" aria-label="手勢動畫示範">
 
-        <!-- 第 1 页：鼠标长按说话 -->
+        <!-- 第 1 頁：滑鼠長按說話 -->
         <div class="stage">
           <div class="app">
-            <div class="app-bar"><i></i><i></i><i></i><span>项目群</span></div>
-            <div class="msgs"><div class="msg">明天的会几点开？</div></div>
-            <div class="input"><span class="typed"></span><i class="caret"></i><span class="ph">发消息…</span></div>
+            <div class="app-bar"><i></i><i></i><i></i><span>專案群組</span></div>
+            <div class="msgs"><div class="msg">明天的會議幾點開？</div></div>
+            <div class="input"><span class="typed"></span><i class="caret"></i><span class="ph">發送訊息…</span></div>
           </div>
           <svg class="trail" viewBox="0 0 512 292" aria-hidden="true"><path class="line" d=""/><path class="head" d=""/></svg>
           <div class="cap" data-state="hidden" data-glow="none" aria-hidden="true">
@@ -264,13 +264,13 @@
           </div>
         </div>
 
-        <!-- 第 2 页：随时问 AI -->
+        <!-- 第 2 頁：隨時問 AI -->
         <div class="stage" hidden>
           <div class="app">
             <div class="app-bar"><i></i><i></i><i></i><span class="url">knowledge.example.com</span></div>
             <div class="art">
-              <h4>用 RAG 搭建企业知识库的五个步骤</h4>
-              <p>RAG 是现在最常用的知识库做法：把文档切成小段存起来，提问时先找出最相关的几段，再交给大模型组织回答。</p>
+              <h4>使用 RAG 打造企業知識庫的五個步驟</h4>
+              <p>RAG 是目前最常用的知識庫做法：把文件切成片段存起來，提問時先找出最相關的幾段，再交給大模型組織回答。</p>
             </div>
           </div>
           <div class="panel" aria-hidden="true">
@@ -296,12 +296,12 @@
           </div>
         </div>
 
-        <!-- 第 3 页：语音翻译 -->
+        <!-- 第 3 頁：語音翻譯 -->
         <div class="stage" hidden>
           <div class="app">
             <div class="app-bar"><i></i><i></i><i></i><span>Global Team</span></div>
             <div class="msgs"><div class="msg">Hi! Are we still meeting tomorrow?</div></div>
-            <div class="input"><span class="typed"></span><i class="caret"></i><span class="ph">发消息…</span></div>
+            <div class="input"><span class="typed"></span><i class="caret"></i><span class="ph">發送訊息…</span></div>
           </div>
           <div class="say" aria-hidden="true"><span class="say-k"><svg viewBox="0 0 12 12"><rect x="4" y="1" width="4" height="6.5" rx="2" fill="currentColor"/><path d="M2.5 5.6a3.5 3.5 0 0 0 7 0M6 9.1V11" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></span><span class="say-t"></span></div>
           <div class="cap" data-state="hidden" data-glow="none" aria-hidden="true">
@@ -322,29 +322,29 @@
       <div class="step" id="step" aria-live="polite"><i></i><span></span></div>
       </div>
       <div class="right">
-      <div class="chips" id="chips" aria-label="演示动作"></div>
+      <div class="chips" id="chips" aria-label="演示動作"></div>
       <div class="copy">
         <h2 id="ttl"></h2>
         <p id="desc"></p>
       </div>
       <div class="try" id="try">
-        <div class="try-t"><b>试一试</b> · 在下面的框里按住鼠标，说一句话</div>
-        <textarea class="try-box" id="tryBox" rows="1" placeholder="在这里按住鼠标，说一句话" aria-label="试一试"></textarea>
+        <div class="try-t"><b>試一試</b> · 在下方的框中按住滑鼠，說一句話</div>
+        <textarea class="try-box" id="tryBox" rows="1" placeholder="在此處按住滑鼠，說一句話" aria-label="試一試"></textarea>
       </div>
 
-      <p class="note" id="note">这些功能已默认开启，想关闭或调整，去「设置 → 探索」。</p>
+      <p class="note" id="note">這些功能已預設開啟，若想關閉或調整，請至「設定 → 探索」。</p>
 
       </div>
     </div>
       <div class="foot">
         <div class="dots" id="dots">
-          <button class="dot" type="button" aria-label="第 1 页" aria-current="true"></button>
-          <button class="dot" type="button" aria-label="第 2 页"></button>
-          <button class="dot" type="button" aria-label="第 3 页"></button>
+          <button class="dot" type="button" aria-label="第 1 頁" aria-current="true"></button>
+          <button class="dot" type="button" aria-label="第 2 頁"></button>
+          <button class="dot" type="button" aria-label="第 3 頁"></button>
         </div>
         <div class="btns">
-          <button class="btn ghost invisible" id="prev" type="button">上一个</button>
-          <button class="btn primary" id="next" type="button">下一个</button>
+          <button class="btn ghost invisible" id="prev" type="button">上一個</button>
+          <button class="btn primary" id="next" type="button">下一個</button>
         </div>
       </div>
   </div>
@@ -537,111 +537,111 @@
     return c;
   }
 
-  // ---------- 第 1 页：鼠标长按说话 ----------
+  // ---------- 第 1 頁：滑鼠長按說話 ----------
   const START = [404, 84];
   const IN = [196, 162];
   const mouseScenes = [
     {
-      name: '按住说话', dur: 7400, still: 4600, desc: '在输入框上<b>按住鼠标左键</b>说话，<b>松开</b>就输入。',
+      name: '按住說話', dur: 7400, still: 4600, desc: '在輸入框上<b>按住滑鼠左鍵</b>說話，<b>放開</b>就輸入。',
       run(c) {
         c.reset(START);
         c.at(250, () => c.move(IN[0], IN[1], 850));
-        c.at(1200, () => { c.down(); c.focus(true); c.step('在输入框上按住鼠标，约半秒'); });
-        c.at(1650, () => { c.held(); c.cap('rec'); c.step('开始说话'); });
-        c.at(3800, () => { c.up(); c.step('松开'); c.cap('proc', { text: PROC }); });
-        c.at(4500, () => { c.cap('hidden'); c.step('整理好的文字自动输入'); c.type('明天下午三点开会，记得带上电脑。'); });
+        c.at(1200, () => { c.down(); c.focus(true); c.step('在輸入框上按住滑鼠，約半秒'); });
+        c.at(1650, () => { c.held(); c.cap('rec'); c.step('開始說話'); });
+        c.at(3800, () => { c.up(); c.step('放開'); c.cap('proc', { text: PROC }); });
+        c.at(4500, () => { c.cap('hidden'); c.step('整理好的文字自動輸入'); c.type('明天下午三點開會，記得帶上電腦。'); });
         c.at(6400, () => c.move(START[0], START[1], 900));
       },
     },
     {
-      name: '向下拖：锁定', dur: 10000, still: 2900, desc: '说到一半想松手：<b>向下拖一点</b>，亮绿光后松手接着说，说完点 ✓。',
+      name: '向下拖曳：鎖定', dur: 10000, still: 2900, desc: '說到一半想放手：<b>向下拖曳一點</b>，亮綠光後放手接著說，說完點 ✓。',
       run(c) {
         c.reset(START);
         c.at(250, () => c.move(IN[0], IN[1], 850));
-        c.at(1200, () => { c.down(); c.focus(true); c.step('按住，开始说话'); });
-        c.at(1650, () => { c.held(); c.cap('rec', { caption: '移近锁定' }); });
-        c.at(2350, () => { c.trailOn(IN[0], IN[1], IN[0], IN[1] + 34); c.move(IN[0], IN[1] + 30, 420); c.step('说到一半想松手：向下拖一点'); });
-        c.at(2750, () => c.cap('btns', { glow: 'lock', caption: '已锁定' }));
-        c.at(3700, () => { c.up(); c.step('亮绿光 = 已锁定，松手接着说'); });
+        c.at(1200, () => { c.down(); c.focus(true); c.step('按住，開始說話'); });
+        c.at(1650, () => { c.held(); c.cap('rec', { caption: '移近鎖定' }); });
+        c.at(2350, () => { c.trailOn(IN[0], IN[1], IN[0], IN[1] + 34); c.move(IN[0], IN[1] + 30, 420); c.step('說到一半想放手：向下拖曳一點'); });
+        c.at(2750, () => c.cap('btns', { glow: 'lock', caption: '已鎖定' }));
+        c.at(3700, () => { c.up(); c.step('亮綠光 = 已鎖定，放手接著說'); });
         c.at(3950, () => { c.cap('btns', { glow: 'lock' }); c.move(412, 70, 1300); });
-        c.at(6300, () => { const p = c.pos('.cap-ok'); c.move(p[0], p[1] + 1, 950); c.step('说完，点 ✓'); });
+        c.at(6300, () => { const p = c.pos('.cap-ok'); c.move(p[0], p[1] + 1, 950); c.step('說完，點 ✓'); });
         c.at(7400, () => { c.tapOk(); c.cap('proc', { text: PROC }); });
-        c.at(8100, () => { c.cap('hidden'); c.step('整理好的文字自动输入'); c.type('会议纪要我整理好了，下午发到群里。'); });
+        c.at(8100, () => { c.cap('hidden'); c.step('整理好的文字自動輸入'); c.type('會議記錄我整理好了，下午發到群組。'); });
         c.at(9100, () => c.move(START[0], START[1], 900));
       },
     },
     {
-      name: '拖远：取消', dur: 8000, still: 3100, desc: '不想要这句：<b>往外拖远</b>，亮红光后松开。点错了 9 秒内可撤销。',
+      name: '拖遠：取消', dur: 8000, still: 3100, desc: '不想要這句：<b>往外拖遠</b>，亮紅光後放開。點錯了 9 秒內可復原。',
       run(c) {
         c.reset(START);
         c.at(250, () => c.move(IN[0], IN[1], 850));
-        c.at(1200, () => { c.down(); c.focus(true); c.step('按住，开始说话'); });
+        c.at(1200, () => { c.down(); c.focus(true); c.step('按住，開始說話'); });
         c.at(1650, () => { c.held(); c.cap('rec'); });
-        c.at(2600, () => { c.trailOn(IN[0], IN[1], 300, 92); c.move(300, 92, 750); c.step('不想要了：往外拖远'); });
-        c.at(3100, () => { c.cap('rec', { glow: 'cancel' }); c.step('亮红光了，松开'); });
-        c.at(4300, () => { c.up(); c.focus(false); c.cap('hint', { text: '已取消', undo: true }); c.step('已取消，点错了 9 秒内可撤销'); });
+        c.at(2600, () => { c.trailOn(IN[0], IN[1], 300, 92); c.move(300, 92, 750); c.step('不想要了：往外拖遠'); });
+        c.at(3100, () => { c.cap('rec', { glow: 'cancel' }); c.step('亮紅光了，放開'); });
+        c.at(4300, () => { c.up(); c.focus(false); c.cap('hint', { text: '已取消', undo: true }); c.step('已取消，點錯了 9 秒內可復原'); });
         c.at(6500, () => c.cap('hidden'));
         c.at(6800, () => c.move(START[0], START[1], 900));
       },
     },
   ];
 
-  // ---------- 第 2 页：随时问 AI ----------
-  const A1 = 'RAG 就是「检索增强生成」：先从资料里找出和问题相关的内容，再交给大模型组织成回答。回答有依据，资料更新了也不用重新训练模型。';
-  const A2 = '微调是把知识训练进模型本身，成本高、更新慢；RAG 不改模型，换掉资料就能更新，更适合经常变化的内容。';
+  // ---------- 第 2 頁：隨時問 AI ----------
+  const A1 = 'RAG 就是「檢索增強生成」：先從資料裡找出和問題相關的內容，再交給大型模型組織成回答。回答有依據，資料更新了也不用重新訓練模型。';
+  const A2 = '微調是把知識訓練進模型本身，成本高、更新慢；RAG 不改模型，換掉資料就能更新，更適合經常變化的內容。';
   const askScenes = [
     {
-      name: '按住提问', dur: 9200, still: 6800, desc: '看到不懂的，在<b>空白处按住鼠标</b>说出问题，回答出现在<b>右上角</b>。不用切窗口，也不用先复制什么。',
+      name: '按住提問', dur: 9200, still: 6800, desc: '看到不懂的，在<b>空白處按住滑鼠</b>說出問題，回答出現在<b>右上角</b>。不用切換視窗，也不用先複製內容。',
       run(c) {
         let answer = null;
         c.reset([404, 200]);
         c.at(250, () => c.move(300, 150, 900));
-        c.at(1300, () => { c.down('ask'); c.step('找一块空白处，按住鼠标约半秒'); });
-        c.at(1750, () => { c.held(); c.cap('rec', { glow: 'ask' }); c.step('亮蓝光，说出问题'); });
-        c.at(3500, () => { c.up(); c.step('松开'); c.cap('proc', { text: '→ AI' }); });
-        c.at(4300, () => { c.cap('hidden'); c.step('回答出现在屏幕右上角'); c.panelOpen('RAG 是什么意思？'); answer = c.turn(''); });
+        c.at(1300, () => { c.down('ask'); c.step('找一塊空白處，按住滑鼠約半秒'); });
+        c.at(1750, () => { c.held(); c.cap('rec', { glow: 'ask' }); c.step('亮藍光，說出問題'); });
+        c.at(3500, () => { c.up(); c.step('放開'); c.cap('proc', { text: '→ AI' }); });
+        c.at(4300, () => { c.cap('hidden'); c.step('回答出現在螢幕右上角'); c.panelOpen('RAG 是什麼意思？'); answer = c.turn(''); });
         c.at(4900, () => c.stream(answer, A1, 2200));
         c.at(7800, () => c.move(404, 236, 900));
       },
     },
     {
-      name: '按住面板：追问', dur: 10000, still: 5200, desc: '<b>按住回答面板</b>继续说，AI 接着这个话题回答。点图钉可以把回答固定住。',
+      name: '按住面板：追問', dur: 10000, still: 5200, desc: '<b>按住回答面板</b>繼續說，AI 接著這個話題回答。點圖釘可以把回答固定住。',
       run(c) {
         let answer = null;
         c.reset([404, 236]);
-        c.panelOpen('RAG 是什么意思？', true);
+        c.panelOpen('RAG 是什麼意思？', true);
         c.turn('').textContent = A1;
         c.at(400, () => { const p = c.pos('.panel .a'); c.move(p[0] - 10, p[1], 900); });
-        c.at(1500, () => { c.down('ask'); c.step('想接着问：按住回答面板'); });
-        c.at(1950, () => { c.held(); c.listen(true); c.step('说出下一个问题'); });
-        c.at(3900, () => { c.up(); c.step('松开'); c.listen(false); c.foot('text', '识别中'); });
-        c.at(4600, () => { c.foot(''); c.step('接在同一个话题下回答'); answer = c.turn('它和微调有什么区别？'); });
+        c.at(1500, () => { c.down('ask'); c.step('想接著問：按住回答面板'); });
+        c.at(1950, () => { c.held(); c.listen(true); c.step('說出下一個問題'); });
+        c.at(3900, () => { c.up(); c.step('放開'); c.listen(false); c.foot('text', '辨識中'); });
+        c.at(4600, () => { c.foot(''); c.step('接在同一個話題下回答'); answer = c.turn('它和微調有什麼區別？'); });
         c.at(5200, () => c.stream(answer, A2, 2200));
         c.at(8100, () => c.move(404, 256, 900));
       },
     },
     {
-      name: '点外面：收起', dur: 8600, still: 3000, desc: '看完了，<b>点面板外面</b>任意地方，它会缩成一行，几秒后自动消失。想留住它，点右上角的<b>图钉</b>。',
+      name: '點外面：收起', dur: 8600, still: 3000, desc: '看完了，<b>點面板外面</b>任意地方，它會縮成一行，幾秒後自動消失。想留住它，點右上角的<b>圖釘</b>。',
       run(c) {
         c.reset([404, 256]);
-        c.panelOpen('RAG 是什么意思？', true);
+        c.panelOpen('RAG 是什麼意思？', true);
         c.turn('').textContent = A1;
         c.at(400, () => c.move(300, 150, 900));
-        c.at(1500, () => { c.click(); c.step('看完了：点面板外面任意地方'); });
+        c.at(1500, () => { c.click(); c.step('看完了：點面板外面任意地方'); });
         c.at(1800, () => c.mini(true));
-        c.at(2600, () => c.step('缩成一行，几秒后自动消失'));
+        c.at(2600, () => c.step('縮成一行，幾秒後自動消失'));
         c.at(4800, () => c.fade());
-        c.at(6000, () => c.step('想留住它：点右上角的图钉'));
+        c.at(6000, () => c.step('想留住它：點右上角的圖釘'));
       },
     },
   ];
 
-  // ---------- 第 3 页：语音翻译 ----------
+  // ---------- 第 3 頁：語音翻譯 ----------
   const langScenes = [
-    { name: '用英文', desc: '说完正文，结尾加一句<b>「用英文」</b>，这句就直接输入成英文。放在开头也行；用快捷键说话也一样。', parts: [{ t: '明天下午三点开会，记得带上电脑，' }, { t: '用英文', cmd: true }], tag: '→ EN',
-      first: '按住鼠标，说完正文，结尾加一句「用英文」', out: 'Meeting at 3 p.m. tomorrow — remember to bring your laptop.', hint: '已按口令「用英文」输出英文' },
-    { name: '用韩文', desc: '还支持韩文、中文；法语、德语、西班牙语可以在设置里打开。也可以固定一种输出语言，不用每次说口令。', parts: [{ t: '谢谢你今天帮忙，' }, { t: '用韩文', cmd: true }], tag: '→ KO',
-      first: '说完正文，结尾加一句「用韩文」', out: '오늘 도와주셔서 감사합니다.', hint: '已按口令「用韩文」输出韩文' },
+    { name: '用英文', desc: '說完正文，結尾加一句<b>「用英文」</b>，這句就直接輸入成英文。放在開頭也行；用快速鍵說話也一樣。', parts: [{ t: '明天下午三點開會，記得帶上電腦，' }, { t: '用英文', cmd: true }], tag: '→ EN',
+      first: '按住滑鼠，說完正文，結尾加一句「用英文」', out: 'Meeting at 3 p.m. tomorrow — remember to bring your laptop.', hint: '已按指令「用英文」輸出英文' },
+    { name: '用韓文', desc: '還支援韓文、中文；法語、德語、西班牙語可以在設定裡開啟。也可以固定一種輸出語言，不用每次說指令。', parts: [{ t: '謝謝你今天幫忙，' }, { t: '用韓文', cmd: true }], tag: '→ KO',
+      first: '說完正文，結尾加一句「用韓文」', out: '오늘 도와주셔서 감사합니다.', hint: '已按指令「用韓文」輸出韓文' },
   ].map((d) => ({
     name: d.name, desc: d.desc, dur: 8600, still: 5300,
     run(c) {
@@ -650,27 +650,27 @@
       c.at(1200, () => { c.down(); c.focus(true); c.step(d.first); });
       c.at(1650, () => { c.held(); c.cap('rec'); });
       c.at(1900, () => c.say(d.parts, 2100));
-      c.at(4500, () => { c.up(); c.hush(); c.cap('proc', { text: d.tag }); c.step('松开'); });
-      c.at(5300, () => { c.type(d.out); c.cap('hint', { text: d.hint }); c.step('这句直接输入成对应的语言'); });
+      c.at(4500, () => { c.up(); c.hush(); c.cap('proc', { text: d.tag }); c.step('放開'); });
+      c.at(5300, () => { c.type(d.out); c.cap('hint', { text: d.hint }); c.step('這句直接輸入成對應的語言'); });
       c.at(7300, () => { c.cap('hidden'); c.move(START[0], START[1], 900); });
     },
   }));
 
-  // ---------- 页面内容 ----------
+  // ---------- 頁面內容 ----------
   const slides = [
     {
-      title: '鼠标长按说话',
-      desc: '在输入框上<b>按住鼠标左键</b>说话，<b>松开</b>就输入。想松手：<b>向下拖</b>锁定；不想要：<b>拖远</b>再松开。',
+      title: '滑鼠長按說話',
+      desc: '在輸入框上<b>按住滑鼠左鍵</b>說話，<b>放開</b>就輸入。想放手：<b>向下拖曳</b>鎖定；不想要：<b>拖遠</b>再放開。',
       scenes: mouseScenes, tryable: true,
     },
     {
-      title: '随时问 AI',
-      desc: '在<b>空白处按住鼠标</b>，说出问题，回答出现在<b>右上角</b>。<b>按住回答面板</b>可以接着问。',
+      title: '隨時問 AI',
+      desc: '在<b>空白處按住滑鼠</b>，說出問題，回答出現在<b>右上角</b>。<b>按住回答面板</b>可以接著問。',
       scenes: askScenes,
     },
     {
-      title: '语音翻译',
-      desc: '说完正文，<b>结尾</b>加一句口令，比如「用英文」，这句话就直接输入成那种语言。放开头也行。',
+      title: '語音翻譯',
+      desc: '說完正文，<b>結尾</b>加一句指令，比如「用英文」，這句話就直接輸入成那種語言。放開頭也行。',
       scenes: langScenes,
     },
   ];
@@ -765,13 +765,13 @@
     if (pageChanged || !players[p].chipEls.length) buildChips(players[p], p);
     dots.forEach((d, i) => d.setAttribute('aria-current', String(i === p)));
     prev.classList.toggle('invisible', n === 0);
-    next.textContent = n === steps.length - 1 ? finishLabel : '下一个';
+    next.textContent = n === steps.length - 1 ? finishLabel : '下一個';
     players[p].show(j);
   }
 
-  let finishLabel = '开始使用';
+  let finishLabel = '開始使用';
   function post(type) {
-    try { window.webkit.messageHandlers.guide.postMessage({ type }); } catch (e) { /* 浏览器里预览时没有原生端 */ }
+    try { window.webkit.messageHandlers.guide.postMessage({ type }); } catch (e) { /* 瀏覽器中預覽時沒有原生端 */ }
   }
 
   next.addEventListener('click', () => {
@@ -786,12 +786,12 @@
     if (e.key === 'ArrowLeft' && k > 0) go(k - 1);
   });
 
-  // 原生端调用：feature = 0/1/2 跳到该功能第一步；label = 末步按钮文案（首次「开始使用」，探索页「完成」）
+  // 原生端呼叫：feature = 0/1/2 跳到該功能第一步；label = 末步按鈕文案（首次「開始使用」，探索頁「完成」）
   window.__guide = {
     go(feature, label, only) {
       if (label) finishLabel = label;
       steps = only ? allSteps.filter((st) => st.p === feature) : allSteps;
-      dotsEl.hidden = Boolean(only);   // 只看一个功能时不显示功能圆点
+      dotsEl.hidden = Boolean(only);   // 只看一個功能時不顯示功能圓點
       const n = steps.findIndex((st) => st.p === feature);
       go(n < 0 ? 0 : n);
     },

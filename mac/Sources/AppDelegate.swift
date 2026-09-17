@@ -530,14 +530,14 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
         let isError = info.errorMessage != nil
         let model = TypefreeUpdateDialogModel(
             badge: isError ? "ERROR" : "NEW",
-            title: isError ? "更新检查遇到问题" : "发现新版本",
+            title: isError ? "更新檢查遇到問題" : "發現新版本",
             subtitle: updateSummary(for: info),
             versionText: versionText(for: info),
-            notesTitle: isError ? "错误信息" : "更新内容",
+            notesTitle: isError ? "錯誤訊息" : "更新內容",
             notes: notesText(for: info),
             notesIsHTML: !isError,
             primaryTitle: primaryButtonTitle(for: info),
-            secondaryTitle: (!info.isDownloading || info.isReadyToInstall) ? "稍后" : nil,
+            secondaryTitle: (!info.isDownloading || info.isReadyToInstall) ? "稍後" : nil,
             primaryEnabled: true,
             isError: isError
         )
@@ -639,10 +639,10 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
             let model = TypefreeUpdateDialogModel(
                 badge: "OK",
                 title: "已是最新版本",
-                subtitle: "当前没有可安装的新版本。",
+                subtitle: "當前沒有可安裝的新版本。",
                 versionText: currentVersionText(),
-                notesTitle: "更新状态",
-                notes: "Typefree 会每天自动检查一次；有新版本时，左上角才会显示 NEW。",
+                notesTitle: "更新狀態",
+                notes: "Typefree 會每天自動檢查一次；有新版本時，左上角才會顯示 NEW。",
                 notesIsHTML: false,
                 primaryTitle: "好",
                 secondaryTitle: nil,
@@ -659,7 +659,7 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
         acknowledgement()
         let message = (error as NSError).localizedDescription
         updateInfo = TypefreeUpdateInfo(
-            title: "更新检查失败",
+            title: "更新檢查失敗",
             displayVersion: "",
             buildVersion: "",
             releaseNotes: "",
@@ -742,14 +742,14 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
         guard let controller = dialogController, let info = updateInfo else { return }
         let text: String
         if installing {
-            text = "下载完成，正在安装并重启…"
+            text = "下載完成，正在安裝並重啟…"
         } else if extracting {
-            text = "下载完成，正在准备安装…"
+            text = "下載完成，正在準備安裝…"
         } else if info.isReadyToInstall {
-            text = "版本 \(info.displayVersion) 已准备好，可以安装并重启。"
+            text = "版本 \(info.displayVersion) 已準備好，可以安裝並重啟。"
         } else if info.isDownloading {
             let pct = Int((info.downloadProgress * 100).rounded())
-            text = info.downloadProgress > 0 ? "正在下载更新 \(pct)%…" : "正在开始下载…"
+            text = info.downloadProgress > 0 ? "正在下載更新 \(pct)%…" : "正在開始下載…"
         } else {
             text = updateSummary(for: info)
         }
@@ -791,24 +791,24 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
     private func updateSummary(for info: TypefreeUpdateInfo) -> String {
         if let error = info.errorMessage { return error }
         if info.isReadyToInstall {
-            return "版本 \(info.displayVersion) 已准备好，可以安装并重启。"
+            return "版本 \(info.displayVersion) 已準備好，可以安裝並重啟。"
         }
         if info.isDownloading {
             let pct = Int((info.downloadProgress * 100).rounded())
             return info.downloadProgress > 0
-                ? "正在下载更新 \(pct)%，下载完成后会自动安装并重启。"
-                : "正在下载更新，下载完成后会自动安装并重启。"
+                ? "正在下載更新 \(pct)%，下載完成後會自動安裝並重啟。"
+                : "正在下載更新，下載完成後會自動安裝並重啟。"
         }
-        return "发现版本 \(info.displayVersion)。"
+        return "發現版本 \(info.displayVersion)。"
     }
 
     private func primaryButtonTitle(for info: TypefreeUpdateInfo) -> String {
-        if info.errorMessage != nil { return "重新检查" }
+        if info.errorMessage != nil { return "重新檢查" }
         if info.infoURL != nil && readyInstallReply == nil && foundUpdateReply == nil && installOnQuitHandler == nil {
-            return "查看详情"
+            return "查看詳情"
         }
-        if info.isDownloading && !info.isReadyToInstall { return "稍后" }
-        return info.isReadyToInstall ? "安装并重启" : "后台下载中"
+        if info.isDownloading && !info.isReadyToInstall { return "稍後" }
+        return info.isReadyToInstall ? "安裝並重啟" : "背景下載中"
     }
 
     private func showDialog(model: TypefreeUpdateDialogModel,
@@ -822,7 +822,6 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
             onClose: { [weak self] in
                 guard let self else { return }
                 self.dialogController = nil
-                // 用户在下载中关掉进度窗（点「稍后」）→ 转为后台温和模式，不再自动重启，只留 NEW 徽章。
                 if self.updateInfo?.isReadyToInstall == false, self.updateInfo?.isDownloading == true {
                     self.autoInstallOnReady = false
                     self.presentDetailsWhenReady = false
@@ -846,8 +845,8 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
     private func currentVersionText() -> String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
             ?? Bundle.main.infoDictionary?["CFBundleVersion"] as? String
-            ?? "本地开发版"
-        return "当前版本 \(version)"
+            ?? "本機開發版"
+        return "當前版本 \(version)"
     }
 
     private func notesText(for info: TypefreeUpdateInfo) -> String {
@@ -855,17 +854,17 @@ private final class TypefreeUpdateUserDriver: NSObject, SPUUserDriver {
             return error
         }
         let releaseNotes = info.releaseNotes.trimmingCharacters(in: .whitespacesAndNewlines)
-        return releaseNotes.isEmpty ? "这次更新包含体验改进和问题修复。" : releaseNotes
+        return releaseNotes.isEmpty ? "這次更新包含體驗改進和問題修復。" : releaseNotes
     }
 
     private static func releaseNotes(from item: SUAppcastItem) -> String {
         if let desc = item.itemDescription?.trimmingCharacters(in: .whitespacesAndNewlines), !desc.isEmpty {
-            return desc   // 保留 HTML 原文，弹窗用 ReleaseNotesRenderer 富文本渲染
+            return desc   // 保留 HTML 原文，彈窗用 ReleaseNotesRenderer 富文本渲染
         }
         if let url = item.releaseNotesURL {
-            return "完整更新内容：\(url.absoluteString)"
+            return "完整更新內容：\(url.absoluteString)"
         }
-        return "这次更新包含体验改进和问题修复。"
+        return "這次更新包含體驗改進和問題修復。"
     }
 
 }
@@ -1108,7 +1107,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
                 let shown = UserDefaults.standard.integer(forKey: key)
                 guard shown < 3 else { return }
                 UserDefaults.standard.set(shown + 1, forKey: key)
-                self?.pendingOutputLanguageHint = "已按口令「\(command.matchedPhrase)」输出\(language.name)"
+                self?.pendingOutputLanguageHint = "已按口令「\(command.matchedPhrase)」輸出\(language.name)"
             }
         }
         pipeline.onPolishFailed = { [weak self] reason in
@@ -1359,7 +1358,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
             guard let self else { return }
             self.finishAsk()
             if speechUnconfirmed { return }
-            if followUp { self.answerPanel.setListening(.noSpeech) } else { self.overlayWindow.showHint("没听到问题", accent: .neutral) }
+            if followUp { self.answerPanel.setListening(.noSpeech) } else { self.overlayWindow.showHint("沒聽清問題", accent: .neutral) }
         }
         audioRecorder.stopRecording { [weak self] samples in
             guard let self else { return }
@@ -1397,16 +1396,15 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
                                 case .failure(let err):
                                     let reason = (err as? LocalizedError)?.errorDescription ?? "\(err)"
                                     self.debugLog("ASK failed: \(reason)")
-                                    self.answerPanel.fail("回答失败：\(reason)")
+                                    self.answerPanel.fail("回答失敗：\(reason)")
                                 }
                             }
                         }
                     case .failure(let err):
-                        // 没听到有效语音：安静地提示一次，不走红框 + 文字条的两段式报错
                         if case CloudASRTranscriber.TranscriptionError.noSpeech = err { noSpeech(); return }
                         self.finishAsk()
                         self.answerPanel.setListening(.idle)
-                        let message = (err as? LocalizedError)?.errorDescription ?? "识别失败"
+                        let message = (err as? LocalizedError)?.errorDescription ?? "辨識失敗"
                         self.showError(message)
                     }
                 }
@@ -1542,18 +1540,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
         }
     }
 
-    /// 历史加密密钥丢失（钥匙串被重置等）且旧记录仍在：告知用户一次，别让历史「悄悄消失」。
+    /// 歷史加密金鑰遺失（鑰匙圈被重置等）且舊記錄仍在：告知使用者一次，避免歷史紀錄悄悄消失。
     @objc private func historyKeyWasRegenerated() {
         let alert = NSAlert()
-        alert.messageText = "历史记录的加密密钥已丢失"
-        alert.informativeText = "钥匙串里找不到之前用来加密历史记录的密钥（通常是钥匙串被重置或迁移过）。\n\n之前的历史记录无法再读取；从现在起的新记录会用新密钥正常保存。"
+        alert.messageText = "歷史記錄的加密金鑰已遺失"
+        alert.informativeText = "鑰匙圈中找不到先前用來加密歷史記錄的金鑰（通常是鑰匙圈被重置或遷移過）。\n\n先前的歷史記錄無法再讀取；從現在起的新記錄會使用新金鑰正常儲存。"
         alert.alertStyle = .warning
         alert.addButton(withTitle: "知道了")
         alert.runModal()
     }
 
-    /// 录音太短没采到音频 / 识别结果为空：不报红框、不粘贴，安静收起浮窗，
-    /// 只在历史里留一条「无内容」记录（asr/output 均为空，复制不会带出占位字）。
+    /// 錄音太短沒採到音訊 / 辨識結果為空：不報紅框、不貼上，安靜收起浮窗，
     private func recordEmptyResult() {
         pendingOverlayHide?.cancel()
         pendingOverlayHide = nil
@@ -1568,11 +1565,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
     private func showError(_ message: String) {
         pendingOverlayHide?.cancel()
         overlayWindow.show(state: .error(message: message))
-        // 失败提示按文字长短停留 4~12 秒——长录音失败的提示要让用户看清、知道原因。
         let seconds = min(12.0, max(4.0, Double(message.count) * 0.2))
-        // 红色胶囊本身不画文字，只闪 0.7 秒表示"失败了"，随后换成可读的文字条说明原因。
-        // 之前只有无字红框，用户根本不知道是没开通服务、断网还是别的（用户反馈"红框没字"）。
-        // 用 pendingOverlayHide 挂这个切换：期间若又开始录音会被取消，不会误把录音胶囊收掉。
         let work = DispatchWorkItem { [weak self] in
             self?.overlayWindow.showErrorHint(message, seconds: seconds)
         }
@@ -1585,39 +1578,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
         case .pasted:
             return text
         case .copiedOnlyNeedsAccessibility:
-            return text + "\n(已复制到剪贴板；授予辅助功能权限后可自动粘贴)"
+            return text + "\n(已複製到剪貼簿；授予輔助功能權限後可自動貼上)"
         }
     }
 
-    /// 建立标准主菜单（App 菜单 + 编辑菜单）。
-    /// 关键作用：编辑菜单里「剪切/拷贝/粘贴/全选/撤销」带标准快捷键，
-    /// macOS 正是靠这些菜单项把 Cmd+X/C/V/A/Z 分发给当前输入框。
-    /// 之前 App 没有主菜单，所以这些快捷键全失效，只能右键粘贴。
+    /// 建立標準主選單（App 選單 + 編輯選單）。
     private func setupMainMenu() {
         let mainMenu = NSMenu()
 
-        // App 菜单（隐藏 / 退出）
+        // App 選單（隱藏 / 結束）
         let appItem = NSMenuItem()
         mainMenu.addItem(appItem)
         let appMenu = NSMenu()
         appItem.submenu = appMenu
-        appMenu.addItem(withTitle: "隐藏 Typefree", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
+        appMenu.addItem(withTitle: "隱藏 Typefree", action: #selector(NSApplication.hide(_:)), keyEquivalent: "h")
         appMenu.addItem(.separator())
-        appMenu.addItem(withTitle: "退出 Typefree", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        appMenu.addItem(withTitle: "結束 Typefree", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
 
-        // 编辑菜单（让 Cmd+X/C/V/A/Z 生效）
+        // 編輯選單（讓 Cmd+X/C/V/A/Z 生效）
         let editItem = NSMenuItem()
         mainMenu.addItem(editItem)
-        let editMenu = NSMenu(title: "编辑")
+        let editMenu = NSMenu(title: "編輯")
         editItem.submenu = editMenu
-        editMenu.addItem(withTitle: "撤销", action: Selector(("undo:")), keyEquivalent: "z")
+        editMenu.addItem(withTitle: "復原", action: Selector(("undo:")), keyEquivalent: "z")
         let redo = editMenu.addItem(withTitle: "重做", action: Selector(("redo:")), keyEquivalent: "Z")
         redo.keyEquivalentModifierMask = [.command, .shift]
         editMenu.addItem(.separator())
-        editMenu.addItem(withTitle: "剪切", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
-        editMenu.addItem(withTitle: "拷贝", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
-        editMenu.addItem(withTitle: "粘贴", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
-        editMenu.addItem(withTitle: "全选", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editMenu.addItem(withTitle: "剪下", action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        editMenu.addItem(withTitle: "拷貝", action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        editMenu.addItem(withTitle: "貼上", action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        editMenu.addItem(withTitle: "全選", action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
 
         NSApp.mainMenu = mainMenu
     }
@@ -1651,7 +1641,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
                     // 试用中：当日额度（缓存值，服务器才是权威）没满就放行；放行后不再走下面的免费额度检查。
                     if TrialManager.shared.usedToday >= TrialManager.shared.dailyLimit {
                         if showFeedback {
-                            overlayWindow.showHint("今日试用额度已用完（剩 \(TrialManager.shared.daysLeft) 天）")
+                            overlayWindow.showHint("今日試用額度已用完（剩 \(TrialManager.shared.daysLeft) 天）")
                         }
                         return false
                     }
@@ -1659,49 +1649,47 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
                 }
                 if TrialManager.shared.trialExpired {
                     if showFeedback {
-                        overlayWindow.showHint("试用已结束 · 开通会员，或在「设置 → 模型」填自己的 Key")
+                        overlayWindow.showHint("試用已結束 · 開通會員，或在「設定 → 模型」填寫自己的 Key")
                     }
                     return false
                 }
                 if !TrialManager.shared.isTrialAvailable {
-                    // 自己编译的开源版没有试用通道（试用地址不进公开仓库）：直接引导填 Key。
+                    // 自行編譯的開源版沒有試用通道（試用位址不進公開倉庫）：直接引導填 Key。
                     if showFeedback {
-                        overlayWindow.showHint("请先在「设置 → 模型」里填入 API Key")
+                        overlayWindow.showHint("請先在「設定 → 模型」中填入 API Key")
                     }
                     return false
                 }
-                // 试用还没拉到（首启刷新中 / 断网）→ 触发一次刷新并提示稍候。
+                // 試用還沒拉到（首次啟動重新整理中 / 離線）→ 觸發一次重新整理並提示稍候。
                 TrialManager.shared.refreshFromServer()
                 if showFeedback {
-                    overlayWindow.showHint("正在准备免费试用，请稍候…")
+                    overlayWindow.showHint("正在準備免費試用，請稍候…")
                 }
                 return false
             }
-            // 已激活：年付会员走托管通道；老买断/赠送码需要自己的 Key
+            // 已啟用：年費會員走託管通道；舊買斷/贈送碼需要自己的 Key
             let license = LicenseManager.shared
             if license.isMember && TrialManager.shared.isTrialAvailable {
                 if license.isMemberExpired() {
                     if showFeedback {
-                        overlayWindow.showHint("会员已到期 · 续费，或在「设置 → 模型」填自己的 Key")
+                        overlayWindow.showHint("會員已到期 · 續費，或在「設定 → 模型」填寫自己的 Key")
                     }
                     return false
                 }
                 if license.hasActiveMembership() { return true }
-                // 会员有效但手里还没有可用令牌（刚转成会员 / 很久没联网）→ 立刻复核一次
                 license.revalidateNow()
                 if showFeedback {
-                    overlayWindow.showHint("正在验证会员状态，请稍候…")
+                    overlayWindow.showHint("正在驗證會員狀態，請稍候…")
                 }
                 return false
             }
             if showFeedback {
-                overlayWindow.showHint("请先在「设置 → 模型」里填入 API key")
+                overlayWindow.showHint("請先在「設定 → 模型」中填入 API Key")
                 debugLog("Cloud ASR unavailable: \(cloudTranscriber.missingConfigurationHint())")
             }
             return false
         }
 
-        // 2026-09-14 起自带 Key 不再限每周字数（开源后限制形同虚设，且自带 Key 不花我们的钱）。
         return true
     }
 
@@ -1728,7 +1716,6 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
             if !isRecording && !isProcessing {
                 statusBar.setTitle("VP!")
             }
-            // 引导窗口正在前台时，由引导负责索要辅助功能权限，避免重复弹窗/提示
             if isOnboardingVisible {
                 debugLog("Accessibility not granted yet; onboarding owns the prompt")
                 return
@@ -1739,7 +1726,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
             }
             if !didReportMissingAccessibility {
                 debugLog("Accessibility not granted yet; skipping global hotkey listener")
-                showError("请授予辅助功能权限以启用快捷键")
+                showError("請授予輔助功能權限以啟用快速鍵")
                 didReportMissingAccessibility = true
             }
             return
@@ -1764,7 +1751,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, SettingsWindowDelegate, SPUU
             NotificationCenter.default.post(name: .voicePolishAccessibilityGranted, object: nil)
             // 引导窗口在场时由引导自己反馈，不重复弹提示
             if !self.isOnboardingVisible {
-                self.overlayWindow.showHint("辅助功能已开启，现在可以用快捷键录音了", accent: .success)
+                self.overlayWindow.showHint("輔助使用權限已開啟，現在可以用快速鍵錄音了", accent: .success)
             }
         }
     }
@@ -2358,10 +2345,10 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
     private func buildWelcome(into stack: NSStackView) {
         stack.addArrangedSubview(makeBadge("🎙️"))
         stack.setCustomSpacing(26, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makeTitle("欢迎使用 Typefree"))
-        stack.addArrangedSubview(makeBody("按住快捷键说话，松手就贴上整理好的文字。简单几步就能开始。"))
+        stack.addArrangedSubview(makeTitle("歡迎使用 Typefree"))
+        stack.addArrangedSubview(makeBody("按住快速鍵說話，放開就貼上整理好的文字。簡單幾步即可開始。"))
         stack.setCustomSpacing(30, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makePrimaryButton("开始设置") { [weak self] in
+        stack.addArrangedSubview(makePrimaryButton("開始設定") { [weak self] in
             self?.goTo(step: 1)
         })
     }
@@ -2369,38 +2356,38 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
     private func buildAccessibility(into stack: NSStackView) {
         stack.addArrangedSubview(makeBadge("🔑"))
         stack.setCustomSpacing(26, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makeTitle("开启辅助功能"))
-        stack.addArrangedSubview(makeBody("用于监听快捷键、把文字贴到光标处。"))
+        stack.addArrangedSubview(makeTitle("開啟輔助使用權限"))
+        stack.addArrangedSubview(makeBody("用於監聽快速鍵、將文字貼至游標處。"))
         stack.setCustomSpacing(30, after: stack.arrangedSubviews.last!)
 
-        stack.addArrangedSubview(makePrimaryButton("打开辅助功能设置") { [weak self] in
+        stack.addArrangedSubview(makePrimaryButton("打開輔助使用設定") { [weak self] in
             self?.appDelegate?.openAccessibilitySettings()
         })
 
         let granted = appDelegate?.onboardingHasAccessibility() ?? false
         stack.setCustomSpacing(14, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makeStatusPill(granted ? "✓ 已授权" : "等待授权…", done: granted))
+        stack.addArrangedSubview(makeStatusPill(granted ? "✓ 已授權" : "等待授權…", done: granted))
         // 该步骤强制：未授权无法继续，没有跳过按钮。
     }
 
     private func buildMicrophone(into stack: NSStackView) {
         stack.addArrangedSubview(makeBadge("🎤"))
         stack.setCustomSpacing(26, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makeTitle("开启麦克风"))
-        stack.addArrangedSubview(makeBody("用来录下你的声音，再转成文字。"))
+        stack.addArrangedSubview(makeTitle("開啟麥克風"))
+        stack.addArrangedSubview(makeBody("用來錄製你的聲音，並轉換為文字。"))
         stack.setCustomSpacing(30, after: stack.arrangedSubviews.last!)
 
         let authorized = appDelegate?.onboardingHasMicrophone() ?? false
         if authorized {
-            stack.addArrangedSubview(makeStatusPill("✓ 已授权", done: true))
+            stack.addArrangedSubview(makeStatusPill("✓ 已授權", done: true))
         } else {
             // 已拒绝时系统弹窗弹不出来，只能去系统设置开；未决则可直接弹授权框。
             let denied = appDelegate?.onboardingMicrophoneDenied() ?? false
-            stack.addArrangedSubview(makePrimaryButton(denied ? "去系统设置开启" : "开启麦克风") { [weak self] in
+            stack.addArrangedSubview(makePrimaryButton(denied ? "前往系統設定開啟" : "開啟麥克風") { [weak self] in
                 self?.appDelegate?.onboardingRequestMicrophone()
             })
             stack.setCustomSpacing(14, after: stack.arrangedSubviews.last!)
-            stack.addArrangedSubview(makeStatusPill(denied ? "已拒绝 · 点上面到系统设置开启" : "等待授权…", done: false))
+            stack.addArrangedSubview(makeStatusPill(denied ? "已拒絕 · 請點選上方按鈕至系統設定開啟" : "等待授權…", done: false))
         }
     }
 
@@ -2410,10 +2397,10 @@ final class OnboardingWindowController: NSObject, NSWindowDelegate {
         let hotkey = RecordingHotkeyShortcut.current.displayName
         stack.addArrangedSubview(makeBadge("✓", green: true))
         stack.setCustomSpacing(26, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makeTitle("全部就绪"))
-        stack.addArrangedSubview(makeBody("按住 \(hotkey) 说话，松手就贴上整理好的文字。"))
+        stack.addArrangedSubview(makeTitle("全部就緒"))
+        stack.addArrangedSubview(makeBody("按住 \(hotkey) 說話，放開就貼上整理好的文字。"))
         stack.setCustomSpacing(30, after: stack.arrangedSubviews.last!)
-        stack.addArrangedSubview(makePrimaryButton("开始使用") { [weak self] in
+        stack.addArrangedSubview(makePrimaryButton("開始使用") { [weak self] in
             self?.finish()
         })
     }

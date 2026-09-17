@@ -21,23 +21,23 @@ public struct OutputLanguage: Equatable, Codable {
 
     public static let builtin: [OutputLanguage] = [
         OutputLanguage(id: "en", name: "英文", tag: "EN", phrases: [
-            "用英文", "用英语", "翻译成英文", "翻译成英语", "翻成英文", "翻成英语", "转成英文", "转英文",
-            "英文输出", "输出英文", "说英文", "English", "in English",
+            "用英文", "用英語", "翻譯成英文", "翻譯成英語", "翻成英文", "翻成英語", "轉成英文", "轉英文",
+            "英文輸出", "輸出英文", "說英文", "English", "in English",
         ], enabled: true),
         OutputLanguage(id: "ja", name: "日文", tag: "JA", phrases: [
-            "用日文", "用日语", "翻译成日文", "翻译成日语", "翻成日文", "翻成日语", "转日文",
-            "日文输出", "输出日文", "说日语", "Japanese", "日本語",
+            "用日文", "用日語", "翻譯成日文", "翻譯成日語", "翻成日文", "翻成日語", "轉日文",
+            "日文輸出", "輸出日文", "說日語", "Japanese", "日本語",
         ], enabled: true),
-        OutputLanguage(id: "ko", name: "韩文", tag: "KO", phrases: [
-            "用韩文", "用韩语", "翻译成韩文", "翻译成韩语", "翻成韩文", "翻成韩语", "转韩文",
-            "韩文输出", "输出韩文", "说韩语", "Korean", "한국어",
+        OutputLanguage(id: "ko", name: "韓文", tag: "KO", phrases: [
+            "用韓文", "用韓語", "翻譯成韓文", "翻譯成韓語", "翻成韓文", "翻成韓語", "轉韓文",
+            "韓文輸出", "輸出韓文", "說韓語", "Korean", "한국어",
         ], enabled: true),
         OutputLanguage(id: "zh", name: "中文", tag: "ZH", phrases: [
-            "用中文", "翻译成中文", "翻成中文", "转中文", "中文输出", "输出中文", "说中文", "Chinese",
+            "用中文", "翻譯成中文", "翻成中文", "轉中文", "中文輸出", "輸出中文", "說中文", "Chinese",
         ], enabled: true),
-        OutputLanguage(id: "fr", name: "法语", tag: "FR", phrases: ["用法语", "翻译成法语", "翻成法语", "法语输出", "French"], enabled: false),
-        OutputLanguage(id: "de", name: "德语", tag: "DE", phrases: ["用德语", "翻译成德语", "翻成德语", "德语输出", "German"], enabled: false),
-        OutputLanguage(id: "es", name: "西班牙语", tag: "ES", phrases: ["用西班牙语", "翻译成西班牙语", "西班牙语输出", "Spanish"], enabled: false),
+        OutputLanguage(id: "fr", name: "法文", tag: "FR", phrases: ["用法文", "翻譯成法文", "翻成法文", "法文輸出", "French"], enabled: false),
+        OutputLanguage(id: "de", name: "德文", tag: "DE", phrases: ["用德文", "翻譯成德文", "翻成德文", "德文輸出", "German"], enabled: false),
+        OutputLanguage(id: "es", name: "西班牙文", tag: "ES", phrases: ["用西班牙文", "翻譯成西班牙文", "西班牙文輸出", "Spanish"], enabled: false),
     ]
 
     // MARK: - 持久化（config.json 的 output_languages：内置项按 id 覆盖，自定义项追加）

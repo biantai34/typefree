@@ -142,13 +142,13 @@ struct RecordingHotkeyCustomShortcut: Equatable {
     var conflictWarning: String? {
         let normalized = Self.normalized(modifiers)
         if keyCode == 49 && normalized == .command {
-            return "⌘ Space 通常会被系统输入法或 Spotlight 占用，建议换一个组合。"
+            return "⌘ Space 通常會被系統輸入法或 Spotlight 佔用，建議換一個組合。"
         }
         if keyCode == 48 && normalized.contains(.command) {
-            return "⌘ Tab 通常会被系统用于切换 App，建议换一个组合。"
+            return "⌘ Tab 通常會被系統用於切換 App，建議換一個組合。"
         }
         if keyDisplay.count == 1 && normalized == .command {
-            return "单独使用 ⌘ 加字母，可能和常用 App 菜单快捷键冲突。"
+            return "單獨使用 ⌘ 加字母，可能和常用 App 選單快速鍵衝突。"
         }
         return nil
     }

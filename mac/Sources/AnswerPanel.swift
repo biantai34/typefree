@@ -627,12 +627,11 @@ struct AnswerView: View {
             }
             .coordinateSpace(name: "answerScroll")
             .onPreferenceChange(TurnTopKey.self) { tops in
-                // 某一轮的问句块进入可视区上半部分 → 标题换成这一轮（此时它的内容已盖住上一轮）
+                // 某一輪的問句塊進入可視區上半部分 → 標題換成這一輪（此時它的內容已蓋住上一輪）
                 let threshold = min(model.contentHeight, model.maxContentHeight) * 0.5
                 let idx = tops.filter { $0.value <= threshold }.keys.max() ?? 0
                 if idx != model.headerIndex { model.headerIndex = idx }
             }
-            // 高度由 AnswerPanel 离屏实测后写入 model，超过上限才滚动；滚到底由 AppKit 侧做（SwiftUI 的 scrollTo 在 macOS 上跟不上内容增长）
             .frame(height: min(max(model.contentHeight, 24), model.maxContentHeight))
             footer
                 .padding(.horizontal, AnswerPanel.contentInset)
@@ -641,7 +640,7 @@ struct AnswerView: View {
         .frame(width: 420)
     }
 
-    // MARK: 头
+    // MARK: 頭
 
     private var headerTurn: Int { min(max(model.headerIndex, 0), max(model.turns.count - 1, 0)) }
 
@@ -651,7 +650,7 @@ struct AnswerView: View {
                 .fill(accent)
                 .frame(width: 4, height: 30)
             VStack(alignment: .leading, spacing: 2) {
-                Text(model.recording ? "正在听…" : (model.turns.count > 1 ? "问 AI · 第 \(headerTurn + 1) 轮" : "问 AI"))
+                Text(model.recording ? "正在聆聽…" : (model.turns.count > 1 ? "問 AI · 第 \(headerTurn + 1) 輪" : "問 AI"))
                     .font(.system(size: 11, weight: .semibold))
                     .foregroundStyle(accent)
                 Text(model.turns.indices.contains(headerTurn) ? model.turns[headerTurn].question : "")
@@ -663,7 +662,7 @@ struct AnswerView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
             HoverIconButton(systemName: model.pinned ? "pin.fill" : "pin", tint: model.pinned ? accent : nil, action: onTogglePin)
-                .help(model.pinned ? "已固定：下次说话时不会自动收起" : "固定面板")
+                .help(model.pinned ? "已固定：下次說話時不會自動收起" : "固定面板")
             HoverIconButton(systemName: "xmark", tint: nil, action: onClose)
         }
     }
@@ -672,7 +671,7 @@ struct AnswerView: View {
 
     @ViewBuilder private var footer: some View {
         ZStack {
-            // 录音：音浪居中，用面板的蓝（拖开待取消时随光环变红）；提示文字让位
+            // 錄音：音浪居中，用面板的藍（拖開待取消時隨光環變紅）；提示文字讓位
             if model.footer == .listening {
                 PanelWave(clock: model.wave, color: model.cancelArmed ? cancelRed : accent)
             }
@@ -685,7 +684,7 @@ struct AnswerView: View {
         HStack(spacing: 4) {
             switch model.footer {
             case .idle:
-                Text("长按任意位置继续提问")
+                Text("長按任意位置繼續提問")
                     .font(.system(size: 11))
                     .foregroundStyle(.tertiary)
             case .listening:
@@ -693,16 +692,16 @@ struct AnswerView: View {
             case .processing:
                 HStack(spacing: 6) {
                     ProgressView().controlSize(.mini)
-                    Text("识别中").font(.system(size: 11)).foregroundStyle(.secondary)
+                    Text("辨識中").font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             case .noSpeech:
-                Text("没听到问题").font(.system(size: 11)).foregroundStyle(.secondary)
+                Text("沒聽清問題").font(.system(size: 11)).foregroundStyle(.secondary)
             case .cancelled:
                 Text("已取消").font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
             if model.turns.contains(where: { $0.state == .answered }) {
-                GhostTextButton(title: model.copied ? "已复制" : "复制", action: onCopy)
+                GhostTextButton(title: model.copied ? "已複製" : "複製", action: onCopy)
             }
         }
     }

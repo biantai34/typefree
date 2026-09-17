@@ -2,34 +2,42 @@ import Foundation
 
 public final class CloudASRTranscriber {
 
-    // MARK: - 服务商 & 识别版本
-    public enum ASRProvider {
+    // MARK: - 服務商 & 識別版本
+    public enum ASRProvider: String, CaseIterable {
+        case groq      // Groq (Whisper)
+        case openai    // OpenAI (Whisper)
+        case gemini    // Google (Gemini)
         case volcano   // 火山引擎
-        case bailian   // 阿里百炼（DashScope）
+        case bailian   // 阿里百煉（DashScope）
     }
 
-    /// 可切换的识别版本，各有独立免费额度：火山三档 + 百炼一档。
-    /// 火山闲时版不纳入（进 24h 队列，无法用于实时）。
+    /// 可切換的識別版本，各有獨立免費額度：Groq / OpenAI / Gemini / 火山三檔 + 百煉一檔。
     public enum ASRVersion: String, CaseIterable {
-        case turbo      // 火山极速版 1.0：同步 flash
-        case standard   // 火山标准版 1.0：异步 submit + 轮询 query
-        case v2         // 火山 2.0(seedasr)：异步 submit + 轮询 query
-        case bailian    // 百炼 qwen3-asr-flash：同步 OpenAI 兼容接口
+        case groq       // Groq whisper-large-v3-turbo
+        case openai     // OpenAI whisper-1
+        case gemini     // Google gemini-2.5-flash
+        case turbo      // 火山極速版 1.0：同步 flash
+        case standard   // 火山標準版 1.0：非同步 submit + 輪詢 query
+        case v2         // 火山 2.0(seedasr)：非同步 submit + 輪詢 query
+        case bailian    // 百煉 qwen3-asr-flash：同步 OpenAI 相容介面
 
         public var provider: ASRProvider {
             switch self {
+            case .groq: return .groq
+            case .openai: return .openai
+            case .gemini: return .gemini
             case .turbo, .standard, .v2: return .volcano
             case .bailian: return .bailian
             }
         }
 
-        /// 火山调用时填入 X-Api-Resource-Id 的值（百炼不用）
+        /// 火山調用時填入 X-Api-Resource-Id 的值
         public var resourceID: String {
             switch self {
             case .turbo: return "volc.bigasr.auc_turbo"
             case .standard: return "volc.bigasr.auc"
             case .v2: return "volc.seedasr.auc"
-            case .bailian: return ""
+            case .bailian, .groq, .openai, .gemini: return ""
             }
         }
 
@@ -37,30 +45,39 @@ public final class CloudASRTranscriber {
             switch self {
             case .turbo, .standard, .v2: return resourceID
             case .bailian: return "qwen3-asr-flash"
+            case .groq: return "whisper-large-v3-turbo"
+            case .openai: return "whisper-1"
+            case .gemini: return "gemini-2.5-flash"
             }
         }
 
-        /// true = 同步一步出结果（极速版、百炼）；false = 异步 submit/query（火山标准版/2.0）
+        /// true = 同步一步出結果；false = 異步 submit/query
         public var isSync: Bool {
             switch self {
-            case .turbo, .bailian: return true
+            case .groq, .openai, .gemini, .turbo, .bailian: return true
             case .standard, .v2: return false
             }
         }
 
-        /// 给用户看的名字
+        /// 給使用者看的名字
         public var displayName: String {
             switch self {
-            case .turbo: return "极速版"
-            case .standard: return "标准版"
+            case .groq: return "Groq Whisper"
+            case .openai: return "OpenAI Whisper"
+            case .gemini: return "Gemini 2.5 Flash"
+            case .turbo: return "極速版"
+            case .standard: return "標準版"
             case .v2: return "2.0"
-            case .bailian: return "百炼"
+            case .bailian: return "百煉"
             }
         }
 
-        /// 建议切换顺序：火山 极速→标准→2.0→百炼（百炼需配 DashScope Key 才会真正用上）→ nil
+        /// 建議切換順序
         public var nextForFallback: ASRVersion? {
             switch self {
+            case .groq: return .openai
+            case .openai: return .gemini
+            case .gemini: return nil
             case .turbo: return .standard
             case .standard: return .v2
             case .v2: return .bailian
@@ -77,29 +94,29 @@ public final class CloudASRTranscriber {
         let authStyle: AuthStyle
     }
 
-    // MARK: - 错误分类
+    // MARK: - 錯誤分類
     public enum TranscriptionError: LocalizedError {
         case missingCredentials
         case invalidAudio
         case noData
         case parseError
-        case network(underlying: Error)      // 网络层错误（断网/超时）→ 不切版本
-        case serverBusy(message: String)     // 服务器临时繁忙（如 55000031）→ 原地可重试
-        case serverFailed(message: String)   // 服务端业务失败 / 疑似额度耗尽 → 建议切版本
-        case timeout                          // 异步轮询超过总时限
-        case noSpeech                         // 服务端判定音频无有效语音（火山状态码 20000003）→ 当作"无内容"，不报错
+        case network(underlying: Error)      // 網路層錯誤（斷網/超時）→ 不切版本
+        case serverBusy(message: String)     // 伺服器臨時繁忙 → 原地可重試
+        case serverFailed(message: String)   // 服務端業務失敗 / 額度耗盡 → 建議切版本
+        case timeout                          // 輪詢超過時限
+        case noSpeech                         // 無有效語音 → 當作「無內容」，不報錯
 
         public var errorDescription: String? {
             switch self {
-            case .missingCredentials: return "未配置云端语音识别凭证"
-            case .invalidAudio: return "音频编码失败"
-            case .noData: return "云端识别未返回数据"
-            case .parseError: return "云端识别返回无法解析"
-            case .network(let e): return "网络错误：\(e.localizedDescription)"
+            case .missingCredentials: return "未設定雲端語音識別憑證"
+            case .invalidAudio: return "音訊編碼失敗"
+            case .noData: return "雲端識別未返回資料"
+            case .parseError: return "雲端識別返回無法解析"
+            case .network(let e): return "網路錯誤：\(e.localizedDescription)"
             case .serverBusy(let m): return m
             case .serverFailed(let m): return m
-            case .timeout: return "识别超时"
-            case .noSpeech: return "无内容"
+            case .timeout: return "識別逾時"
+            case .noSpeech: return "無內容"
             }
         }
 
@@ -118,45 +135,57 @@ public final class CloudASRTranscriber {
         }
     }
 
-    // MARK: - 端点
+    // MARK: - 端點
     private static let flashURL  = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/recognize/flash"
     private static let submitURL = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/submit"
     private static let queryURL  = "https://openspeech.bytedance.com/api/v3/auc/bigmodel/query"
-    // 百炼(DashScope) OpenAI 兼容 ASR：qwen3-asr-flash 同步一步出结果
+    // 百煉(DashScope) OpenAI 相容 ASR：qwen3-asr-flash 同步一步出結果
     private static let bailianURL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
     private static let bailianModel = ASRVersion.bailian.modelIdentifier
+    // Groq Whisper API 端點
+    private static let groqURL = URL(string: "https://api.groq.com/openai/v1/audio/transcriptions")!
+    // OpenAI Whisper API 端點
+    private static let openAIURL = URL(string: "https://api.openai.com/v1/audio/transcriptions")!
+    // Google Gemini API 端點
+    private static let geminiURL = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent")!
 
     private let config = VoicePolishConfig.shared
     public var debugLog: ((String) -> Void)?
 
     public init() {}
 
-    // 热词词表统一由 PersonalVocabulary 提供（内置 + 自定义 + 个人词库）
+    // 熱詞詞表統一由 PersonalVocabulary 提供（內建 + 自訂 + 個人詞庫）
 
     public func isConfigured() -> Bool {
         isConfigured(version: currentVersion())
     }
 
-    /// 当前版本对应服务商的凭证是否已配置。
+    /// 當前版本對應服務商的憑證是否已配置。
     public func isConfigured(version: ASRVersion) -> Bool {
         switch version.provider {
+        case .groq: return groqAPIKey() != nil
+        case .openai: return openaiAPIKey() != nil
+        case .gemini: return geminiAPIKey() != nil
         case .volcano: return volcanoCredentials() != nil
         case .bailian: return dashscopeAPIKey() != nil
         }
     }
 
     public func missingConfigurationHint() -> String {
-        "请配置火山引擎的 bigasr_api_key，或阿里百炼的 dashscope_api_key"
+        "請在「設定 → 模型」中設定 Groq、OpenAI、Gemini、火山或阿里百煉的 API Key"
     }
 
-    // MARK: - 当前识别版本
+    // MARK: - 當前識別版本
 
-    /// 用户在设置里选择的识别版本，默认极速版。
+    /// 使用者在設定裡選擇的識別版本，若有設定對應 key 則自動選取，預設 Groq（若有 Key）或極速版。
     public func currentVersion() -> ASRVersion {
         if let raw = config.string(forKey: "bigasr_version", envKey: "BIGASR_VERSION"),
            let v = ASRVersion(rawValue: raw) {
             return v
         }
+        if groqAPIKey() != nil { return .groq }
+        if openaiAPIKey() != nil { return .openai }
+        if geminiAPIKey() != nil { return .gemini }
         return .turbo
     }
 
@@ -308,6 +337,29 @@ public final class CloudASRTranscriber {
         let budget = Self.recognitionBudget(audioSeconds: audioSeconds)
 
         switch version.provider {
+        case .groq:
+            guard let apiKey = groqAPIKey() else {
+                completion(.failure(TranscriptionError.missingCredentials))
+                return
+            }
+            let model = config.string(forKey: "groq_asr_model") ?? "whisper-large-v3-turbo"
+            debugLog?("Cloud ASR: version=groq provider=groq model=\(model) audio=\(audioFormat)/\(audioData.count / 1024)KB budget=\(Int(budget))s")
+            transcribeWhisper(url: Self.groqURL, audioData: audioData, format: audioFormat, model: model, apiKey: apiKey, budgetSeconds: budget, completion: completion)
+        case .openai:
+            guard let apiKey = openaiAPIKey() else {
+                completion(.failure(TranscriptionError.missingCredentials))
+                return
+            }
+            let model = config.string(forKey: "openai_asr_model") ?? "whisper-1"
+            debugLog?("Cloud ASR: version=openai provider=openai model=\(model) audio=\(audioFormat)/\(audioData.count / 1024)KB budget=\(Int(budget))s")
+            transcribeWhisper(url: Self.openAIURL, audioData: audioData, format: audioFormat, model: model, apiKey: apiKey, budgetSeconds: budget, completion: completion)
+        case .gemini:
+            guard let apiKey = geminiAPIKey() else {
+                completion(.failure(TranscriptionError.missingCredentials))
+                return
+            }
+            debugLog?("Cloud ASR: version=gemini provider=gemini model=gemini-2.5-flash audio=\(audioFormat)/\(audioData.count / 1024)KB budget=\(Int(budget))s")
+            transcribeGemini(audioData: audioData, format: audioFormat, apiKey: apiKey, budgetSeconds: budget, completion: completion)
         case .volcano:
             guard let credentials = volcanoCredentials() else {
                 completion(.failure(TranscriptionError.missingCredentials))
@@ -326,11 +378,10 @@ public final class CloudASRTranscriber {
                 completion(.failure(TranscriptionError.missingCredentials))
                 return
             }
-            // 百炼 qwen3-asr-flash 官方硬上限：音频 ≤5 分钟。超了服务端只会用天书报错（"audio format illegal"）拒掉，
-            // 这里提前拦下、给人话提示，省一次注定失败的请求。长音频请改用火山 2.0（异步长音频接口）。
+            // 百煉 qwen3-asr-flash 官方硬上限：音訊 ≤5 分鐘。
             if audioSeconds > 300 {
                 let mins = Int((audioSeconds / 60).rounded())
-                completion(.failure(TranscriptionError.serverFailed(message: "百炼识别最长支持 5 分钟，这段约 \(mins) 分钟太长了。请在「模型」里改用火山 2.0，或把录音分短一些。")))
+                completion(.failure(TranscriptionError.serverFailed(message: "百煉識別最長支援 5 分鐘，這段約 \(mins) 分鐘過長。請在「模型」裡改用 Groq、OpenAI 或火山 2.0。")))
                 return
             }
             debugLog?("Cloud ASR: version=\(version.rawValue) provider=bailian model=\(Self.bailianModel) audio=\(audioFormat)/\(audioData.count / 1024)KB budget=\(Int(budget))s")
@@ -374,7 +425,7 @@ public final class CloudASRTranscriber {
             } else {
                 // 托管层错误（试用额度/会员隐藏限额等）：用服务器给的人话 error 文案
                 let json = (try? JSONSerialization.jsonObject(with: data ?? Data())) as? [String: Any]
-                let msg = (json?["error"] as? String) ?? (route == .member ? "会员识别失败（\(status)）" : "试用识别失败（\(status)）")
+                let msg = (json?["error"] as? String) ?? (route == .member ? "會員辨識失敗（\(status)）" : "試用辨識失敗（\(status)）")
                 completion(.failure(TranscriptionError.serverFailed(message: msg)))
             }
         }
@@ -477,7 +528,7 @@ public final class CloudASRTranscriber {
                    let text = Self.extractText(from: json) {
                     completion(.success(text))
                 } else {
-                    completion(.failure(TranscriptionError.serverFailed(message: "识别完成但未返回文本")))
+                    completion(.failure(TranscriptionError.serverFailed(message: "辨識完成但未返回文字")))
                 }
             case 20000001?, 20000002?:
                 // 处理中 / 排队中 → 0.3s 后再查
@@ -547,7 +598,7 @@ public final class CloudASRTranscriber {
             }
             // 失败：百炼把错误放在 error.message（额度/鉴权/限流等）→ 归为业务失败（可触发切下一个）。
             // 常见的 Key 错 / 欠费 / 限流由 AIPolisher.extractAPIErrorMessage 统一翻成中文，其余保留原话。
-            let msg = AIPolisher.extractAPIErrorMessage(from: json) ?? "百炼识别失败"
+            let msg = AIPolisher.extractAPIErrorMessage(from: json) ?? "百煉辨識失敗"
             completion(.failure(TranscriptionError.serverFailed(message: msg)))
         }.resume()
     }
@@ -635,30 +686,183 @@ public final class CloudASRTranscriber {
         return (json["message"] as? String) ?? (json["msg"] as? String) ?? (json["error"] as? String)
     }
 
-    /// 把服务端失败分成「临时繁忙（原地重试）」和「业务失败（建议切版本）」。
+    // MARK: - Whisper（Groq / OpenAI 相容介面）
+
+    private func transcribeWhisper(url: URL, audioData: Data, format: String, model: String, apiKey: String, budgetSeconds: TimeInterval, completion: @escaping (Result<String, Error>) -> Void) {
+        let boundary = "Boundary-\(UUID().uuidString)"
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = budgetSeconds
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        var body = Data()
+        func appendFormField(named name: String, value: String) {
+            guard let header = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"\r\n\r\n".data(using: .utf8),
+                  let val = value.data(using: .utf8),
+                  let footer = "\r\n".data(using: .utf8) else { return }
+            body.append(header)
+            body.append(val)
+            body.append(footer)
+        }
+
+        appendFormField(named: "model", value: model)
+        appendFormField(named: "response_format", value: "json")
+        if let context = PersonalVocabulary.asrContextSentence(), !context.isEmpty {
+            appendFormField(named: "prompt", value: context)
+        }
+
+        let filename = "audio.\(format)"
+        let mimeType = (format == "m4a") ? "audio/m4a" : "audio/wav"
+        if let fileHeader = "--\(boundary)\r\nContent-Disposition: form-data; name=\"file\"; filename=\"\(filename)\"\r\nContent-Type: \(mimeType)\r\n\r\n".data(using: .utf8),
+           let fileFooter = "\r\n--\(boundary)--\r\n".data(using: .utf8) {
+            body.append(fileHeader)
+            body.append(audioData)
+            body.append(fileFooter)
+        }
+        request.httpBody = body
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                completion(.failure(TranscriptionError.network(underlying: error)))
+                return
+            }
+            guard let data = data else {
+                completion(.failure(TranscriptionError.noData))
+                return
+            }
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                completion(.failure(TranscriptionError.parseError))
+                return
+            }
+            if let text = json["text"] as? String {
+                let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+                if !trimmed.isEmpty {
+                    completion(.success(trimmed))
+                } else {
+                    completion(.failure(TranscriptionError.noSpeech))
+                }
+                return
+            }
+            let msg = AIPolisher.extractAPIErrorMessage(from: json) ?? "Whisper 語音轉寫失敗"
+            completion(.failure(TranscriptionError.serverFailed(message: msg)))
+        }.resume()
+    }
+
+    // MARK: - Gemini（Google 多模態音訊轉寫）
+
+    private func transcribeGemini(audioData: Data, format: String, apiKey: String, budgetSeconds: TimeInterval, completion: @escaping (Result<String, Error>) -> Void) {
+        guard var components = URLComponents(url: Self.geminiURL, resolvingAgainstBaseURL: false) else {
+            completion(.failure(TranscriptionError.invalidAudio))
+            return
+        }
+        components.queryItems = [URLQueryItem(name: "key", value: apiKey)]
+        guard let url = components.url else {
+            completion(.failure(TranscriptionError.invalidAudio))
+            return
+        }
+
+        let mimeType = (format == "m4a") ? "audio/mp4" : "audio/wav"
+        let base64 = audioData.base64EncodedString()
+        var prompt = "請將這段語音轉寫為繁體中文文字。只需輸出轉寫的逐字文字內容，不要包含任何解釋、開場白或多餘標記。如果音訊為靜音或無人聲，請直接返回空字串。"
+        if let context = PersonalVocabulary.asrContextSentence(), !context.isEmpty {
+            prompt += " 專有名詞參考：\(context)。"
+        }
+
+        let body: [String: Any] = [
+            "contents": [
+                [
+                    "role": "user",
+                    "parts": [
+                        ["text": prompt],
+                        ["inlineData": ["mimeType": mimeType, "data": base64]]
+                    ]
+                ]
+            ],
+            "generationConfig": [
+                "temperature": 0.0
+            ]
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = budgetSeconds
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: body)
+        } catch {
+            completion(.failure(error))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { data, _, error in
+            if let error = error {
+                completion(.failure(TranscriptionError.network(underlying: error)))
+                return
+            }
+            guard let data = data else {
+                completion(.failure(TranscriptionError.noData))
+                return
+            }
+            guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                completion(.failure(TranscriptionError.parseError))
+                return
+            }
+            if let candidates = json["candidates"] as? [[String: Any]],
+               let content = candidates.first?["content"] as? [String: Any],
+               let parts = content["parts"] as? [[String: Any]] {
+                let text = parts.compactMap { $0["text"] as? String }.joined().trimmingCharacters(in: .whitespacesAndNewlines)
+                if !text.isEmpty {
+                    completion(.success(text))
+                } else {
+                    completion(.failure(TranscriptionError.noSpeech))
+                }
+                return
+            }
+            let msg = AIPolisher.extractAPIErrorMessage(from: json) ?? "Gemini 語音識別失敗"
+            completion(.failure(TranscriptionError.serverFailed(message: msg)))
+        }.resume()
+    }
+
+    /// 把服務端失敗分成「臨時繁忙（原地重試）」和「業務失敗（建議切版本）」。
     private func classifyServerError(status: Int?, data: Data?) -> TranscriptionError {
-        let message = Self.message(from: data) ?? "云端识别失败"
+        let message = Self.message(from: data) ?? "雲端識別失敗"
         guard let status = status else {
             return .serverFailed(message: message)
         }
-        if status == 55000031 {   // 服务器繁忙：服务过载，临时性
-            return .serverBusy(message: "\(message)（服务器繁忙）")
+        if status == 55000031 {   // 伺服器繁忙：服務超載，臨時性
+            return .serverBusy(message: "\(message)（伺服器繁忙）")
         }
-        if status == 20000003 {   // 音频无有效语音（静音 / 太短）→ 当作"无内容"，不报红框
+        if status == 20000003 {   // 音訊無有效語音（靜音 / 太短）→ 當作「無內容」，不報紅框
             return .noSpeech
         }
-        // 新用户最常撞的两个错，原文是英文（"requested resource not granted" / "Invalid X-Api-Key"），
-        // 换成能照着办的中文；其余状态码保留服务端原话。
-        if status == 45000030 {   // HTTP 403：账号没开通该识别版本（极速版/标准版/2.0 需分别开通并领免费额度）
-            return .serverFailed(message: "火山账号未开通此识别版本，请到控制台开通并领免费额度（45000030）")
+        if status == 45000030 {   // HTTP 403：帳號未開通該識別版本
+            return .serverFailed(message: "火山帳號未開通此識別版本，請到控制台開通並領取免費額度（45000030）")
         }
-        if status == 45000010 {   // HTTP 401：API Key 不对
-            return .serverFailed(message: "火山 API Key 无效，请检查是否复制完整（45000010）")
+        if status == 45000010 {   // HTTP 401：API Key 不對
+            return .serverFailed(message: "火山 API Key 無效，請檢查是否複製完整（45000010）")
         }
-        return .serverFailed(message: "\(message)（状态码 \(status)）")
+        return .serverFailed(message: "\(message)（狀態碼 \(status)）")
     }
 
-    /// 百炼凭证：DashScope API Key（与语音优化的通义千问共用同一个 key）。
+    // MARK: - 憑證讀取
+
+    public func groqAPIKey() -> String? {
+        if let key = config.string(forKey: "groq_api_key", envKey: "GROQ_API_KEY"), !key.isEmpty { return key }
+        return nil
+    }
+
+    public func openaiAPIKey() -> String? {
+        if let key = config.string(forKey: "openai_api_key", envKey: "OPENAI_API_KEY"), !key.isEmpty { return key }
+        return nil
+    }
+
+    public func geminiAPIKey() -> String? {
+        if let key = config.string(forKey: "gemini_api_key", envKey: "GEMINI_API_KEY"), !key.isEmpty { return key }
+        return nil
+    }
+
+    /// 百煉憑證：DashScope API Key（與語音優化的通義千問共用同一個 key）。
     private func dashscopeAPIKey() -> String? {
         if let key = config.string(forKey: "dashscope_api_key", envKey: "DASHSCOPE_API_KEY"),
            !key.isEmpty {
@@ -667,14 +871,12 @@ public final class CloudASRTranscriber {
         return nil
     }
 
-    /// 火山凭证：新版单 API Key 优先，兼容旧版 App ID + Access Token。
+    /// 火山憑證：新版單 API Key 優先，相容舊版 App ID + Access Token。
     private func volcanoCredentials() -> Credentials? {
-        // 新版控制台：单个 API Key 鉴权（优先）
         if let apiKey = config.string(forKey: "bigasr_api_key", envKey: "BIGASR_API_KEY"),
            !apiKey.isEmpty {
             return Credentials(authStyle: .apiKey(apiKey))
         }
-        // 旧版控制台：App ID + Access Token（向后兼容，老用户配置不中断）
         if let appID = config.string(forKey: "bigasr_app_id", envKey: "BIGASR_APP_ID"),
            let accessToken = config.string(forKey: "bigasr_access_token", envKey: "BIGASR_ACCESS_TOKEN"),
            !appID.isEmpty,

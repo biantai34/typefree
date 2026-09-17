@@ -29,11 +29,11 @@ final class SupportChatView: NSView, NSTextViewDelegate {
 
     private let composerCard = NSView()
     private let textView = SupportTextView()
-    private let placeholder = NSTextField(labelWithString: "有问题、建议，或者哪个软件里不好用，直接在这里说…")
+    private let placeholder = NSTextField(labelWithString: "有問題、建議，或者哪個軟體裡不好用，直接在這裡說…")
     private let attachmentRow = NSStackView()
     private var imageThumb: NSImageView?
-    private var pendingImage: Data?             // 已转成 JPEG 的截图
-    private var transcriptAttached = false     // 默认不带；用户点「附上最后的转录」才带
+    private var pendingImage: Data?             // 已轉成 JPEG 的截圖
+    private var transcriptAttached = false     // 預設不帶；使用者點「附上最後的轉錄」才帶
     private var attachTranscriptButton: VPButton!
     private let transcriptChip = NSStackView()
     private let statusLabel = NSTextField(labelWithString: "")
@@ -57,10 +57,10 @@ final class SupportChatView: NSView, NSTextViewDelegate {
     required init?(coder: NSCoder) { fatalError() }
     deinit { if let observer { NotificationCenter.default.removeObserver(observer) } }
 
-    // MARK: - 布局
+    // MARK: - 佈局
 
     private func build() {
-        // 消息区
+        // 訊息區
         messagesScroll.translatesAutoresizingMaskIntoConstraints = false
         messagesScroll.hasVerticalScroller = true
         messagesScroll.autohidesScrollers = true
@@ -79,7 +79,7 @@ final class SupportChatView: NSView, NSTextViewDelegate {
         emptyLabel.textColor = theme.text3
         emptyLabel.alignment = .center
         emptyLabel.translatesAutoresizingMaskIntoConstraints = false
-        emptyLabel.stringValue = "还没有消息。有问题、建议，或者哪个软件里用着不顺，直接在下面说。\n开发者的回复会出现在这里。"
+        emptyLabel.stringValue = "還沒有訊息。有問題、建議，或者哪個軟體裡用著不順，直接在下面說。\n開發者的回覆會出現在這裡。"
         addSubview(emptyLabel)
 
         // 输入区
@@ -133,19 +133,19 @@ final class SupportChatView: NSView, NSTextViewDelegate {
         attachmentRow.spacing = 8
         attachmentRow.translatesAutoresizingMaskIntoConstraints = false
 
-        let addImage = VPButton(title: "添加截图", style: .secondary, size: .small, theme: theme,
+        let addImage = VPButton(title: "新增截圖", style: .secondary, size: .small, theme: theme,
                                 target: self, action: #selector(chooseImage))
-        attachTranscriptButton = VPButton(title: "附上最后的转录", style: .secondary, size: .small, theme: theme,
+        attachTranscriptButton = VPButton(title: "附上最後的轉錄", style: .secondary, size: .small, theme: theme,
                                           target: self, action: #selector(attachTranscript))
-        attachTranscriptButton.toolTip = "把最近一次识别的文字和录音一起发给开发者，方便查识别问题"
-        let hint = NSTextField(wrappingLabelWithString: "也可以把截图拖进来或直接粘贴。")
+        attachTranscriptButton.toolTip = "把最近一次辨識的文字和錄音一起發給開發者，方便排查辨識問題"
+        let hint = NSTextField(wrappingLabelWithString: "也可以把截圖拖進來或直接貼上。")
         hint.font = .systemFont(ofSize: 11.5)
         hint.textColor = theme.text3
         hint.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         statusLabel.font = .systemFont(ofSize: 12)
         statusLabel.textColor = theme.text3
         statusLabel.isHidden = true
-        sendButton = VPButton(title: "发送", style: .primary, size: .regular, theme: theme,
+        sendButton = VPButton(title: "發送", style: .primary, size: .regular, theme: theme,
                               target: self, action: #selector(sendTapped))
         sendButton.setContentHuggingPriority(.required, for: .horizontal)
 
@@ -271,14 +271,14 @@ final class SupportChatView: NSView, NSTextViewDelegate {
                     iv.heightAnchor.constraint(lessThanOrEqualToConstant: 240),
                 ])
             } else {
-                let t = NSTextField(labelWithString: "🖼 截图")
+                let t = NSTextField(labelWithString: "🖼 截圖")
                 t.font = .systemFont(ofSize: 12)
                 t.textColor = mine ? theme.onAccent.withAlphaComponent(0.8) : theme.text3
                 content.addArrangedSubview(t)
             }
         }
         if m.hasAudio {
-            let t = NSTextField(labelWithString: "🎙 附带了最后一次录音")
+            let t = NSTextField(labelWithString: "🎙 附帶了最後一次錄音")
             t.font = .systemFont(ofSize: 12)
             t.textColor = mine ? theme.onAccent.withAlphaComponent(0.8) : theme.text3
             content.addArrangedSubview(t)
@@ -291,7 +291,7 @@ final class SupportChatView: NSView, NSTextViewDelegate {
             content.bottomAnchor.constraint(equalTo: bubble.bottomAnchor),
         ])
 
-        let time = NSTextField(labelWithString: Self.localTime(m.createdAt) + (mine ? "" : " · 开发者"))
+        let time = NSTextField(labelWithString: Self.localTime(m.createdAt) + (mine ? "" : " · 開發者"))
         time.font = .systemFont(ofSize: 11)
         time.textColor = theme.text3
 
@@ -341,7 +341,7 @@ final class SupportChatView: NSView, NSTextViewDelegate {
         attachmentRow.arrangedSubviews.forEach { $0.removeFromSuperview() }
         imageThumb = nil
         if let data = pendingImage, let image = NSImage(data: data) {
-            let chip = makeChip(icon: nil, title: "截图 · \(Int(image.size.width))×\(Int(image.size.height))",
+            let chip = makeChip(icon: nil, title: "截圖 · \(Int(image.size.width))×\(Int(image.size.height))",
                                 remove: #selector(removeImage))
             let thumb = NSImageView(image: image)
             thumb.imageScaling = .scaleProportionallyUpOrDown
@@ -357,10 +357,10 @@ final class SupportChatView: NSView, NSTextViewDelegate {
         if transcriptAttached, let t = context.latestTranscript() {
             let preview = (t.output.isEmpty ? t.asr : t.output).split(whereSeparator: \.isNewline).joined(separator: " ")
             let brief = preview.count > 24 ? String(preview.prefix(24)) + "…" : preview
-            attachmentRow.addArrangedSubview(makeChip(icon: "waveform", title: "最后的转录：\(brief)", remove: #selector(removeTranscript)))
+            attachmentRow.addArrangedSubview(makeChip(icon: "waveform", title: "最後的轉錄：\(brief)", remove: #selector(removeTranscript)))
         }
         attachmentRow.isHidden = attachmentRow.arrangedSubviews.isEmpty
-        // 已经附上了、或者根本没有转录可附，就不显示这个按钮
+        // 已經附上了、或者根本沒有轉錄可附，就不顯示這個按鈕
         attachTranscriptButton?.isHidden = transcriptAttached || context.latestTranscript() == nil
     }
 
@@ -409,7 +409,7 @@ final class SupportChatView: NSView, NSTextViewDelegate {
         let panel = NSOpenPanel()
         panel.allowedContentTypes = [.png, .jpeg, .heic, .tiff]
         panel.allowsMultipleSelection = false
-        panel.message = "选一张截图（PNG / JPG）"
+        panel.message = "選一張截圖（PNG / JPG）"
         guard panel.runModal() == .OK, let url = panel.url, let image = NSImage(contentsOf: url) else { return }
         attach(image: image)
     }
@@ -417,7 +417,7 @@ final class SupportChatView: NSView, NSTextViewDelegate {
     private func attach(image: NSImage) {
         SupportChatView.log?("support attach image \(Int(image.size.width))x\(Int(image.size.height))")
         guard let jpeg = SupportImageEncoder.jpegData(from: image) else {
-            showStatus("这张图读不出来", isError: true)
+            showStatus("這張圖片無法讀取", isError: true)
             return
         }
         pendingImage = jpeg
@@ -447,7 +447,7 @@ final class SupportChatView: NSView, NSTextViewDelegate {
     @objc private func sendTapped() {
         let text = textView.string.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty || pendingImage != nil else {
-            showStatus("写点内容或附上截图再发", isError: true)
+            showStatus("請填寫內容或附上截圖再發送", isError: true)
             return
         }
         var asr: String?, polished: String?, audio: Data?
@@ -461,19 +461,19 @@ final class SupportChatView: NSView, NSTextViewDelegate {
             deviceName: Host.current().localizedName ?? "",
             appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?")
         sendButton.isEnabled = false
-        sendButton.title = "发送中…"
+        sendButton.title = "發送中…"
         service.send(out) { [weak self] result in
             guard let self else { return }
             sendButton.isEnabled = true
-            sendButton.title = "发送"
+            sendButton.title = "發送"
             switch result {
             case .success:
                 textView.string = ""
                 pendingImage = nil
-                transcriptAttached = false      // 转录只随这一条发；下次要带得再点一次
+                transcriptAttached = false      // 轉錄只隨這一條發；下次要帶得再點一次
                 textDidChange(Notification(name: NSText.didChangeNotification))
                 refreshAttachments()
-                showStatus("已发送，收到回复会显示在这里", isError: false)
+                showStatus("已發送，收到回覆會顯示在這裡", isError: false)
             case .failure(let err):
                 showStatus(err.userMessage, isError: true)
             }
@@ -553,7 +553,7 @@ final class SupportClickableImage: NSImageView {
         layer?.cornerRadius = 8
         layer?.masksToBounds = true
         translatesAutoresizingMaskIntoConstraints = false
-        toolTip = "点击查看大图"
+        toolTip = "點擊查看大圖"
     }
     required init?(coder: NSCoder) { fatalError() }
     override func mouseDown(with event: NSEvent) { NSWorkspace.shared.open(url) }

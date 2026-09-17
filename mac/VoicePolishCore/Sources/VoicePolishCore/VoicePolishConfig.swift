@@ -8,10 +8,11 @@ public final class VoicePolishConfig {
     private let configPath: URL
     private let secrets: SecretStoring
 
-    /// 敏感键：存 Keychain，绝不写明文 config.json。
+    /// 敏感鍵：存 Keychain，絕不寫明文 config.json。
     static let secretKeys: Set<String> = [
         "ark_api_key", "dashscope_api_key", "bigasr_api_key",
         "bigasr_access_token", "zhipu_api_key",
+        "openai_api_key", "groq_api_key", "gemini_api_key",
     ]
 
     /// 供其他模块读取 config 文件（如热词）

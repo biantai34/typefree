@@ -7,7 +7,7 @@ class StatusBarController {
     private let statusItem: NSStatusItem
     private let appearanceObserver = AppearanceObservingView(frame: .zero)
     private weak var delegate: AppDelegate?
-    private let micItem = NSMenuItem(title: "麦克风", action: nil, keyEquivalent: "")
+    private let micItem = NSMenuItem(title: "麥克風", action: nil, keyEquivalent: "")
     private let hotkeyHintItem = NSMenuItem(title: "", action: nil, keyEquivalent: "")
 
     init(delegate: AppDelegate) {
@@ -20,26 +20,26 @@ class StatusBarController {
         refreshStatusBarIcon()
 
         let menu = NSMenu()
-        menu.addItem(withTitle: "开始/停止录音", action: #selector(toggleRecording), keyEquivalent: "")
+        menu.addItem(withTitle: "開始/停止錄音", action: #selector(toggleRecording), keyEquivalent: "")
             .target = self
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(withTitle: "打开 Typefree", action: #selector(openSettingsCenter), keyEquivalent: "")
+        menu.addItem(withTitle: "開啟 Typefree", action: #selector(openSettingsCenter), keyEquivalent: "")
             .target = self
-        menu.addItem(withTitle: "检查更新…", action: #selector(AppDelegate.checkForUpdates(_:)), keyEquivalent: "")
+        menu.addItem(withTitle: "檢查更新…", action: #selector(AppDelegate.checkForUpdates(_:)), keyEquivalent: "")
             .target = delegate
         menu.addItem(NSMenuItem.separator())
         menu.addItem(micItem)
         rebuildMicSubmenu()
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(withTitle: "纠正上次结果", action: #selector(showManualCorrection), keyEquivalent: "")
+        menu.addItem(withTitle: "修正上次結果", action: #selector(showManualCorrection), keyEquivalent: "")
             .target = self
         menu.addItem(NSMenuItem.separator())
         updateHotkeyHint()
         menu.addItem(hotkeyHintItem)
-        menu.addItem(withTitle: "打开辅助功能设置", action: #selector(openAccessibilitySettings), keyEquivalent: "")
+        menu.addItem(withTitle: "開啟輔助功能設定", action: #selector(openAccessibilitySettings), keyEquivalent: "")
             .target = self
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(withTitle: "退出 Typefree", action: #selector(quitApp), keyEquivalent: "q")
+        menu.addItem(withTitle: "結束 Typefree", action: #selector(quitApp), keyEquivalent: "q")
             .target = self
         statusItem.menu = menu
 
@@ -76,7 +76,7 @@ class StatusBarController {
 
         let defaultName = mgr.systemDefaultDeviceName ?? "未知"
         let defaultItem = NSMenuItem(
-            title: "跟随系统默认（\(defaultName)）",
+            title: "跟隨系統預設（\(defaultName)）",
             action: #selector(selectMicrophone(_:)),
             keyEquivalent: ""
         )
@@ -87,7 +87,7 @@ class StatusBarController {
         submenu.addItem(NSMenuItem.separator())
 
         for device in mgr.devices {
-            let title = device.isBuiltIn ? "\(device.name)（推荐）" : device.name
+            let title = device.isBuiltIn ? "\(device.name)（推薦）" : device.name
             let item = NSMenuItem(title: title, action: #selector(selectMicrophone(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = device.uid
@@ -104,8 +104,8 @@ class StatusBarController {
 
     private func updateHotkeyHint() {
         let shortcut = RecordingHotkeyShortcut.current.displayName
-        let action = RecordingHotkeyBehavior.isTapToggleEnabled ? "长按/单击" : "长按"
-        hotkeyHintItem.title = "快捷键：\(action) \(shortcut) 录音"
+        let action = RecordingHotkeyBehavior.isTapToggleEnabled ? "長按/按一下" : "長按"
+        hotkeyHintItem.title = "快速鍵：\(action) \(shortcut) 錄音"
         hotkeyHintItem.isEnabled = false
     }
 
